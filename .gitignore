@@ -1,0 +1,10 @@
+raspy/lib_raspy/raspy.egg-info/*
+raspy/lib_raspy/raspy/build/*
+raspy/lib_raspy/raspy/dist/*
+*.pyc
+*.egg-info
+.idea/*
+.vagrant/*
+.idea/*
+raspy/venv/*
+
