@@ -7,4 +7,5 @@ raspy/lib_raspy/raspy/dist/*
 .vagrant/*
 .idea/*
 raspy/venv/*
+.DS_Store
 
