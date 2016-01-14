@@ -17,28 +17,28 @@ def make_connect_req(username, password):
 
 
 def make_disconnect_req(cuiid, cid):
-    discon_req = rasmgr.DisconnectReq(clientUUID=cuiid, clientID=cid)
+    discon_req = rasmgr.DisconnectReq(clientUUID=cuiid, clientId=cid)
     if not discon_req:
         raise Exception("Can't create Disconnect request")
     return discon_req
 
 
 def make_keep_alive_req(cuiid, cid):
-    keep_alive_req = rasmgr.KeepAliveReq(clientUUID=cuiid, clientID=cid)
+    keep_alive_req = rasmgr.KeepAliveReq(clientUUID=cuiid, clientId=cid)
     if not keep_alive_req:
         raise Exception("Can't create KeepAlive request")
     return keep_alive_req
 
 
 def make_open_db_req(cuiid, cid, dbname):
-    open_db_req = rasmgr.OpenDbReq(clientUUID=cuiid, clientID=cid, databaseName=dbname)
+    open_db_req = rasmgr.OpenDbReq(clientUUID=cuiid, clientId=cid, databaseName=dbname)
     if not open_db_req:
         raise Exception("Can't create OpenDb request")
     return open_db_req
 
 
 def make_close_db_req(cuuid, cid, dbsid):
-    close_db_req = rasmgr.CloseDbReq(clientUUID=cuuid, clientID=cid, dbSessionId=dbsid)
+    close_db_req = rasmgr.CloseDbReq(clientUUID=cuuid, clientId=cid, dbSessionId=dbsid)
     if not close_db_req:
         raise Exception("Can't create CloseDb request")
     return close_db_req
@@ -109,7 +109,7 @@ def rasmgr_disconnect(stub, cuiid, cid):
 
 
 def rasmgr_keep_alive(stub, cuiid, cid):
-    return stub.KeepAliveReq(make_keep_alive_req(cuiid, cid), _TIMEOUT_SECONDS)
+    return stub.KeepAlive(make_keep_alive_req(cuiid, cid), _TIMEOUT_SECONDS)
 
 
 def rasmgr_open_db(stub, cuiid, cid, dbname):
@@ -181,14 +181,14 @@ class Connection:
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = rasmgr_connect(self.stub, self.username, self.password)
-        rasmgr_keep_alive(self.stub, self.username, self.password)
+        # rasmgr_keep_alive(self.stub, self.session.clientUUID, self.session.clientId)
 
     def disconnect(self):
-        rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientID)
+        rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.password)
-        rasmgr_keep_alive(self.stub, self.username, self.password)
+        # rasmgr_keep_alive(self.stub, self.username, self.password)
 
     def database(self, name):
         """
@@ -209,14 +209,14 @@ class Database:
         """
         self.connection = connection
         self.name = name
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.name)
+        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId, self.name)
         self.stub = client.beta_create_ClientRassrvrService_stub(self.connection.channel)
 
     def open(self):
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.name)
+        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId, self.name)
 
     def close(self):
-        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.db.dbSessionId)
+        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId, self.db.dbSessionId)
 
     def transaction(self, rw=False):
         """
@@ -235,7 +235,8 @@ class Database:
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query.execute()
-        collection = [client_get_collection_by_name(self.stub, self.connection.channel.clientID, name) for name in result]
+        collection = [client_get_collection_by_name(self.stub, self.connection.channel.clientId, name) for name in result]
+        import pdb; pdb.set_trace()
         return collection
 
 
@@ -247,7 +248,7 @@ class Collection:
         """
         self.transaction = transaction
         if name:
-            self.data = client_get_collection_by_name(self.transaction.database.stub, self.transaction.database.connection.session.clientID, name)
+            self.data = client_get_collection_by_name(self.transaction.database.stub, self.transaction.database.connection.session.clientId, name)
 
 
     def name(self):
@@ -289,13 +290,13 @@ class Transaction:
         self.begin_transaction()
 
     def begin_transaction(self):
-        client_begin_transaction(self.database.stub, self.database.connection.channel.clientID, self.rw)
+        client_begin_transaction(self.database.stub, self.database.connection.channel.clientId, self.rw)
 
     def commit_transaction(self):
-        client_commit_transaction(self.database.stub, self.database.connection.channel.clientID)
+        client_commit_transaction(self.database.stub, self.database.connection.channel.clientId)
 
     def abort_transaction(self):
-        client_abort_transaction(self.database.stub, self.database.connection.channel.clientID)
+        client_abort_transaction(self.database.stub, self.database.connection.channel.clientId)
 
     def query(self, query_str):
         """
@@ -335,7 +336,7 @@ class Query:
         :return: the resulting array returned by the query
         :rtype: Array
         """
-        result = client_execute_query(self.transaction.database.stub, self.transaction.database.connection.channel.clientID, self.query_str)
+        result = client_execute_query(self.transaction.database.stub, self.transaction.database.connection.channel.clientId, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
@@ -345,13 +346,13 @@ class Query:
         while mddstatus == 0:
             array = []
             metadata = []
-            mddresp = client_get_next_mdd(self.transaction.database.stub, self.transaction.database.connection.session.clientID)
+            mddresp = client_get_next_mdd(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception("getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
-                tileresp = client_get_next_tile(self.transaction.database.stub, self.transaction.database.connection.session.clientID)
+                tileresp = client_get_next_tile(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
