@@ -1,6 +1,7 @@
 import error_message_pb2 as error
 import client_rassrvr_service_pb2 as client
 import rasmgr_client_service_pb2 as rasmgr
+import hashlib
 # import numpy as np
 # from scipy import sparse
 
@@ -177,18 +178,20 @@ class Connection:
         self.hostname = hostname
         self.port = port
         self.username = username
-        self.password = password
+        self.passwordHash = hashlib.md5()
+        self.passwordHash.update(password)
+        self.passwordHash = self.passwordHash.hexdigest()
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
-        self.session = rasmgr_connect(self.stub, self.username, self.password)
-        rasmgr_keep_alive(self.stub, self.username, self.password)
+        self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
         rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientID)
 
     def connect(self):
-        self.session = rasmgr_connect(self.stub, self.username, self.password)
-        rasmgr_keep_alive(self.stub, self.username, self.password)
+        self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def database(self, name):
         """
