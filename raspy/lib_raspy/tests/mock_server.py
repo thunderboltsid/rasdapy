@@ -10,25 +10,26 @@ class RasMgrClientServiceServicer(rasmgr.BetaRasMgrClientServiceServicer):
     Provides mock methods for testing with a mock server
     """
 
-    def __init__(self):
-        pass
-
     def Connect(self, request, context):
-        return rasmgr.ConnectRepl(clientUUID="mockUUID", client_id=0, keepAliveTimeout=100)
+        print("Invoking Connect")
+        repl = rasmgr.ConnectRepl(clientUUID="mockUUID", clientId=0, keepAliveTimeout=100)
+        return repl
 
     def Disconnect(self, request, context):
+        print("Invoking Disconnect")
         if not request.clientUUID == "mockUUID" and request.clientId == 0:
             raise Exception("Test failed: incorrect client identity during Disconnect request")
         pass
 
     def OpenDb(self, request, context):
+        print("Invoking OpenDb")
         return rasmgr.OpenDbRepl(dbSessionId="mockDB", serverHostName="mockHost", port=0)
 
     def CloseDb(self, request, context):
-        pass
+        print("Invoking CloseDb")
 
     def KeepAlive(self, request, context):
-        pass
+        print("Invoking KeepAlive")
 
 
 class ClientRassrvrServiceServicer(client.BetaClientRassrvrServiceServicer):
@@ -74,7 +75,10 @@ def serve():
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)
     except KeyboardInterrupt:
-        server.stop()
+        try:
+            server.stop()
+        except:
+            print("Oops!")
 
 if __name__ == '__main__':
     serve()
