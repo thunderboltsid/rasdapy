@@ -6,4 +6,3 @@ dist/*
 .vagrant/*
 raspy/venv/*
 .DS_Store
-MANIFEST.in
