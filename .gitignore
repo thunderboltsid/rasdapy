@@ -1,11 +1,11 @@
-raspy/lib_raspy/raspy.egg-info/*
-raspy/lib_raspy/raspy/build/*
-raspy/lib_raspy/raspy/dist/*
-raspy/lib_raspy/dist/*
+lib_raspy/raspy.egg-info/*
+raspy/build/*
+raspy/dist/*
+lib_raspy/dist/*
 *.pyc
 *.egg-info
 .idea/*
 .vagrant/*
 raspy/venv/*
 .DS_Store
-raspy/lib_raspy/MANIFEST.in
+MANIFEST.in
