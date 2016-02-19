@@ -148,3 +148,12 @@ Numpy Operations
 ::
 
     $ data += 1
+
+Contributors
+============
+* Siddharth Shukla
+
+Thanks also to
+==============
+* Alex Mircea Dumitru
+* Vlad Merticariu

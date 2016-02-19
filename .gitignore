@@ -1,7 +1,5 @@
-lib_raspy/raspy.egg-info/*
 raspy/build/*
 raspy/dist/*
-lib_raspy/dist/*
 *.pyc
 *.egg-info
 .idea/*
