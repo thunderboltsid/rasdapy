@@ -36,6 +36,8 @@ Installation
 
 1) Make sure you have Python 2.6 or newer. If in doubt, run:
 
+::
+
    $ python -V
 
 2) If you do not have setuptools, numpy, scipy, grpcio, and protobuf
@@ -50,9 +52,13 @@ Installation
    you install a binary distribution, make sure that it is the same
    version as this package. If in doubt, run:
 
+::
+
    $ protoc --version
 
 4) Build and run the tests:
+
+::
 
     $ python setup.py build
     $ python setup.py test
@@ -69,6 +75,8 @@ or when it might me fixed. We also do not know how likely it is that
 this bug will affect users in practice.
 
 5) Install:
+
+::
 
    $ python setup.py install
 
