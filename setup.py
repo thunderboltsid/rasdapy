@@ -20,8 +20,9 @@
 # or contact Peter Baumann via <baumann@rasdaman.com>.
 
 from setuptools import setup
-import os
+import subprocess
 
+subprocess.call("bin/stub_generator.py", shell=True)
 if __name__ == '__main__':
     setup(name='raspy',
           version='0.2dev',
@@ -36,4 +37,3 @@ if __name__ == '__main__':
           install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
           zip_safe=False,
           )
-    os.system("bin/stub_generator.py")

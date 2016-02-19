@@ -1,4 +1,4 @@
-raspy/build/*
+build/*
 dist/*
 *.pyc
 *.egg-info
