@@ -20,17 +20,20 @@
 # or contact Peter Baumann via <baumann@rasdaman.com>.
 
 from setuptools import setup
+import os
 
-setup(name='raspy',
-      version='0.2dev',
-      description='Python interface to Rasdaman',
-      author='Siddharth Shukla',
-      author_email='s.shukla@jacobs-university.de',
-      license='LGPL',
-      packages=['raspy', 'raspy.stubs', 'raspy.test'],
-      scripts=['bin/ez_setup.py'],
-      long_description=open('README.rst').read(),
-      url='http://rasdaman.org',
-      install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
-      zip_safe=False,
-      )
+if __name__ == '__main__':
+    setup(name='raspy',
+          version='0.2dev',
+          description='Python interface to Rasdaman',
+          author='Siddharth Shukla',
+          author_email='s.shukla@jacobs-university.de',
+          license='LGPL',
+          packages=['raspy', 'raspy.stubs', 'raspy.test'],
+          scripts=['bin/ez_setup.py', 'bin/stub_generator.py'],
+          long_description=open('README.rst').read(),
+          url='http://rasdaman.org',
+          install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
+          zip_safe=False,
+          )
+    os.system("bin/stub_generator.py")
