@@ -19,7 +19,7 @@
 # For more information please see <http://www.rasdaman.org>
 # or contact Peter Baumann via <baumann@rasdaman.com>.
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='raspy',
       version='0.2dev',
@@ -27,7 +27,7 @@ setup(name='raspy',
       author='Siddharth Shukla',
       author_email='s.shukla@jacobs-university.de',
       license='LGPL',
-      packages=['raspy', 'raspy.stubs'],
+      packages=['raspy', 'raspy.stubs', 'test.stubs'],
       long_description=open('README.md').read(),
       url='http://rasdaman.org',
       install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],

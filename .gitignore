@@ -8,4 +8,4 @@ raspy/lib_raspy/dist/*
 .vagrant/*
 raspy/venv/*
 .DS_Store
-MANIFEST
+raspy/lib_raspy/MANIFEST.in

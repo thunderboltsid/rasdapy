@@ -42,16 +42,18 @@ class Connection:
         self.passwordHash = self.passwordHash.hexdigest()
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
-        self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
-        self.session.clientUUID = getattr(self.session, "clientUUID")
-        self.session.clientID = getattr(self.session, "clientID")
+        self.session = None
+        self.connect()
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
         rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientID)
+        self.session = None
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        self.session.clientUUID = getattr(self.session, "clientUUID")
+        self.session.clientID = getattr(self.session, "clientID")
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def database(self, name):
@@ -73,13 +75,14 @@ class Database:
         """
         self.connection = connection
         self.name = name
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
-                                 self.connection.session.clientID, self.name)
+        self.db = None
+        self.open()
         self.stub = client.beta_create_ClientRassrvrService_stub(self.connection.channel)
 
     def open(self):
         self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                  self.connection.session.clientID, self.name)
+        self.db.dbSessionId = getattr(self.db, "dbSessionId")
 
     def close(self):
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID,
@@ -102,7 +105,7 @@ class Database:
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query.execute()
-        collection = [client_get_collection_by_name(self.stub, self.connection.channel.clientID, name) for name in
+        collection = [client_get_collection_by_name(self.stub, self.connection.session.clientID, name) for name in
                       result]
         return collection
 
@@ -157,13 +160,13 @@ class Transaction:
         self.begin_transaction()
 
     def begin_transaction(self):
-        client_begin_transaction(self.database.stub, self.database.connection.channel.clientID, self.rw)
+        client_begin_transaction(self.database.stub, self.database.connection.session.clientID, self.rw)
 
     def commit_transaction(self):
-        client_commit_transaction(self.database.stub, self.database.connection.channel.clientID)
+        client_commit_transaction(self.database.stub, self.database.connection.session.clientID)
 
     def abort_transaction(self):
-        client_abort_transaction(self.database.stub, self.database.connection.channel.clientID)
+        client_abort_transaction(self.database.stub, self.database.connection.session.clientID)
 
     def query(self, query_str):
         """
@@ -204,7 +207,7 @@ class Query:
         :rtype: Array
         """
         result = client_execute_query(self.transaction.database.stub,
-                                      self.transaction.database.connection.channel.clientID, self.query_str)
+                                      self.transaction.database.connection.session.clientID, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
