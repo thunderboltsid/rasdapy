@@ -54,7 +54,8 @@ Installation
 
 4) Build and run the tests:
 
-   $ python setup.py build $ python setup.py test
+    $ python setup.py build
+    $ python setup.py test
 
 If some tests fail, this library may not work correctly on your system.
 Continue at your own risk.
@@ -157,3 +158,4 @@ Thanks also to
 ==============
 * Alex Mircea Dumitru
 * Vlad Merticariu
+* Peter Baumann
