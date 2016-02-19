@@ -5,7 +5,6 @@ raspy/lib_raspy/raspy/dist/*
 *.egg-info
 .idea/*
 .vagrant/*
-.idea/*
 raspy/venv/*
 .DS_Store
 

@@ -28,7 +28,7 @@ setup(name='raspy',
       author_email='s.shukla@jacobs-university.de',
       license='LGPL',
       packages=['raspy'],
-      long_description=open('README.txt').read(),
+      long_description=open('README.md').read(),
       install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
       zip_safe=False,
       )
