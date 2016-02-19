@@ -19,7 +19,7 @@
 # For more information please see <http://www.rasdaman.org>
 # or contact Peter Baumann via <baumann@rasdaman.com>.
 
-from setuptools import setup
+from distutils.core import setup
 
 setup(name='raspy',
       version='0.2dev',
