@@ -1,172 +1,10 @@
-import error_message_pb2 as error
-import client_rassrvr_service_pb2 as client
-import rasmgr_client_service_pb2 as rasmgr
+from remote_procedures import *
 import hashlib
-# import numpy as np
-# from scipy import sparse
+import numpy as np
+from scipy import sparse
 
 from grpc.beta import implementations
 
-_TIMEOUT_SECONDS = 30
-
-
-def make_connect_req(username, password):
-    con_req = rasmgr.ConnectReq(userName=username, passwordHash=password)
-    if not con_req:
-        raise Exception("Can't create Connect request")
-    return con_req
-
-
-def make_disconnect_req(cuiid, cid):
-    discon_req = rasmgr.DisconnectReq(clientUUID=cuiid, clientID=cid)
-    if not discon_req:
-        raise Exception("Can't create Disconnect request")
-    return discon_req
-
-
-def make_keep_alive_req(cuiid, cid):
-    keep_alive_req = rasmgr.KeepAliveReq(clientUUID=cuiid, clientID=cid)
-    if not keep_alive_req:
-        raise Exception("Can't create KeepAlive request")
-    return keep_alive_req
-
-
-def make_open_db_req(cuiid, cid, dbname):
-    open_db_req = rasmgr.OpenDbReq(clientUUID=cuiid, clientID=cid, databaseName=dbname)
-    if not open_db_req:
-        raise Exception("Can't create OpenDb request")
-    return open_db_req
-
-
-def make_close_db_req(cuuid, cid, dbsid):
-    close_db_req = rasmgr.CloseDbReq(clientUUID=cuuid, clientID=cid, dbSessionId=dbsid)
-    if not close_db_req:
-        raise Exception("Can't create CloseDb request")
-    return close_db_req
-
-
-def make_begin_transaction_req(cid, rw):
-    begin_transaction_req = client.BeginTransactionReq(client_id=cid, rw=rw)
-    if not begin_transaction_req:
-        raise Exception("Can't create BeginTransaction request")
-    return begin_transaction_req
-
-
-def make_commit_transaction_req(cid):
-    commit_transaction_req = client.CommitTransactionReq(client_id=cid)
-    if not commit_transaction_req:
-        raise Exception("Can't create CommitTransaction request")
-    return commit_transaction_req
-
-
-def make_abort_transaction_req(cid):
-    abort_transaction_req = client.AbortTransactionReq(client_id=cid)
-    if not abort_transaction_req:
-        raise Exception("Can't create AbortTransaction request")
-    return abort_transaction_req
-
-
-def make_execute_query_req(cid, query):
-    execute_query_req = client.ExecuteQueryReq(client_id=cid, query=query)
-    if not execute_query_req:
-        raise Exception("Can't create ExecuteQuery request")
-    return execute_query_req
-
-
-def make_execute_http_query_req(cid, data, data_length):
-    execute_http_query_req = client.ExecuteHttpQueryReq(client_id=cid, data=data, data_length=data_length)
-    if not execute_http_query_req:
-        raise Exception("Can't create ExecuteHttpQuery request")
-    return execute_http_query_req
-
-
-def make_get_collection_req(cid, colid):
-    get_collection_req = client.GetCollectionByNameOrOidReq(client_id=cid, collection_identifier=colid, is_name=True)
-    if not get_collection_req:
-        raise Exception("Can't create GetCollectionByNameOrOid request")
-    return get_collection_req
-
-def make_get_next_mdd_req(cid):
-    get_next_mdd_req = client.GetNextMDD(client_id=cid)
-    if not get_next_mdd_req:
-        raise Exception("Can't create GetNextMDD request")
-    return get_next_mdd_req
-
-def make_get_next_tile_req(cid):
-    get_next_tile_req = client.GetNextTile(client_id=cid)
-    if not get_next_tile_req:
-        raise Exception("Can't create GetNextTile")
-    return get_next_tile_req
-
-def rasmgr_connect(stub, username, password):
-    connection = stub.Connect(make_connect_req(username,password), _TIMEOUT_SECONDS)
-    if not connection:
-        raise Exception("Remote function 'Connect' did not return anything")
-    return connection
-
-
-def rasmgr_disconnect(stub, cuiid, cid):
-    return stub.Disconnect(make_disconnect_req(cuiid, cid), _TIMEOUT_SECONDS)
-
-
-def rasmgr_keep_alive(stub, cuiid, cid):
-    return stub.KeepAliveReq(make_keep_alive_req(cuiid, cid), _TIMEOUT_SECONDS)
-
-
-def rasmgr_open_db(stub, cuiid, cid, dbname):
-    resp = stub.OpenDb(make_open_db_req(cuiid, cid, dbname), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'OpenDb' did not return anything")
-    return resp
-
-
-def rasmgr_close_db(stub, cuuid, cid, dbsid):
-    return stub.CloseDb(make_close_db_req(cuuid, cid, dbsid), _TIMEOUT_SECONDS)
-
-
-def client_begin_transaction(stub, cid, rw):
-    return stub.BeginTransaction(make_begin_transaction_req(cid, rw), _TIMEOUT_SECONDS)
-
-
-def client_commit_transaction(stub, cid):
-    return stub.CommitTransaction(make_commit_transaction_req(cid), _TIMEOUT_SECONDS)
-
-
-def client_abort_transaction(stub, cid):
-    return stub.AbortTransaction(make_abort_transaction_req(cid), _TIMEOUT_SECONDS)
-
-
-def client_execute_query(stub, cid, query):
-    resp = stub.ExecuteQuery(make_execute_query_req(cid, query), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'ExecuteQuery' did not return anything")
-    return resp
-
-
-def client_execute_http_query(stub, cid, data, data_length):
-    resp = stub.ExecuteHttpQuery(make_execute_http_query_req(cid, data, data_length), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'ExecuteHttpQuery' did not return anything")
-    return resp
-
-
-def client_get_collection_by_name(stub, cid, name):
-    resp = stub.GetCollectionByNameOrOid(make_get_collection_req(cid, name), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
-    return resp
-
-def client_get_next_mdd(stub, cid):
-    resp = stub.GetNextMDD(cid)
-    if not resp:
-        raise Exception("Remote function 'GetNextMDD' did not return anything")
-    return resp
-
-def client_get_next_tile(stub, cid):
-    resp = stub.GetNextTile(cid)
-    if not resp:
-        raise Exception("Remote function 'GetNextTile' did not return anything")
-    return resp
 
 class Connection:
     def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest", password="rasguest"):
@@ -184,6 +22,8 @@ class Connection:
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        self.session.clientUUID = getattr(self.session, "clientUUID")
+        self.session.clientID = getattr(self.session, "clientID")
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
@@ -212,14 +52,17 @@ class Database:
         """
         self.connection = connection
         self.name = name
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.name)
+        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
+                                 self.connection.session.clientID, self.name)
         self.stub = client.beta_create_ClientRassrvrService_stub(self.connection.channel)
 
     def open(self):
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.name)
+        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
+                                 self.connection.session.clientID, self.name)
 
     def close(self):
-        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID, self.db.dbSessionId)
+        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID,
+                        self.db.dbSessionId)
 
     def transaction(self, rw=False):
         """
@@ -238,7 +81,8 @@ class Database:
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query.execute()
-        collection = [client_get_collection_by_name(self.stub, self.connection.channel.clientID, name) for name in result]
+        collection = [client_get_collection_by_name(self.stub, self.connection.channel.clientID, name) for name in
+                      result]
         return collection
 
 
@@ -250,8 +94,8 @@ class Collection:
         """
         self.transaction = transaction
         if name:
-            self.data = client_get_collection_by_name(self.transaction.database.stub, self.transaction.database.connection.session.clientID, name)
-
+            self.data = client_get_collection_by_name(self.transaction.database.stub,
+                                                      self.transaction.database.connection.session.clientID, name)
 
     def name(self):
         """
@@ -338,23 +182,27 @@ class Query:
         :return: the resulting array returned by the query
         :rtype: Array
         """
-        result = client_execute_query(self.transaction.database.stub, self.transaction.database.connection.channel.clientID, self.query_str)
+        result = client_execute_query(self.transaction.database.stub,
+                                      self.transaction.database.connection.channel.clientID, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
-            raise Exception("Error executing query: err_no = " + str(result.err_no) + ", line_no = " + str(result.line_no) + ", col_no = " + str(result.col_no) + ", token = " + result.token)
+            raise Exception("Error executing query: err_no = " + str(result.err_no) + ", line_no = " + str(
+                result.line_no) + ", col_no = " + str(result.col_no) + ", token = " + result.token)
         mddstatus = 0
         res = []
         while mddstatus == 0:
             array = []
             metadata = []
-            mddresp = client_get_next_mdd(self.transaction.database.stub, self.transaction.database.connection.session.clientID)
+            mddresp = client_get_next_mdd(self.transaction.database.stub,
+                                          self.transaction.database.connection.session.clientID)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception("getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
-                tileresp = client_get_next_tile(self.transaction.database.stub, self.transaction.database.connection.session.clientID)
+                tileresp = client_get_next_tile(self.transaction.database.stub,
+                                                self.transaction.database.connection.session.clientID)
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
