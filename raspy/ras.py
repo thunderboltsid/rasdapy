@@ -1,30 +1,31 @@
-#
-# This file is part of rasdaman community.
-#
-# Rasdaman community is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Rasdaman community is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with rasdaman community.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Copyright 2003, 2004, 2005, 2006, 2007, 2008, 2009 Peter Baumann / rasdaman GmbH.
-#
-# For more information please see <http://www.rasdaman.org>
-# or contact Peter Baumann via <baumann@rasdaman.com>.
-
-import hashlib
+"""
+ *
+ * This file is part of rasdaman community.
+ *
+ * Rasdaman community is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Rasdaman community is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU  General Public License for more details.
+ *
+ * You should have received a copy of the GNU  General Public License
+ * along with rasdaman community.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Copyright 2003 - 2016 Peter Baumann / rasdaman GmbH.
+ *
+ * For more information please see <http://www.rasdaman.org>
+ * or contact Peter Baumann via <baumann@rasdaman.com>.
+ *
+"""
 
 import numpy as np
 from grpc.beta import implementations
 from scipy import sparse
-
+from utils import *
 from remote_procedures import *
 
 
@@ -38,9 +39,7 @@ class Connection:
         self.hostname = hostname
         self.port = port
         self.username = username
-        self.passwordHash = hashlib.md5()
-        self.passwordHash.update(password)
-        self.passwordHash = self.passwordHash.hexdigest()
+        self.passwordHash = get_md5_string(password)
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
@@ -48,13 +47,11 @@ class Connection:
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
-        rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientID)
+        rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
         self.session = None
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
-        self.session.clientUUID = getattr(self.session, "clientUUID")
-        self.session.clientID = getattr(self.session, "clientID")
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def database(self, name):
@@ -82,11 +79,10 @@ class Database:
 
     def open(self):
         self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
-                                 self.connection.session.clientID, self.name)
-        self.db.dbSessionId = getattr(self.db, "dbSessionId")
+                                 self.connection.session.clientId, self.name)
 
     def close(self):
-        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientID,
+        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
                         self.db.dbSessionId)
 
     def transaction(self, rw=False):
@@ -106,7 +102,7 @@ class Database:
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query.execute()
-        collection = [client_get_collection_by_name(self.stub, self.connection.session.clientID, name) for name in
+        collection = [client_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
                       result]
         return collection
 
@@ -120,7 +116,7 @@ class Collection:
         self.transaction = transaction
         if name:
             self.data = client_get_collection_by_name(self.transaction.database.stub,
-                                                      self.transaction.database.connection.session.clientID, name)
+                                                      self.transaction.database.connection.session.clientId, name)
 
     def name(self):
         """
@@ -161,13 +157,13 @@ class Transaction:
         self.begin_transaction()
 
     def begin_transaction(self):
-        client_begin_transaction(self.database.stub, self.database.connection.session.clientID, self.rw)
+        client_begin_transaction(self.database.stub, self.database.connection.session.clientId, self.rw)
 
     def commit_transaction(self):
-        client_commit_transaction(self.database.stub, self.database.connection.session.clientID)
+        client_commit_transaction(self.database.stub, self.database.connection.session.clientId)
 
     def abort_transaction(self):
-        client_abort_transaction(self.database.stub, self.database.connection.session.clientID)
+        client_abort_transaction(self.database.stub, self.database.connection.session.clientId)
 
     def query(self, query_str):
         """
@@ -208,7 +204,7 @@ class Query:
         :rtype: Array
         """
         result = client_execute_query(self.transaction.database.stub,
-                                      self.transaction.database.connection.session.clientID, self.query_str)
+                                      self.transaction.database.connection.session.clientId, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
@@ -220,14 +216,14 @@ class Query:
             array = []
             metadata = []
             mddresp = client_get_next_mdd(self.transaction.database.stub,
-                                          self.transaction.database.connection.session.clientID)
+                                          self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception("getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
                 tileresp = client_get_next_tile(self.transaction.database.stub,
-                                                self.transaction.database.connection.session.clientID)
+                                                self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
