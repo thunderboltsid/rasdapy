@@ -18,17 +18,3 @@
 #
 # For more information please see <http://www.rasdaman.org>
 # or contact Peter Baumann via <baumann@rasdaman.com>.
-
-from setuptools import setup
-
-setup(name='raspy',
-      version='0.2dev',
-      description='Python interface to Rasdaman',
-      author='Siddharth Shukla',
-      author_email='s.shukla@jacobs-university.de',
-      license='LGPL',
-      packages=['raspy'],
-      long_description=open('README.txt').read(),
-      install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
-      zip_safe=False,
-      )
