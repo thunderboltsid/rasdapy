@@ -1,0 +1,21 @@
+include *.txt
+recursive-include docs *.txt
+include *.rst
+setup.py
+raspy/__init__.py
+raspy/ras.py
+raspy/remote_procedures.py
+raspy/request_factories.py
+raspy/stubs/__init__.py
+raspy/stubs/client_rassrvr_service_pb2.py
+raspy/stubs/common_service_pb2.py
+raspy/stubs/error_message_pb2.py
+raspy/stubs/rasmgr_client_service_pb2.py
+test/test_connect.py
+test/test_db_open.py
+test/test_mock_server.py
+test/stubs/__init__.py
+protomessages/rasmgr_client_service.proto
+protomessages/client_rassrvr_service.proto
+protomessages/error_message.proto
+protomessages/common_service.proto
