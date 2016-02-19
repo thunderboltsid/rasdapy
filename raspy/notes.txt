@@ -2,9 +2,6 @@
 For compiling protobuf files: protoc -I=$SRC_DIR --python_out=$DST_DIR $SRC_DIR/addressbook.proto
 protoc -I . --python_out=. --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_python_plugin` ./route_guide.proto
 
-For generating swig wrapper: swig -python example.i
-For compiling swig wrapper: g++ -c -std=c++0x example.c example_wrap.c -I /usr/include/python2.7
-
-For building protobuf: python setup.py build
+For building f: python setup.py build
 For testing protobuf: python setup.py test
 For installing protobuf: python setup.py install
