@@ -1,5 +1,5 @@
 raspy/build/*
-raspy/dist/*
+dist/*
 *.pyc
 *.egg-info
 .idea/*
