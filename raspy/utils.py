@@ -6,7 +6,7 @@ def get_md5_string(input_str):
         input_str:
     Returns: MD5 hash of the input_str
     """
-    hash = hashlib.md5()
-    hash = hash.update(input_str)
-    hash = hash.hexdigest()
-    return hash
+    hashed_str = hashlib.md5()
+    hashed_str = hashed_str.update(input_str)
+    hashed_str = hashed_str.hexdigest()
+    return hashed_str
