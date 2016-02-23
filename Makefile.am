@@ -27,4 +27,10 @@
 #
 ##################################################################
 
+if RMANRASNET
+    python bin/stub_generator.py
+    python setup.py build
+    python setup.py test
+    python setup.py install
+endif
 

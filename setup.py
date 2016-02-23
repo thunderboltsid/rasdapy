@@ -23,9 +23,7 @@
 """
 
 from setuptools import setup
-import subprocess
 
-subprocess.call("bin/stub_generator.py", shell=True)
 if __name__ == '__main__':
     setup(name='raspy',
           version='0.2dev',
