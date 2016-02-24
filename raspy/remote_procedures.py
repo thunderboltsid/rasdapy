@@ -53,6 +53,7 @@ def rasmgr_close_db(stub, cuuid, cid, dbsid):
 
 
 def client_begin_transaction(stub, cid, rw):
+    import pdb; pdb.set_trace()
     return stub.BeginTransaction(make_begin_transaction_req(cid, rw), _TIMEOUT_SECONDS)
 
 

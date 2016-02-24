@@ -44,6 +44,7 @@ class Connection:
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
         self.connect()
+        # Keep running the rasmgr_keep_alive on a separate thread
         # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
@@ -85,13 +86,13 @@ class Database:
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
                         self.db.dbSessionId)
 
-    def transaction(self, rw=False):
+    def transaction(self, rw=True):
         """
         Returns a new transaction object for this database
         :rtype: Transaction
         :return: a new transaction object
         """
-        transaction = Transaction(self, rw)
+        transaction = Transaction(self, rw=rw)
         return transaction
 
     def collections(self):
