@@ -74,18 +74,20 @@ class Database:
         """
         self.connection = connection
         self.name = name
-        self.db = None
+        self.rasmgr_db = None
         self.open()
-        self.stub = client.beta_create_ClientRassrvrService_stub(self.connection.channel)
+        self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.connection.channel)
 
     def open(self):
-        self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
+        self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                  self.connection.session.clientId, self.name)
+        self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
         # TODO: Stop sending rasmgr_keep_alive messages
+        # TODO: Start sending rassrvr_keep_alive messages
 
     def close(self):
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
-                        self.db.dbSessionId)
+                        self.rasmgr_db.dbSessionId)
 
     def transaction(self, rw=True):
         """
@@ -104,7 +106,7 @@ class Database:
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query.execute()
-        collection = [client_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
+        collection = [rassrvr_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
                       result]
         return collection
 
@@ -117,7 +119,7 @@ class Collection:
         """
         self.transaction = transaction
         if name:
-            self.data = client_get_collection_by_name(self.transaction.database.stub,
+            self.data = rassrvr_get_collection_by_name(self.transaction.database.stub,
                                                       self.transaction.database.connection.session.clientId, name)
 
     def name(self):
@@ -159,13 +161,13 @@ class Transaction:
         self.begin_transaction()
 
     def begin_transaction(self):
-        client_begin_transaction(self.database.stub, self.database.connection.session.clientId, self.rw)
+        rassrvr_begin_transaction(self.database.stub, self.database.connection.session.clientId, self.rw)
 
     def commit_transaction(self):
-        client_commit_transaction(self.database.stub, self.database.connection.session.clientId)
+        rassrvr_commit_transaction(self.database.stub, self.database.connection.session.clientId)
 
     def abort_transaction(self):
-        client_abort_transaction(self.database.stub, self.database.connection.session.clientId)
+        rassrvr_abort_transaction(self.database.stub, self.database.connection.session.clientId)
 
     def query(self, query_str):
         """
@@ -205,7 +207,7 @@ class Query:
         :return: the resulting array returned by the query
         :rtype: Array
         """
-        result = client_execute_query(self.transaction.database.stub,
+        result = rassrvr_execute_query(self.transaction.database.stub,
                                       self.transaction.database.connection.session.clientId, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
@@ -217,14 +219,14 @@ class Query:
         while mddstatus == 0:
             array = []
             metadata = []
-            mddresp = client_get_next_mdd(self.transaction.database.stub,
+            mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                           self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception("getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
-                tileresp = client_get_next_tile(self.transaction.database.stub,
+                tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
                 if tilestatus == 4:

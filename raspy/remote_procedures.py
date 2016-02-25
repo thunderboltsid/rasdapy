@@ -52,48 +52,59 @@ def rasmgr_close_db(stub, cuuid, cid, dbsid):
     return stub.CloseDb(make_rasmgr_close_db_req(cuuid, cid, dbsid), _TIMEOUT_SECONDS)
 
 
-def client_begin_transaction(stub, cid, rw):
+def rassrvr_open_db(stub, cid, dbname):
+    resp =  stub.OpenServerDatabase(make_rassrvr_open_db_req(cid, dbname), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'OpenDB' did not return anything")
+    return resp
+
+
+def rassrvr_close_db(stub, cid):
+    return stub.CloseServerDatabase(make_rassrvr_close_db_req(cid), _TIMEOUT_SECONDS)
+
+
+def rassrvr_begin_transaction(stub, cid, rw):
     import pdb; pdb.set_trace()
     return stub.BeginTransaction(make_rassrvr_begin_transaction_req(cid, rw), _TIMEOUT_SECONDS)
 
 
-def client_commit_transaction(stub, cid):
+def rassrvr_commit_transaction(stub, cid):
     return stub.CommitTransaction(make_rassrvr_commit_transaction_req(cid), _TIMEOUT_SECONDS)
 
 
-def client_abort_transaction(stub, cid):
+def rassrvr_abort_transaction(stub, cid):
     return stub.AbortTransaction(make_rassrvr_abort_transaction_req(cid), _TIMEOUT_SECONDS)
 
 
-def client_execute_query(stub, cid, query):
+def rassrvr_execute_query(stub, cid, query):
     resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'ExecuteQuery' did not return anything")
     return resp
 
 
-def client_execute_http_query(stub, cid, data, data_length):
+def rassrvr_execute_http_query(stub, cid, data, data_length):
     resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data, data_length), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'ExecuteHttpQuery' did not return anything")
     return resp
 
 
-def client_get_collection_by_name(stub, cid, name):
+def rassrvr_get_collection_by_name(stub, cid, name):
     resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_req(cid, name), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
     return resp
 
 
-def client_get_next_mdd(stub, cid):
+def rassrvr_get_next_mdd(stub, cid):
     resp = stub.GetNextMDD(cid)
     if not resp:
         raise Exception("Remote function 'GetNextMDD' did not return anything")
     return resp
 
 
-def client_get_next_tile(stub, cid):
+def rassrvr_get_next_tile(stub, cid):
     resp = stub.GetNextTile(cid)
     if not resp:
         raise Exception("Remote function 'GetNextTile' did not return anything")
