@@ -22,9 +22,9 @@
  *
 """
 
-import numpy as np
+# import numpy as np
 from grpc.beta import implementations
-from scipy import sparse
+# from scipy import sparse
 from utils import *
 from remote_procedures import *
 
@@ -44,16 +44,16 @@ class Connection:
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
         self.connect()
-        # Keep running the rasmgr_keep_alive on a separate thread
-        # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
 
     def disconnect(self):
         rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
-        self.session = None
+        del self.session
+        # TODO: Stop rasmgr_keep_alive
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
-        # rasmgr_keep_alive(self.stub, self.username, self.passwordHash)
+        # TODO: Keep running the rasmgr_keep_alive on a separate thread
+        # rasmgr_keep_alive(self.stub, self.session.clientUUID, self.session.clientId)
 
     def database(self, name):
         """
@@ -81,6 +81,7 @@ class Database:
     def open(self):
         self.db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                  self.connection.session.clientId, self.name)
+        # TODO: Stop sending rasmgr_keep_alive messages
 
     def close(self):
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
