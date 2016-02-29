@@ -31,12 +31,6 @@ option java_generic_services = false;
 
 import "common_service.proto";
 
-message ClientIdentity
-{
-    bytes uuid = 1;
-    int32 id = 2;
-}
-
 message ConnectReq
 {
     string userName = 1;
@@ -65,9 +59,10 @@ message OpenDbReq
 
 message OpenDbRepl
 {
-    string dbSessionId = 1;
-    string serverHostName = 2;
-    uint32 port = 3;
+    string clientSessionId = 1;
+    string dbSessionId = 2;
+    string serverHostName = 3;
+    uint32 port = 4;
 }
 
 message CloseDbReq
@@ -80,7 +75,6 @@ message CloseDbReq
 message KeepAliveReq
 {
     string clientUUID = 1;
-    int32 clientId = 2;
 }
 
 service RasMgrClientService
