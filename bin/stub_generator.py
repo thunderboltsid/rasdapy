@@ -88,7 +88,7 @@ if __name__ == '__main__':
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto', 'error_message.proto',
                   'rasmgr_client_service.proto']
     proto_dir = "../protomessages/"
-    stubs_dir = "../raspy/stubs2/"
+    stubs_dir = "../raspy/stubs/"
     for proto_file in proto_list:
         pb2_file = proto_file.replace(".proto", "_pb2.py")
         generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir, stubs_dir, require=True)
