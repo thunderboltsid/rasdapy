@@ -80,6 +80,7 @@ class Database:
                                         self.connection.session.clientId, self.name)
         self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
         self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
+        import pdb;pdb.set_trace()
         rassrvr_keep_alive(self.stub, self.connection.session.clientUUID, self.rasmgr_db.dbSessionId)
 
     def open(self):
@@ -333,3 +334,58 @@ class Array:
             raise NotImplementedError("No Support for Pandas yet")
         else:
             raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
+
+
+class RasCollection:
+    def __init__(self, name):
+        self.collection = name
+        self.expression = None
+        self.condition = None
+
+    @property
+    def query(self):
+        query = self.collection
+        return query
+
+    def __add__(self, other):
+        pass
+
+    def __radd__(self, other):
+        """
+        Reflected addition is the same as addition.
+        :param other:
+        :return regular addition:
+        """
+        return self.__add__(other)
+
+    def __iadd__(self, other):
+        pass
+
+    def __sub__(self, other):
+        pass
+
+    def __rsub__(self, other):
+        pass
+
+    def __isub__(self, other):
+        pass
+
+    def __mul__(self, other):
+        pass
+
+    def __rmul__(self, other):
+        pass
+
+    def __imul__(self, other):
+        pass
+
+    def __div__(self, other):
+        pass
+
+    def __rdiv__(self, other):
+        pass
+
+    def __idiv__(self, other):
+        pass
+
+
