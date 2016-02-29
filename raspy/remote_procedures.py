@@ -37,8 +37,8 @@ def rasmgr_disconnect(stub, cuuid, cid):
     return stub.Disconnect(make_rasmgr_disconnect_req(cuuid, cid), _TIMEOUT_SECONDS)
 
 
-def rasmgr_keep_alive(stub, cuuid, cid):
-    return stub.KeepAlive(make_rasmgr_keep_alive_req(cuuid, cid), _TIMEOUT_SECONDS)
+def rasmgr_keep_alive(stub, cuuid):
+    return stub.KeepAlive(make_rasmgr_keep_alive_req(cuuid), _TIMEOUT_SECONDS)
 
 
 def rasmgr_open_db(stub, cuuid, cid, dbname):

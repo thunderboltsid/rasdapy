@@ -52,7 +52,7 @@ class Connection:
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
-        rasmgr_keep_alive(self.stub, self.session.clientUUID, self.session.clientId)
+        rasmgr_keep_alive(self.stub, self.session.clientUUID)
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
 
     def database(self, name):

@@ -40,8 +40,8 @@ def make_rasmgr_disconnect_req(cuiid, cid):
     return discon_req
 
 
-def make_rasmgr_keep_alive_req(cuiid, cid):
-    keep_alive_req = rasmgr.KeepAliveReq(clientUUID=cuiid, clientId=cid)
+def make_rasmgr_keep_alive_req(cuiid):
+    keep_alive_req = rasmgr.KeepAliveReq(clientUUID=cuiid)
     if not keep_alive_req:
         raise Exception("Can't create KeepAlive request")
     return keep_alive_req
