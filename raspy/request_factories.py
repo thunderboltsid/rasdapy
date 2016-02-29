@@ -61,6 +61,9 @@ def make_rasmgr_close_db_req(cuuid, cid, dbsid):
     return close_db_req
 
 
+# Start RasServer request creation
+
+
 def make_rassrvr_open_db_req(cid, dbname):
     open_db_req = rassrvr.OpenServerDatabaseReq(client_id=cid, database_name=dbname)
     if not open_db_req:
@@ -73,6 +76,10 @@ def make_rassrvr_close_db_req(cid):
     if not close_db_req:
         raise Exception("Can't create CloseDB request for Rassrvr")
     return close_db_req
+
+
+def make_rassrvr_keep_alive_req(cuuid, dbsid):
+    return rassrvr.KeepAliveRequest(client_uuid=cuuid, session_id=dbsid)
 
 
 def make_rassrvr_begin_transaction_req(cid, rw):

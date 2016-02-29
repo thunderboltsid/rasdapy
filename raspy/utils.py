@@ -1,5 +1,6 @@
 import hashlib
 
+
 def get_md5_string(input_str):
     """
     Args:
@@ -10,3 +11,6 @@ def get_md5_string(input_str):
     hashed_str.update(input_str)
     hashed_str = hashed_str.hexdigest()
     return hashed_str
+
+
+

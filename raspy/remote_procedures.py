@@ -33,27 +33,30 @@ def rasmgr_connect(stub, username, password):
     return connection
 
 
-def rasmgr_disconnect(stub, cuiid, cid):
-    return stub.Disconnect(make_rasmgr_disconnect_req(cuiid, cid), _TIMEOUT_SECONDS)
+def rasmgr_disconnect(stub, cuuid, cid):
+    return stub.Disconnect(make_rasmgr_disconnect_req(cuuid, cid), _TIMEOUT_SECONDS)
 
 
-def rasmgr_keep_alive(stub, cuiid, cid):
-    return stub.KeepAliveReq(make_rasmgr_keep_alive_req(cuiid, cid), _TIMEOUT_SECONDS)
+def rasmgr_keep_alive(stub, cuuid, cid):
+    return stub.KeepAlive(make_rasmgr_keep_alive_req(cuuid, cid), _TIMEOUT_SECONDS)
 
 
-def rasmgr_open_db(stub, cuiid, cid, dbname):
-    resp = stub.OpenDb(make_rasmgr_open_db_req(cuiid, cid, dbname), _TIMEOUT_SECONDS)
+def rasmgr_open_db(stub, cuuid, cid, dbname):
+    resp = stub.OpenDb(make_rasmgr_open_db_req(cuuid, cid, dbname), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'OpenDb' did not return anything")
     return resp
 
 
-def rasmgr_close_db(stub, cuuid, cid, dbsid):
-    return stub.CloseDb(make_rasmgr_close_db_req(cuuid, cid, dbsid), _TIMEOUT_SECONDS)
+def rasmgr_close_db(stub, cuuid, cid, dbid):
+    return stub.CloseDb(make_rasmgr_close_db_req(cuuid, cid, dbid), _TIMEOUT_SECONDS)
+
+
+# Start RasServer RPCs
 
 
 def rassrvr_open_db(stub, cid, dbname):
-    resp =  stub.OpenServerDatabase(make_rassrvr_open_db_req(cid, dbname), _TIMEOUT_SECONDS)
+    resp = stub.OpenServerDatabase(make_rassrvr_open_db_req(cid, dbname), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'OpenDB' did not return anything")
     return resp
@@ -64,7 +67,6 @@ def rassrvr_close_db(stub, cid):
 
 
 def rassrvr_begin_transaction(stub, cid, rw):
-    import pdb; pdb.set_trace()
     return stub.BeginTransaction(make_rassrvr_begin_transaction_req(cid, rw), _TIMEOUT_SECONDS)
 
 
@@ -94,6 +96,13 @@ def rassrvr_get_collection_by_name(stub, cid, name):
     resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_req(cid, name), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
+    return resp
+
+
+def rassrvr_keep_alive(stub, client_uuid, session_id):
+    resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'KeepAlive' from RasServer did not return anything")
     return resp
 
 

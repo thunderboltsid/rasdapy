@@ -52,8 +52,8 @@ class Connection:
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        rasmgr_keep_alive(self.stub, self.session.clientUUID, self.session.clientId)
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
-        # rasmgr_keep_alive(self.stub, self.session.clientUUID, self.session.clientId)
 
     def database(self, name):
         """
@@ -75,19 +75,23 @@ class Database:
         self.connection = connection
         self.name = name
         self.rasmgr_db = None
-        self.open()
-        self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.connection.channel)
+        self.rassrvr_db = None
+        self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
+                                        self.connection.session.clientId, self.name)
+        self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
+        self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
+        rassrvr_keep_alive(self.stub, self.connection.session.clientUUID, self.rasmgr_db.dbSessionId)
 
     def open(self):
-        self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
-                                 self.connection.session.clientId, self.name)
         self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
-        # TODO: Stop sending rasmgr_keep_alive messages
         # TODO: Start sending rassrvr_keep_alive messages
 
     def close(self):
+        rassrvr_close_db(self.stub, self.connection.session.clientId)
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
                         self.rasmgr_db.dbSessionId)
+        # TODO: Stop sending rassrvr_keep_alive messages
+        # TODO: Stop sending rasmgr_keep_alive messages
 
     def transaction(self, rw=True):
         """
@@ -120,7 +124,7 @@ class Collection:
         self.transaction = transaction
         if name:
             self.data = rassrvr_get_collection_by_name(self.transaction.database.stub,
-                                                      self.transaction.database.connection.session.clientId, name)
+                                                       self.transaction.database.connection.session.clientId, name)
 
     def name(self):
         """
@@ -208,7 +212,7 @@ class Query:
         :rtype: Array
         """
         result = rassrvr_execute_query(self.transaction.database.stub,
-                                      self.transaction.database.connection.session.clientId, self.query_str)
+                                       self.transaction.database.connection.session.clientId, self.query_str)
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
@@ -220,14 +224,14 @@ class Query:
             array = []
             metadata = []
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
-                                          self.transaction.database.connection.session.clientId)
+                                           self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception("getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
                 tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
-                                                self.transaction.database.connection.session.clientId)
+                                                 self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
