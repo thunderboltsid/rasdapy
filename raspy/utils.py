@@ -13,4 +13,3 @@ def get_md5_string(input_str):
     return hashed_str
 
 
-

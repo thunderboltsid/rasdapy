@@ -125,14 +125,14 @@ def make_rassrvr_get_collection_req(cid, colid):
 
 
 def make_rassrvr_get_next_mdd_req(cid):
-    get_next_mdd_req = rassrvr.GetNextMDD(client_id=cid)
+    get_next_mdd_req = rassrvr.GetNextMDDReq(client_id=cid)
     if not get_next_mdd_req:
         raise Exception("Can't create GetNextMDD request")
     return get_next_mdd_req
 
 
 def make_rassrvr_get_next_tile_req(cid):
-    get_next_tile_req = rassrvr.GetNextTile(client_id=cid)
+    get_next_tile_req = rassrvr.GetNextTileReq(client_id=cid)
     if not get_next_tile_req:
         raise Exception("Can't create GetNextTile")
     return get_next_tile_req

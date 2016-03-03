@@ -76,15 +76,15 @@ class Database:
         self.name = name
         self.rasmgr_db = None
         self.rassrvr_db = None
+        self.open()
+
+    def open(self):
         self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                         self.connection.session.clientId, self.name)
         self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
         self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
-        import pdb;pdb.set_trace()
-        rassrvr_keep_alive(self.stub, self.connection.session.clientUUID, self.rasmgr_db.dbSessionId)
-
-    def open(self):
         self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
+        rassrvr_keep_alive(self.stub, self.connection.session.clientUUID, self.rasmgr_db.dbSessionId)
         # TODO: Start sending rassrvr_keep_alive messages
 
     def close(self):
@@ -93,6 +93,12 @@ class Database:
                         self.rasmgr_db.dbSessionId)
         # TODO: Stop sending rassrvr_keep_alive messages
         # TODO: Stop sending rasmgr_keep_alive messages
+
+    def create(self):
+        raise NotImplementedError("Sorry, not implemented yet")
+
+    def destroy(self):
+        raise NotImplementedError("Sorry, not implemented yet")
 
     def transaction(self, rw=True):
         """
@@ -132,27 +138,28 @@ class Collection:
         Returns the name of the collection
         :rtype: str
         """
-        pass
+        raise NotImplementedError("Sorry, not implemented yet")
 
     def arrays(self):
         """
         Return all the arrays in this collection
         :rtype: Array
         """
-        pass
+        raise NotImplementedError("Sorry, not implemented yet")
 
     def insert(self, array):
         """
         Inserts an array in the collection
         :param Array array: the array to be inserted
         """
-        pass
+        raise NotImplementedError("Sorry, not implemented yet")
 
     def update(self, array):
         """
         Updates the array in the collection
         :param Array array: the array to be updated in the collection
         """
+        raise NotImplementedError("Sorry, not implemented yet")
 
 
 class Transaction:
@@ -220,10 +227,10 @@ class Query:
             raise Exception("Error executing query: err_no = " + str(result.err_no) + ", line_no = " + str(
                 result.line_no) + ", col_no = " + str(result.col_no) + ", token = " + result.token)
         mddstatus = 0
+        tilestatus = 0
         res = []
         while mddstatus == 0:
             array = []
-            metadata = []
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status

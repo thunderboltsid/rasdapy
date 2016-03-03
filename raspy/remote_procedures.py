@@ -107,14 +107,14 @@ def rassrvr_keep_alive(stub, client_uuid, session_id):
 
 
 def rassrvr_get_next_mdd(stub, cid):
-    resp = stub.GetNextMDD(cid)
+    resp = stub.GetNextMDD(make_rassrvr_get_next_mdd_req(cid), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNextMDD' did not return anything")
     return resp
 
 
 def rassrvr_get_next_tile(stub, cid):
-    resp = stub.GetNextTile(cid)
+    resp = stub.GetNextTile(make_rassrvr_get_next_tile_req(cid), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNextTile' did not return anything")
     return resp
