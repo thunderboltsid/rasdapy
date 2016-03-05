@@ -134,5 +134,11 @@ def make_rassrvr_get_next_mdd_req(cid):
 def make_rassrvr_get_next_tile_req(cid):
     get_next_tile_req = rassrvr.GetNextTileReq(client_id=cid)
     if not get_next_tile_req:
-        raise Exception("Can't create GetNextTile")
+        raise Exception("Can't create GetNextTile request")
     return get_next_tile_req
+
+def make_rassrvr_end_transfer_req(cid):
+    ent_transfer_req = rassrvr.EndTransferReq(client_id=cid)
+    if not ent_transfer_req:
+        raise Exception("Can't create EndTransfer request")
+    return ent_transfer_req

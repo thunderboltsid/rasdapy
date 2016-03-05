@@ -221,6 +221,8 @@ class Query:
         """
         result = rassrvr_execute_query(self.transaction.database.stub,
                                        self.transaction.database.connection.session.clientId, self.query_str)
+        import pdb;
+        pdb.set_trace()
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
@@ -243,11 +245,31 @@ class Query:
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
-                array.append((tileresp.data, tileresp.data_length))
+                else:
+                    tile_data = {"confarray_val": tileresp.data, "confarray_len": tileresp.data_length}
+                    array.append({"status": tilestatus, "marray": RPCMarray(domain=tileresp.domain,
+                                                                            cell_type_length=tileresp.cell_type_length,
+                                                                            current_format=tileresp.current_format,
+                                                                            storage_format=tileresp.storage_format,
+                                                                            data=tile_data)})
             if tilestatus == 0:
                 break
             res.append(array)
+        rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
         return Array(values=res, metadata=result)
+
+
+class RPCMarray:
+    """
+    Class to represent RPC Array
+    """
+
+    def __init__(self, domain=None, cell_type_length=None, current_format=None, storage_format=None, data=None):
+        self.domain = domain
+        self.cell_type_length = cell_type_length
+        self.current_format = current_format
+        self.storage_format = storage_format
+        self.data = data
 
 
 class BandType:
@@ -394,5 +416,3 @@ class RasCollection:
 
     def __idiv__(self, other):
         pass
-
-

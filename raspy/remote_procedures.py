@@ -118,3 +118,10 @@ def rassrvr_get_next_tile(stub, cid):
     if not resp:
         raise Exception("Remote function 'GetNextTile' did not return anything")
     return resp
+
+
+def rassrvr_end_transfer(stub, cid):
+    resp = stub.EndTransfer(make_rassrvr_end_transfer_req(cid), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'EndTransfer' did not return anything")
+    return resp
