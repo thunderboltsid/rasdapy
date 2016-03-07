@@ -221,8 +221,6 @@ class Query:
         """
         result = rassrvr_execute_query(self.transaction.database.stub,
                                        self.transaction.database.connection.session.clientId, self.query_str)
-        import pdb;
-        pdb.set_trace()
         if result.status == 0 or result.status == 1:
             pass
         elif result.status == 4 or result.status == 5:
@@ -230,9 +228,8 @@ class Query:
                 result.line_no) + ", col_no = " + str(result.col_no) + ", token = " + result.token)
         mddstatus = 0
         tilestatus = 0
-        res = []
+        array = []
         while mddstatus == 0:
-            array = []
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
@@ -252,11 +249,12 @@ class Query:
                                                                             current_format=tileresp.current_format,
                                                                             storage_format=tileresp.storage_format,
                                                                             data=tile_data)})
+
             if tilestatus == 0:
                 break
-            res.append(array)
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
-        return Array(values=res, metadata=result)
+        import pdb;pdb.set_trace()
+        return Array(values=array, metadata=result)
 
 
 class RPCMarray:
