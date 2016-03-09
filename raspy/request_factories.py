@@ -24,10 +24,12 @@
 
 from stubs import client_rassrvr_service_pb2 as rassrvr
 from stubs import rasmgr_client_service_pb2 as rasmgr
+from utils import get_md5_string
 
 
 def make_rasmgr_connect_req(username, password):
-    con_req = rasmgr.ConnectReq(userName=username, passwordHash=password)
+    passwordHash = get_md5_string(password)
+    con_req = rasmgr.ConnectReq(userName=username, passwordHash=passwordHash)
     if not con_req:
         raise Exception("Can't create Connect request")
     return con_req

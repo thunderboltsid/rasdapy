@@ -35,6 +35,6 @@ if __name__ == '__main__':
           scripts=['bin/ez_setup.py', 'bin/stub_generator.py'],
           long_description=open('README.rst').read(),
           url='http://rasdaman.org',
-          install_requires=['grpcio', 'protobuf', 'numpy', 'scipy'],
+          install_requires=['grpcio', 'protobuf'],
           zip_safe=False,
           )

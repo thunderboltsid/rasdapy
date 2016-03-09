@@ -39,7 +39,7 @@ class Connection:
         self.hostname = hostname
         self.port = port
         self.username = username
-        self.passwordHash = get_md5_string(password)
+        self.password = password
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
@@ -51,7 +51,7 @@ class Connection:
         # TODO: Stop rasmgr_keep_alive
 
     def connect(self):
-        self.session = rasmgr_connect(self.stub, self.username, self.passwordHash)
+        self.session = rasmgr_connect(self.stub, self.username, self.password)
         rasmgr_keep_alive(self.stub, self.session.clientUUID)
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
 
