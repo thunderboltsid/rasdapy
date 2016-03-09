@@ -112,8 +112,8 @@ def make_rassrvr_execute_query_req(cid, query):
     return execute_query_req
 
 
-def make_rassrvr_execute_http_query_req(cid, data, data_length):
-    execute_http_query_req = rassrvr.ExecuteHttpQueryReq(client_id=cid, data=data, data_length=data_length)
+def make_rassrvr_execute_http_query_req(cid, data):
+    execute_http_query_req = rassrvr.ExecuteHttpQueryReq(client_id=cid, data=data)
     if not execute_http_query_req:
         raise Exception("Can't create ExecuteHttpQuery request")
     return execute_http_query_req
@@ -138,6 +138,7 @@ def make_rassrvr_get_next_tile_req(cid):
     if not get_next_tile_req:
         raise Exception("Can't create GetNextTile request")
     return get_next_tile_req
+
 
 def make_rassrvr_end_transfer_req(cid):
     ent_transfer_req = rassrvr.EndTransferReq(client_id=cid)
