@@ -8,7 +8,10 @@ from raspy.request_factories import make_rassrvr_end_transfer_req, make_rassrvr_
     make_rassrvr_insert_tile_req, make_rassrvr_end_insert_mdd_req, make_rassrvr_insert_collection_req, \
     make_rassrvr_delete_collection_by_name_req, make_rassrvr_delete_collection_by_id_req, \
     make_rassrvr_get_collection_by_name_or_id_req, make_rassrvr_remove_object_from_collection_req, \
-    make_rassrvr_get_collection_oids_by_name_or_id
+    make_rassrvr_get_collection_oids_by_name_or_id, make_rassrvr_init_update_req, make_rassrvr_get_next_element_req, \
+    make_rassrvr_execute_update_query_req, make_rassrvr_execute_insert_query_req, make_rassrvr_get_new_oid_req, \
+    make_rassrvr_get_object_type_req, make_rassrvr_get_type_structure_req, make_rassrvr_set_format_req, \
+    make_rassrvr_begin_streamed_http_query_req, make_rassrvr_get_next_streamed_http_query_req
 import unittest
 
 
@@ -29,10 +32,15 @@ class RasmgrRequestCreationTest(unittest.TestCase):
         self.domain = bytes("[100:140, 40:80]")
         self.type_len = 12
         self.type_name = "tmp"
+        self.type_type = 1
         self.persistence = False
         self.current_format = 16
         self.storage_format = 16
         self.is_name = True
+        self.object_type = 1
+        self.format = 1
+        self.format_params = "{char, char, char}"
+        self.transfer_format = 1
 
     def test_opendb(self):
         req = make_rassrvr_open_db_req(self.clientId, self.dbname)
@@ -151,6 +159,10 @@ class RasmgrRequestCreationTest(unittest.TestCase):
         req = make_rassrvr_end_transfer_req(self.clientId)
         self.assertEqual(req.client_id, self.clientId)
 
+    def test_init_update(self):
+        req = make_rassrvr_init_update_req(self.clientId)
+        self.assertEqual(req.client_id, self.clientId)
+
     def test_execute_query(self):
         req = make_rassrvr_execute_query_req(self.clientId, self.query)
         self.assertEqual(req.client_id, self.clientId)
@@ -161,10 +173,56 @@ class RasmgrRequestCreationTest(unittest.TestCase):
         self.assertEqual(req.client_id, self.clientId)
         self.assertEqual(req.data, self.data)
 
+    def test_get_next_element(self):
+        req = make_rassrvr_get_next_element_req(self.clientId)
+        self.assertEqual(req.client_id, self.clientId)
+
+    def test_execute_update_query(self):
+        req = make_rassrvr_execute_update_query_req(self.clientId, self.query)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.query, self.query)
+
+    def test_execute_insert_query(self):
+        req = make_rassrvr_execute_insert_query_req(self.clientId, self.query)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.query, self.query)
+
+    def test_get_new_oid(self):
+        req = make_rassrvr_get_new_oid_req(self.clientId, self.object_type)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.object_type, self.object_type)
+
+    def test_get_object_type(self):
+        req = make_rassrvr_get_object_type_req(self.clientId, self.colid)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.oid, self.colid)
+
+    def test_get_type_structure(self):
+        req = make_rassrvr_get_type_structure_req(self.clientId, self.type_name, self.type_type)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.type_name, self.type_name)
+        self.assertEqual(req.type_type, self.type_type)
+
+    def test_set_format(self):
+        req = make_rassrvr_set_format_req(self.clientId, self.transfer_format, self.format, self.format_params)
+        self.assertEqual(req.client_id, self.clientId)
+        self.assertEqual(req.transfer_format, self.transfer_format)
+        self.assertEqual(req.format, self.format)
+        self.assertEqual(req.format_params, self.format_params)
+
     def test_keep_alive(self):
         req = make_rassrvr_keep_alive_req(self.clientUUID, self.dbsid)
         self.assertEqual(req.client_uuid, self.clientUUID)
         self.assertEqual(req.session_id, self.dbsid)
+
+    def test_begin_streamed_http_query(self):
+        req = make_rassrvr_begin_streamed_http_query_req(self.clientUUID, self.data)
+        self.assertEqual(req.client_uuid, self.clientUUID)
+        self.assertEqual(req.data, self.data)
+
+    def test_get_next_streamed_http_query(self):
+        req = make_rassrvr_get_next_streamed_http_query_req(self.clientUUID)
+        self.assertEqual(req.uuid, self.clientUUID)
 
 
 if __name__ == "__main__":

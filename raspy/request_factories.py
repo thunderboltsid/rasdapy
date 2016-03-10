@@ -214,10 +214,17 @@ def make_rassrvr_get_next_tile_req(cid):
 
 
 def make_rassrvr_end_transfer_req(cid):
-    ent_transfer_req = rassrvr.EndTransferReq(client_id=cid)
-    if not ent_transfer_req:
+    end_transfer_req = rassrvr.EndTransferReq(client_id=cid)
+    if not end_transfer_req:
         raise Exception("Can't create EndTransfer request")
-    return ent_transfer_req
+    return end_transfer_req
+
+
+def make_rassrvr_init_update_req(cid):
+    init_update_req = rassrvr.InitUpdateReq(client_id=cid)
+    if not init_update_req:
+        raise Exception("Can't create InitUpdate request")
+    return init_update_req
 
 
 def make_rassrvr_execute_query_req(cid, query):
@@ -234,8 +241,72 @@ def make_rassrvr_execute_http_query_req(cid, data):
     return execute_http_query_req
 
 
+def make_rassrvr_get_next_element_req(cid):
+    get_next_element_req = rassrvr.GetNextElementReq(client_id=cid)
+    if not get_next_element_req:
+        raise Exception("Can't create GetNextElement request")
+    return get_next_element_req
+
+
+def make_rassrvr_execute_update_query_req(cid, query):
+    execute_update_query_req = rassrvr.ExecuteUpdateQueryReq(client_id=cid, query=query)
+    if not execute_update_query_req:
+        raise Exception("Can't create ExecuteUpdateQuery request")
+    return execute_update_query_req
+
+
+def make_rassrvr_execute_insert_query_req(cid, query):
+    execute_insert_query_req = rassrvr.ExecuteInsertQueryReq(client_id=cid, query=query)
+    if not execute_insert_query_req:
+        raise Exception("Can't create ExecuteInsertQuery request")
+    return execute_insert_query_req
+
+
+def make_rassrvr_get_new_oid_req(cid, object_type):
+    get_new_oid_req = rassrvr.GetNewOidReq(client_id=cid, object_type=object_type)
+    if not get_new_oid_req:
+        raise Exception("Can't create GetNewOid request")
+    return get_new_oid_req
+
+
+def make_rassrvr_get_object_type_req(cid, oid):
+    get_obj_type_req = rassrvr.GetObjectTypeReq(client_id=cid, oid=oid)
+    if not get_obj_type_req:
+        raise Exception("Can't create GetObjectType request")
+    return get_obj_type_req
+
+
+def make_rassrvr_get_type_structure_req(cid, type_name, type_type):
+    get_type_structure_req = rassrvr.GetTypeStructureReq(client_id=cid, type_name=type_name, type_type=type_type)
+    if not get_type_structure_req:
+        raise Exception("Can't create GetTypeStructure request")
+    return get_type_structure_req
+
+
+def make_rassrvr_set_format_req(cid, transfer_format, format, format_params):
+    set_format_req = rassrvr.SetFormatReq(client_id=cid, transfer_format=transfer_format, format=format,
+                                          format_params=format_params)
+    if not set_format_req:
+        raise Exception("Can't create SetFormat request")
+    return set_format_req
+
+
 def make_rassrvr_keep_alive_req(cuuid, dbsid):
     keep_alive_req = rassrvr.KeepAliveRequest(client_uuid=cuuid, session_id=dbsid)
     if not keep_alive_req:
         raise Exception("Can't create KeepAlive request for Rassrvr")
     return keep_alive_req
+
+
+def make_rassrvr_begin_streamed_http_query_req(cuuid, data):
+    begin_streamed_http_query_req = rassrvr.BeginStreamedHttpQueryReq(client_uuid=cuuid, data=data)
+    if not begin_streamed_http_query_req:
+        raise Exception("Can't create BeginStreamedHttpQuery request")
+    return begin_streamed_http_query_req
+
+
+def make_rassrvr_get_next_streamed_http_query_req(cuuid):
+    get_next_streamed_http_query_req = rassrvr.GetNextStreamedHttpQueryReq(uuid=cuuid)
+    if not get_next_streamed_http_query_req:
+        raise Exception("Can't create GetNextStreamedHttpQuery request")
+    return get_next_streamed_http_query_req
