@@ -93,7 +93,14 @@ def rassrvr_execute_http_query(stub, cid, data, data_length):
 
 
 def rassrvr_get_collection_by_name(stub, cid, name):
-    resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_req(cid, name), _TIMEOUT_SECONDS)
+    resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_by_name_or_id_req(cid, name, True), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
+    return resp
+
+
+def rassrvr_get_collection_by_id(stub, cid, oid):
+    resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_by_name_or_id_req(cid, oid, False), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
     return resp
