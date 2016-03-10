@@ -253,7 +253,6 @@ class Query:
             if tilestatus == 0:
                 break
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
-        import pdb;pdb.set_trace()
         return Array(values=array, metadata=result)
 
 

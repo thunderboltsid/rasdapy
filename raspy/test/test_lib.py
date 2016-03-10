@@ -40,13 +40,13 @@ class TestConnectionDefault(unittest.TestCase):
     def setUp(self):
         self.connection = ras.Connection()
 
-    def disconnect_connection(self):
+    def test_disconnect_connection(self):
         self.connection.disconnect()
 
-    def reconnect_connection(self):
+    def test_reconnect_connection(self):
         self.connection.connect()
 
-    def connect_default_settings(self):
+    def test_connect_default_settings(self):
         self.assertEqual(self.connection.hostname, "0.0.0.0")
         self.assertEqual(self.connection.port, 7001)
         self.assertEqual(self.connection.username, "rasguest")
@@ -57,21 +57,20 @@ class TestConnectionCustom(unittest.TestCase):
     def setUp(self):
         self.connection = ras.Connection(hostname="192.168.1.1", port=50051, username="testuser", password="dJ4ng0Pi5")
 
-    def disconnect_connection(self):
+    def test_disconnect_connection(self):
         self.connection.disconnect()
 
-    def reconnect_connection(self):
+    def test_reconnect_connection(self):
         self.connection.connect()
 
-    def connect_custom_settings(self):
+    def test_connect_custom_settings(self):
         self.assertEqual(self.connection.hostname, "192.168.1.1")
         self.assertEqual(self.connection.port, 7000)
         self.assertEqual(self.connection.username, "testuser")
-        self.assertEquals(self.connection.passwordHash, "a4187b53523c7a13a5dcd3354418f7c7")
+        self.assertEquals(self.connection.password, "dJ4ng0Pi5")
 
-class TestDatabase(unittest.TestCase):
-    def setUp(self):
-        self.connection = ras.Connection(port=50051)
 
+if __name__ == "__main__":
+    unittest.main()
 
 
