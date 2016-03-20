@@ -219,13 +219,15 @@ class Query:
         :return: the resulting array returned by the query
         :rtype: Array
         """
-        result = rassrvr_execute_query(self.transaction.database.stub,
-                                       self.transaction.database.connection.session.clientId, self.query_str)
-        if result.status == 0 or result.status == 1:
-            pass
-        elif result.status == 4 or result.status == 5:
-            raise Exception("Error executing query: err_no = " + str(result.err_no) + ", line_no = " + str(
-                result.line_no) + ", col_no = " + str(result.col_no) + ", token = " + result.token)
+        exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
+                                                self.transaction.database.connection.session.clientId, self.query_str)
+        if exec_query_resp.status == 4 or exec_query_resp.status == 5:
+            raise Exception("Error executing query: err_no = " + str(exec_query_resp.err_no) + ", line_no = " + str(
+                exec_query_resp.line_no) + ", col_no = " + str(
+                exec_query_resp.col_no) + ", token = " + exec_query_resp.token)
+
+        metadata = ArrayMetadata(spatial_domain=exec_query_resp.type_structure,
+                                 band_types=get_type_structure_from_string(exec_query_resp.type_structure))
         mddstatus = 0
         tilestatus = 0
         array = []
@@ -255,7 +257,7 @@ class Query:
             if tilestatus == 0:
                 break
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
-        return Array(values=array, metadata=result)
+        return Array(values=array, metadata=metadata)
 
 
 class RPCMarray:

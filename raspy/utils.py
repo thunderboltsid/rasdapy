@@ -16,9 +16,9 @@ def get_md5_string(input_str):
 
 
 def get_type_structure_from_string(input_str):
-    primary_regex = "set<marray<(char|ushort|short|ulong|long|float|double), .*>>"
+    primary_regex = "set\s+<marray\s+<(char|ushort|short|ulong|long|float|double),\s+.*>>"
     struct_regex = (
-        "set<marray<struct{((char|ushort|short|ulong|long|float|double)\s+.*,)*\s+((char|ushort|short|ulong|long|float|double) .*)}, .*>>"
+        "set\s+<marray\s+<struct{((char|ushort|short|ulong|long|float|double)\s+.*,)*\s+((char|ushort|short|ulong|long|float|double)\s+.*)},\s+.*>>"
     )
     m = re.match(primary_regex, input_str)
     result = {
@@ -64,4 +64,11 @@ def convert_data_from_bin(dtype, data):
         result = struct.unpack("d", data)
     else:
         raise Exception("Unknown Data type provided")
-    return result
+    return result[0]
+
+
+def convert_data_stream_from_bin(dtype, data, len, cell_len):
+    arr = []
+    for i in xrange(0, len - 1):
+        arr[i] = convert_data_from_bin(dtype, data[i])
+    return arr
