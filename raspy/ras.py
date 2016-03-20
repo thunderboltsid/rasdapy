@@ -252,7 +252,11 @@ class Query:
                                                                             cell_type_length=tileresp.cell_type_length,
                                                                             current_format=tileresp.current_format,
                                                                             storage_format=tileresp.storage_format,
-                                                                            data=tile_data)})
+                                                                            data=convert_data_stream_from_bin(
+                                                                                metadata.band_types["type"],
+                                                                                tile_data["confarray_val"],
+                                                                                tile_data["confarray_len"],
+                                                                                tileresp.cell_type_length))})
 
             if tilestatus == 0:
                 break

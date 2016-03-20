@@ -67,8 +67,8 @@ def convert_data_from_bin(dtype, data):
     return result[0]
 
 
-def convert_data_stream_from_bin(dtype, data, len, cell_len):
+def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     arr = []
-    for i in xrange(0, len - 1):
-        arr[i] = convert_data_from_bin(dtype, data[i])
+    for i in xrange(0, array_len, cell_len):
+        arr.append(convert_data_from_bin(dtype, data[i]))
     return arr
