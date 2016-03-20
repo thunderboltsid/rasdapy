@@ -40,8 +40,15 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"char"})
 
     def test_type_structure_struct(self):
-        inp_str = "set<marray<struct{int foo, char bar}, [100:150, 50:80]>>"
-        self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"struct", "sub_type":("int", "char")})
+        inp_str = "set<marray<struct{short foo, char bar}, [100:150, 50:80]>>"
+        self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"struct", "sub_type":("short", "char")})
+
+    def test_convert_data_from_bin(self):
+        test_inp = [{"dtype":"char", "data":"\x16"}]
+        test_out = [21]
+        if len(test_inp) == len(test_out):
+            for i in xrange(0,len(test_inp)-1):
+                self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]))
 
 
 class TestConnectionDefault(unittest.TestCase):

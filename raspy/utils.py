@@ -1,5 +1,6 @@
 import hashlib
 import re
+import struct
 
 
 def get_md5_string(input_str):
@@ -15,7 +16,7 @@ def get_md5_string(input_str):
 
 
 def get_type_structure_from_string(input_str):
-    primary_regex = "set<marray<(char|float|int), .*>>"
+    primary_regex = "set<marray<(char|ushort|short|ulong|long|float|double), .*>>"
     struct_regex = (
         "set<marray<struct{((char|ushort|short|ulong|long|float|double)\s+.*,)*\s+((char|ushort|short|ulong|long|float|double) .*)}, .*>>"
     )
@@ -40,4 +41,27 @@ def get_type_structure_from_string(input_str):
         primary_type = m.group(1)
         result['type'] = primary_type
 
+    if result is None:
+        raise Exception("Failed to retrieve type structure from string")
+
+    return result
+
+
+def convert_data_from_bin(dtype, data):
+    if dtype == "char":
+        result = struct.unpack("B", data)
+    elif dtype == "ushort":
+        result = struct.unpack("H", data)
+    elif dtype == "short":
+        result = struct.unpack("h", data)
+    elif dtype == "ulong":
+        result = struct.unpack("L", data)
+    elif dtype == "long":
+        result = struct.unpack("l", data)
+    elif dtype == "float":
+        result = struct.unpack("f", data)
+    elif dtype == "double":
+        result = struct.unpack("d", data)
+    else:
+        raise Exception("Unknown Data type provided")
     return result

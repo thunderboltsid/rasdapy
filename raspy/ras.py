@@ -244,6 +244,8 @@ class Query:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
                 else:
                     tile_data = {"confarray_val": tileresp.data, "confarray_len": tileresp.data_length}
+                    # for i in xrange(0,tile_data["confarray_len"]-1):
+
                     array.append({"status": tilestatus, "marray": RPCMarray(domain=tileresp.domain,
                                                                             cell_type_length=tileresp.cell_type_length,
                                                                             current_format=tileresp.current_format,
