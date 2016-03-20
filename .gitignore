@@ -6,3 +6,4 @@ dist/*
 .vagrant/*
 raspy/venv/*
 .DS_Store
+.eggs/*
