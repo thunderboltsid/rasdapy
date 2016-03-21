@@ -40,7 +40,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"char"})
 
     def test_type_structure_struct(self):
-        inp_str = "set<marray<struct{short foo, char bar}, [100:150, 50:80]>>"
+        inp_str = "set <marray <struct {short foo, char bar}, [100:150, 50:80]>>"
         self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"struct", "sub_type":("short", "char")})
 
     def test_convert_data_from_bin(self):

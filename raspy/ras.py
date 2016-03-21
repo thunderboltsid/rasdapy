@@ -253,7 +253,7 @@ class Query:
                                                                             current_format=tileresp.current_format,
                                                                             storage_format=tileresp.storage_format,
                                                                             data=convert_data_stream_from_bin(
-                                                                                metadata.band_types["type"],
+                                                                                metadata.band_types,
                                                                                 tile_data["confarray_val"],
                                                                                 tile_data["confarray_len"],
                                                                                 tileresp.cell_type_length))})

@@ -67,8 +67,35 @@ def convert_data_from_bin(dtype, data):
     return result[0]
 
 
+def get_size_from_data_type(dtype):
+    if dtype == "char":
+        result = 1
+    elif dtype == "ushort":
+        result = 2
+    elif dtype == "short":
+        result = 2
+    elif dtype == "ulong":
+        result = 4
+    elif dtype == "long":
+        result = 4
+    elif dtype == "float":
+        result = 4
+    elif dtype == "double":
+        result = 8
+    else:
+        raise Exception("Unknown Data type provided")
+    return result
+
+
 def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     arr = []
-    for i in xrange(0, array_len, cell_len):
-        arr.append(convert_data_from_bin(dtype, data[i]))
+    if dtype["type"] == "struct":
+        for i in xrange(0, array_len, cell_len):
+            cell_counter = 0
+            for idx,dt in enumerate(dtype["sub_type"]):
+                arr.append(convert_data_from_bin(dt, data[cell_counter]))
+                cell_counter += get_size_from_data_type(dt)
+    else:
+        for i in xrange(0, array_len, cell_len):
+            arr.append(convert_data_from_bin(dtype["type"], data[i]))
     return arr
