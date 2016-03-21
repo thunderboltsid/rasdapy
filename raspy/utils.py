@@ -16,9 +16,9 @@ def get_md5_string(input_str):
 
 
 def get_type_structure_from_string(input_str):
-    primary_regex = "set\s+<marray\s+<(char|ushort|short|ulong|long|float|double),\s+.*>>"
+    primary_regex = "set\s*<marray\s*<(char|ushort|short|ulong|long|float|double),\s*.*>>"
     struct_regex = (
-        "set\s+<marray\s+<struct{((char|ushort|short|ulong|long|float|double)\s+.*,)*\s+((char|ushort|short|ulong|long|float|double)\s+.*)},\s+.*>>"
+        "set\s*<marray\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)},\s*.*>>"
     )
     m = re.match(primary_regex, input_str)
     result = {

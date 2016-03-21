@@ -36,7 +36,7 @@ class TestUtils(unittest.TestCase):
             self.assertEquals(password_hash, hash_array[index])
 
     def test_type_structure_char(self):
-        inp_str = "set<marray<char, [100:140, 40:80]>>"
+        inp_str = "set <marray <char, [100:140, 40:80]>>"
         self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"char"})
 
     def test_type_structure_struct(self):
@@ -48,7 +48,7 @@ class TestUtils(unittest.TestCase):
         test_out = [21]
         if len(test_inp) == len(test_out):
             for i in xrange(0,len(test_inp)-1):
-                self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]))
+                self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]), test_out[i])
 
 
 class TestConnectionDefault(unittest.TestCase):
@@ -66,23 +66,6 @@ class TestConnectionDefault(unittest.TestCase):
         self.assertEqual(self.connection.port, 7001)
         self.assertEqual(self.connection.username, "rasguest")
         self.assertEquals(self.connection.password, "rasguest")
-
-
-# class TestConnectionCustom(unittest.TestCase):
-#     def setUp(self):
-#         self.connection = ras.Connection(hostname="192.168.1.1", port=50051, username="testuser", password="dJ4ng0Pi5")
-#
-#     def test_disconnect_connection(self):
-#         self.connection.disconnect()
-#
-#     def test_reconnect_connection(self):
-#         self.connection.connect()
-#
-#     def test_connect_custom_settings(self):
-#         self.assertEqual(self.connection.hostname, "192.168.1.1")
-#         self.assertEqual(self.connection.port, 7000)
-#         self.assertEqual(self.connection.username, "testuser")
-#         self.assertEquals(self.connection.password, "dJ4ng0Pi5")
 
 
 if __name__ == "__main__":
