@@ -34,7 +34,12 @@ def get_type_structure_from_string(input_str):
 
         # Result of m.groups() is a tuple alike
         # ('int foo,', 'int', 'char bar', 'char')
-        sub_type = m.groups()[1::2]
+        temp = m.groups()[2].split(" ")[:-1]
+        types = temp[0::2]
+        names = temp[1::2]
+
+        sub_type = {"types": types, "names": names}
+
         result['type'] = 'struct'
         result['sub_type'] = sub_type
     else:
@@ -49,19 +54,19 @@ def get_type_structure_from_string(input_str):
 
 def convert_data_from_bin(dtype, data):
     if dtype == "char":
-        result = struct.unpack("B", data)
+        result = struct.unpack("B"*len(data), data)
     elif dtype == "ushort":
-        result = struct.unpack("H", data)
+        result = struct.unpack("H"*len(data), data)
     elif dtype == "short":
-        result = struct.unpack("h", data)
+        result = struct.unpack("h"*len(data), data)
     elif dtype == "ulong":
-        result = struct.unpack("L", data)
+        result = struct.unpack("L"*len(data), data)
     elif dtype == "long":
-        result = struct.unpack("l", data)
+        result = struct.unpack("l"*len(data), data)
     elif dtype == "float":
-        result = struct.unpack("f", data)
+        result = struct.unpack("f"*len(data), data)
     elif dtype == "double":
-        result = struct.unpack("d", data)
+        result = struct.unpack("d"*len(data), data)
     else:
         raise Exception("Unknown Data type provided")
     return result[0]
@@ -92,9 +97,12 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     if dtype["type"] == "struct":
         for i in xrange(0, array_len, cell_len):
             cell_counter = 0
-            for idx,dt in enumerate(dtype["sub_type"]):
-                arr.append(convert_data_from_bin(dt, data[cell_counter]))
-                cell_counter += get_size_from_data_type(dt)
+            temp = []
+            for idx, dt in enumerate(dtype["sub_type"]["types"]):
+                dtsize = get_size_from_data_type(dt)
+                temp.append(convert_data_from_bin(dt, data[i + cell_counter:i + cell_counter + dtsize]))
+                cell_counter += dtsize
+            arr.append(temp)
     else:
         for i in xrange(0, array_len, cell_len):
             arr.append(convert_data_from_bin(dtype["type"], data[i]))
