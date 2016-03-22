@@ -213,7 +213,7 @@ class Query:
         self.transaction = transaction
         self.query_str = query_str
 
-    def execute(self, buffer_size=1048576):
+    def execute(self):
         """
         Executes the query and returns back a result
         :return: the resulting array returned by the query
