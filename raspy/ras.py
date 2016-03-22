@@ -22,7 +22,7 @@
  *
 """
 
-# import numpy as np
+import numpy as np
 from grpc.beta import implementations
 # from scipy import sparse
 from utils import *
@@ -245,18 +245,15 @@ class Query:
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
                 else:
-                    tile_data = {"confarray_val": tileresp.data, "confarray_len": tileresp.data_length}
-                    # for i in xrange(0,tile_data["confarray_len"]-1):
-
-                    array.append({"status": tilestatus, "marray": RPCMarray(domain=tileresp.domain,
-                                                                            cell_type_length=tileresp.cell_type_length,
-                                                                            current_format=tileresp.current_format,
-                                                                            storage_format=tileresp.storage_format,
-                                                                            data=convert_data_stream_from_bin(
-                                                                                metadata.band_types,
-                                                                                tile_data["confarray_val"],
-                                                                                tile_data["confarray_len"],
-                                                                                tileresp.cell_type_length))})
+                    array.append(RPCMarray(domain=tileresp.domain,
+                                           cell_type_length=tileresp.cell_type_length,
+                                           current_format=tileresp.current_format,
+                                           storage_format=tileresp.storage_format,
+                                           data=convert_data_stream_from_bin(
+                                               metadata.band_types,
+                                               tileresp.data,
+                                               tileresp.data_length,
+                                               tileresp.cell_type_length)))
 
             if tilestatus == 0:
                 break
@@ -275,6 +272,16 @@ class RPCMarray:
         self.current_format = current_format
         self.storage_format = storage_format
         self.data = data
+
+    def toArray(self):
+        if type == "numpy":
+            return np.frombuffer(self.data)
+        elif type == "scipy":
+            return sparse.csr_matrix(np.frombuffer(self.data))
+        elif type == "pandas":
+            raise NotImplementedError("No Support for Pandas yet")
+        else:
+            raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
 
 
 class BandType:
@@ -361,7 +368,8 @@ class Array:
         :return:
         """
         if type == "numpy":
-            return np.frombuffer(self.values)
+            nparr = np.array([val.data for val in self.values])
+            return nparr
         elif type == "scipy":
             return sparse.csr_matrix(np.frombuffer(self.values))
         elif type == "pandas":
