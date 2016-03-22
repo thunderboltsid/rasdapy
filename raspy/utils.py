@@ -16,6 +16,11 @@ def get_md5_string(input_str):
 
 
 def get_type_structure_from_string(input_str):
+    """
+    Gives a type structure from a string defining type structure
+    :param input_str:
+    :return: object {"type", "base_type", "sub_type"(optional)}
+    """
     primary_regex = "set\s*<marray\s*<(char|ushort|short|ulong|long|float|double),\s*.*>>"
     struct_regex = (
         "set\s*<marray\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)},\s*.*>>"
@@ -53,6 +58,12 @@ def get_type_structure_from_string(input_str):
 
 
 def convert_data_from_bin(dtype, data):
+    """
+
+    :param dtype: datatype
+    :param data: data
+    :return: unpacked data
+    """
     if dtype == "char":
         result = struct.unpack("B"*len(data), data)
     elif dtype == "ushort":
@@ -73,6 +84,11 @@ def convert_data_from_bin(dtype, data):
 
 
 def get_size_from_data_type(dtype):
+    """
+    Return the size of a given datatype
+    :param dtype:
+    :return: int size
+    """
     if dtype == "char":
         result = 1
     elif dtype == "ushort":
@@ -93,6 +109,14 @@ def get_size_from_data_type(dtype):
 
 
 def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
+    """
+    Convert a set of binary data into meaningful data
+    :param dtype:
+    :param data:
+    :param array_len:
+    :param cell_len:
+    :return:
+    """
     arr = []
     if dtype["type"] == "struct":
         for i in xrange(0, array_len, cell_len):
