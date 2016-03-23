@@ -100,7 +100,7 @@ class Database:
     def destroy(self):
         raise NotImplementedError("Sorry, not implemented yet")
 
-    def transaction(self, rw=True):
+    def transaction(self, rw=False):
         """
         Returns a new transaction object for this database
         :rtype: Transaction
@@ -212,12 +212,37 @@ class Query:
         """
         self.transaction = transaction
         self.query_str = query_str
+        self.mdd_constants = None
 
-    def executeUpdate(self):
+    def eval(self):
+        if "insert" in self.query_str:
+            self.execute_update()
+        elif "create" in self.query_str:
+            self.execute_update()
+        elif "drop" in self.query_str:
+            self.execute_update()
+        else:
+            return self.execute()
+
+    def execute_update(self):
         if self.transaction.rw is False:
             raise Exception("Transaction does now have write access")
-        exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
-                                                self.transaction.database.connection.session.clientId, self.query_str)
+
+        if self.mdd_constants is not None:
+            pass
+
+        exec_update_query_resp = rassrvr_execute_update_query(self.transaction.database.stub,
+                                                              self.transaction.database.connection.session.clientId,
+                                                              self.query_str)
+        if exec_update_query_resp.status == 2 or exec_update_query_resp.status == 3:
+            raise Exception("Error executing query: err_no = " + str(exec_update_query_resp.erroNo) + ", line_no = " + str(
+                exec_update_query_resp.lineNo) + ", col_no = " + str(
+                exec_update_query_resp.colNo) + ", token = " + exec_update_query_resp.token)
+        if exec_update_query_resp.status == 1:
+            raise Exception("Error: Unknown Client")
+        if exec_update_query_resp.status > 3:
+            raise Exception("Error: Transfer failed")
+        return exec_update_query_resp.status
 
     def execute(self):
         """

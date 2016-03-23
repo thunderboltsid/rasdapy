@@ -24,7 +24,7 @@
 
 from request_factories import *
 
-_TIMEOUT_SECONDS = 30
+_TIMEOUT_SECONDS = 60
 
 
 def rasmgr_connect(stub, username, password):
