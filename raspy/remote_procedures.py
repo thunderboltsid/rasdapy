@@ -229,6 +229,55 @@ def rassrvr_execute_http_query(stub, cid, data):
     return resp
 
 
+def rassrvr_get_next_element(stub, cid):
+    resp = stub.GetNextElement(make_rassrvr_get_next_element_req(cid), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetNextElement' did not return anything")
+    return resp
+
+
+def rassrvr_execute_update_query(stub, cid, query):
+    resp = stub.ExecuteUpdateQuery(make_rassrvr_execute_update_query_req(cid, query), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'ExecuteUpdateQuery' did not return anything")
+    return resp
+
+
+def rassrvr_execute_insert_query(stub, cid, query):
+    resp = stub.ExecuteInsertQuery(make_rassrvr_execute_insert_query_req(cid, query), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'ExecuteInsertQuery' did not return anything")
+    return resp
+
+
+def rassrvr_get_new_oid(stub, cid, obj_type):
+    resp = stub.GetNewOid(make_rassrvr_get_new_oid_req(cid, obj_type), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetNewOid' did not return anything")
+    return resp
+
+
+def rassrvr_get_object_type(stub, cid, oid):
+    resp = stub.GetObjectType(make_rassrvr_get_object_type_req(cid, oid), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetObjectType' did not return anything")
+    return resp
+
+
+def rassrvr_get_type_structure(stub, cid, type_name, type_type):
+    resp = stub.GetTypeStructure(make_rassrvr_get_type_structure_req(cid, type_name, type_type), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetTypeStructure' did not return anything")
+    return resp
+
+
+def rassrvr_set_format(stub, cid, transfer_format, format, format_params):
+    resp = stub.SetFormat(make_rassrvr_set_format_req(cid, transfer_format, format, format_params), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'SetFormat' did not return anything")
+    return resp
+
+
 def rassrvr_keep_alive(stub, client_uuid, session_id):
     resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id), _TIMEOUT_SECONDS)
     if not resp:
@@ -236,5 +285,17 @@ def rassrvr_keep_alive(stub, client_uuid, session_id):
     return resp
 
 
+def rassrvr_begin_streamed_http_query(stub, cuuid, data):
+    resp = stub.BeginStreamedHttpQuery(make_rassrvr_begin_streamed_http_query_req(cuuid, data), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'BeginStreamedHttpQuery' from RasServer did not return anything")
+    return resp
+
+
+def rassrvr_get_next_streamed_http_query(stub, uuid):
+    resp = stub.GetNextStreamedHttpQuery(make_rassrvr_get_next_streamed_http_query_req(uuid), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'GetNextStreamedHttpQuery' from RasServer did not return anything")
+    return resp
 
 
