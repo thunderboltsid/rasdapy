@@ -187,27 +187,6 @@ def rassrvr_get_collection_oids_by_name(stub, cid, coll_name):
     return resp
 
 
-def rassrvr_execute_query(stub, cid, query):
-    resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'ExecuteQuery' did not return anything")
-    return resp
-
-
-def rassrvr_execute_http_query(stub, cid, data, data_length):
-    resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data, data_length), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'ExecuteHttpQuery' did not return anything")
-    return resp
-
-
-def rassrvr_keep_alive(stub, client_uuid, session_id):
-    resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id), _TIMEOUT_SECONDS)
-    if not resp:
-        raise Exception("Remote function 'KeepAlive' from RasServer did not return anything")
-    return resp
-
-
 def rassrvr_get_next_mdd(stub, cid):
     resp = stub.GetNextMDD(make_rassrvr_get_next_mdd_req(cid), _TIMEOUT_SECONDS)
     if not resp:
@@ -227,3 +206,35 @@ def rassrvr_end_transfer(stub, cid):
     if not resp:
         raise Exception("Remote function 'EndTransfer' did not return anything")
     return resp
+
+
+def rassrvr_init_update(stub, cid):
+    resp = stub.InitUpdate(make_rassrvr_init_update_req(cid), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'InitUpdate' did not return anything")
+    return resp
+
+
+def rassrvr_execute_query(stub, cid, query):
+    resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'ExecuteQuery' did not return anything")
+    return resp
+
+
+def rassrvr_execute_http_query(stub, cid, data):
+    resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'ExecuteHttpQuery' did not return anything")
+    return resp
+
+
+def rassrvr_keep_alive(stub, client_uuid, session_id):
+    resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id), _TIMEOUT_SECONDS)
+    if not resp:
+        raise Exception("Remote function 'KeepAlive' from RasServer did not return anything")
+    return resp
+
+
+
+
