@@ -213,6 +213,12 @@ class Query:
         self.transaction = transaction
         self.query_str = query_str
 
+    def executeUpdate(self):
+        if self.transaction.rw is False:
+            raise Exception("Transaction does now have write access")
+        exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
+                                                self.transaction.database.connection.session.clientId, self.query_str)
+
     def execute(self):
         """
         Executes the query and returns back a result
