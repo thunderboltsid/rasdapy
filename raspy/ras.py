@@ -25,6 +25,7 @@
 import numpy as np
 from grpc.beta import implementations
 # from scipy import sparse
+import sched, time
 from utils import *
 from remote_procedures import *
 
@@ -52,8 +53,14 @@ class Connection:
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.password)
-        rasmgr_keep_alive(self.stub, self.session.clientUUID)
+        self.scheduler = sched.scheduler(time.time, time.sleep)
+        self.scheduler.enter(self.session.keepAliveTimeout/1500, 1, self.keep_alive, (self.scheduler,))
+        self.scheduler.run()
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
+
+    def keep_alive(self, sc):
+        rasmgr_keep_alive(self.stub, self.session.clientUUID)
+        sc.enter(self.session.keepAliveTimeout/1500, 1, self.keep_alive, (sc,))
 
     def database(self, name):
         """

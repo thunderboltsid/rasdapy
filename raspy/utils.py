@@ -1,6 +1,7 @@
 import hashlib
 import re
 import struct
+import threading
 
 
 def get_md5_string(input_str):
@@ -131,3 +132,13 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
         for i in xrange(0, array_len, cell_len):
             arr.append(convert_data_from_bin(dtype["type"], data[i]))
     return arr
+
+
+class FuncThread(threading.Thread):
+    def __init__(self, target, *args):
+        self._target = target
+        self._args = args
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self._target(*self._args)
