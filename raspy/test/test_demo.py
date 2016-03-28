@@ -15,21 +15,21 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         txn = self.db.transaction(rw=True)
         q = txn.query("create collection " + self.collName + " GreySet")
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
     def test_insert_in_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("insert into " + self.collName + " values marray x in [0:100, 0:100] values 1c")
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
     def test_read_from_collection(self):
         txn = self.db.transaction(rw=False)
         q = txn.query("select " + self.collName + "[0:2,0:2] from " + self.collName)
         data = q.eval()
-        txn.abort_transaction()
+        txn.abort()
         self.assertIsInstance(data, ras.Array)
         self.assertEqual(data.values, [[1, 1, 1, 1, 1, 1, 1, 1, 1]])
 
@@ -37,14 +37,14 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         txn = self.db.transaction(rw=False)
         q = txn.query("select avg_cells(" + self.collName + ") from " + self.collName)
         data = q.eval()
-        txn.abort_transaction()
+        txn.abort()
         self.assertIsInstance(data, ras.Array)
 
     def test_drop_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("drop collection " + self.collName)
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
 
@@ -61,28 +61,28 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         txn = self.db.transaction(rw=True)
         q = txn.query("create collection " + self.collName + " RGBSet")
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
     def test_insert_in_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("insert into " + self.collName + " values marray x in [0:100, 0:100] values {1c, 2c, 3c}")
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
     def test_read_from_collection(self):
         txn = self.db.transaction(rw=False)
         q = txn.query("select " + self.collName + "[0:2,0:2] from " + self.collName)
         data = q.eval()
-        txn.abort_transaction()
+        txn.abort()
         self.assertIsInstance(data, ras.Array)
 
     def test_read_scalar_from_collection(self):
         txn = self.db.transaction(rw=False)
         q = txn.query("select avg_cells(" + self.collName + ") from " + self.collName)
         data = q.eval()
-        txn.abort_transaction()
+        txn.abort()
         self.assertIsInstance(data, ras.Array)
         self.assertEqual(data.values, [
             [[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]]])
@@ -91,7 +91,7 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         txn = self.db.transaction(rw=True)
         q = txn.query("drop collection " + self.collName)
         res = q.eval()
-        txn.commit_transaction()
+        txn.commit()
         self.assertEqual(res, 0)
 
 

@@ -224,15 +224,15 @@ class Transaction:
         """
         self.database = database
         self.rw = rw
-        self.begin_transaction()
+        self.begin()
 
-    def begin_transaction(self):
+    def begin(self):
         rassrvr_begin_transaction(self.database.stub, self.database.connection.session.clientId, self.rw)
 
-    def commit_transaction(self):
+    def commit(self):
         rassrvr_commit_transaction(self.database.stub, self.database.connection.session.clientId)
 
-    def abort_transaction(self):
+    def abort(self):
         rassrvr_abort_transaction(self.database.stub, self.database.connection.session.clientId)
 
     def query(self, query_str):
@@ -328,8 +328,6 @@ class Query:
                 tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
                                                  self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
-                import pdb;
-                pdb.set_trace()
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
                 else:
