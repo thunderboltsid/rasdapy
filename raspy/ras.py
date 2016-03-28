@@ -25,7 +25,6 @@
 import numpy as np
 from grpc.beta import implementations
 # from scipy import sparse
-import sched, time
 from utils import *
 from remote_procedures import *
 
@@ -44,23 +43,43 @@ class Connection:
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
+        self.rasmgr_keep_alive_running = None
+        self._keep_alive_thread = None
         self.connect()
 
     def disconnect(self):
+        self._stop_keep_alive()
         rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
-        del self.session
+        self.session = None
         # TODO: Stop rasmgr_keep_alive
 
     def connect(self):
         self.session = rasmgr_connect(self.stub, self.username, self.password)
-        self.scheduler = sched.scheduler(time.time, time.sleep)
-        self.scheduler.enter(self.session.keepAliveTimeout/1500, 1, self.keep_alive, (self.scheduler,))
-        self.scheduler.run()
+        self._keep_alive()
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
 
-    def keep_alive(self, sc):
-        rasmgr_keep_alive(self.stub, self.session.clientUUID)
-        sc.enter(self.session.keepAliveTimeout/1500, 1, self.keep_alive, (sc,))
+    def _keep_alive(self):
+        if not self.rasmgr_keep_alive_running:
+            self.rasmgr_keep_alive_running = True
+            if not self._keep_alive_thread:
+                self._keep_alive_thread = StoppableTimeoutThread(rasmgr_keep_alive,
+                                                                 self.session.keepAliveTimeout / 2000,
+                                                                 self.stub, self.session.clientUUID)
+                self._keep_alive_thread.start()
+        else:
+            raise Exception("RasMgrKeepAlive already running")
+
+    def _stop_keep_alive(self):
+        if self.rasmgr_keep_alive_running is not None:
+            if self._keep_alive_thread is not None:
+                self.rasmgr_keep_alive_running = None
+                self._keep_alive_thread.stop()
+                self._keep_alive_thread.join()
+                self._keep_alive_thread = None
+            else:
+                raise Exception("No thread named _keep_alive_thread to stop")
+        else:
+            raise Exception("rasmgr_keep_alive thread not running")
 
     def database(self, name):
         """
@@ -83,6 +102,10 @@ class Database:
         self.name = name
         self.rasmgr_db = None
         self.rassrvr_db = None
+        self.channel = None
+        self.stub = None
+        self._rassrvr_keep_alive_running = None
+        self._keep_alive_thread = None
         self.open()
 
     def open(self):
@@ -91,7 +114,7 @@ class Database:
         self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
         self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
         self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
-        rassrvr_keep_alive(self.stub, self.connection.session.clientUUID, self.rasmgr_db.dbSessionId)
+        self._keep_alive()
         # TODO: Start sending rassrvr_keep_alive messages
 
     def close(self):
@@ -106,6 +129,30 @@ class Database:
 
     def destroy(self):
         raise NotImplementedError("Sorry, not implemented yet")
+
+    def _keep_alive(self):
+        if not self._rassrvr_keep_alive_running:
+            self._rassrvr_keep_alive_running = True
+            if not self._keep_alive_thread:
+                self._keep_alive_thread = StoppableTimeoutThread(rassrvr_keep_alive,
+                                                                 self.connection.session.keepAliveTimeout / 2000,
+                                                                 self.stub, self.connection.session.clientUUID,
+                                                                 self.rasmgr_db.dbSessionId)
+                self._keep_alive_thread.start()
+        else:
+            raise Exception("RasSrvrKeepAlive already running")
+
+    def _stop_keep_alive(self):
+        if self._rassrvr_keep_alive_running is not None:
+            if self._keep_alive_thread is not None:
+                self._rassrvr_keep_alive_running = None
+                self._keep_alive_thread.stop()
+                self._keep_alive_thread.join()
+                self._keep_alive_thread = None
+            else:
+                raise Exception("No thread named _keep_alive_thread to stop")
+        else:
+            raise Exception("rassrvr_keep_alive thread not running")
 
     def transaction(self, rw=False):
         """
@@ -242,9 +289,10 @@ class Query:
                                                               self.transaction.database.connection.session.clientId,
                                                               self.query_str)
         if exec_update_query_resp.status == 2 or exec_update_query_resp.status == 3:
-            raise Exception("Error executing query: err_no = " + str(exec_update_query_resp.erroNo) + ", line_no = " + str(
-                exec_update_query_resp.lineNo) + ", col_no = " + str(
-                exec_update_query_resp.colNo) + ", token = " + exec_update_query_resp.token)
+            raise Exception(
+                "Error executing query: err_no = " + str(exec_update_query_resp.erroNo) + ", line_no = " + str(
+                    exec_update_query_resp.lineNo) + ", col_no = " + str(
+                    exec_update_query_resp.colNo) + ", token = " + exec_update_query_resp.token)
         if exec_update_query_resp.status == 1:
             raise Exception("Error: Unknown Client")
         if exec_update_query_resp.status > 3:
@@ -280,6 +328,8 @@ class Query:
                 tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
                                                  self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
+                import pdb;
+                pdb.set_trace()
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
                 else:

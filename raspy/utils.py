@@ -2,7 +2,7 @@ import hashlib
 import re
 import struct
 import threading
-
+import time
 
 def get_md5_string(input_str):
     """
@@ -134,11 +134,24 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     return arr
 
 
-class FuncThread(threading.Thread):
-    def __init__(self, target, *args):
+class StoppableTimeoutThread(threading.Thread):
+    """
+    Thread that runs a method over and over again
+    """
+    def __init__(self, target, timeout, *args):
+        super(StoppableTimeoutThread, self).__init__()
         self._target = target
         self._args = args
-        threading.Thread.__init__(self)
+        self._timeout = timeout
+        self._stop = threading.Event()
 
     def run(self):
-        self._target(*self._args)
+        while True:
+            self._target(*self._args)
+            time.sleep(self._timeout)
+
+    def stop(self):
+        self._stop.set()
+
+    def stopped(self):
+        return self._stop.isSet()
