@@ -43,7 +43,7 @@ class Connection:
         self.channel = implementations.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
-        self.rasmgr_keep_alive_running = None
+        self._rasmgr_keep_alive_running = None
         self._keep_alive_thread = None
         self.connect()
 
@@ -59,8 +59,8 @@ class Connection:
         # TODO: Keep running the rasmgr_keep_alive on a separate thread
 
     def _keep_alive(self):
-        if not self.rasmgr_keep_alive_running:
-            self.rasmgr_keep_alive_running = True
+        if not self._rasmgr_keep_alive_running:
+            self._rasmgr_keep_alive_running = True
             if not self._keep_alive_thread:
                 self._keep_alive_thread = StoppableTimeoutThread(rasmgr_keep_alive,
                                                                  self.session.keepAliveTimeout / 2000,
@@ -70,9 +70,9 @@ class Connection:
             raise Exception("RasMgrKeepAlive already running")
 
     def _stop_keep_alive(self):
-        if self.rasmgr_keep_alive_running is not None:
+        if self._rasmgr_keep_alive_running is not None:
+            self._rasmgr_keep_alive_running = None
             if self._keep_alive_thread is not None:
-                self.rasmgr_keep_alive_running = None
                 self._keep_alive_thread.stop()
                 self._keep_alive_thread.join()
                 self._keep_alive_thread = None
@@ -111,48 +111,24 @@ class Database:
     def open(self):
         self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                         self.connection.session.clientId, self.name)
+        if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
+            self.connection._stop_keep_alive()
         self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
         self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
         self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
         self._keep_alive()
-        # TODO: Start sending rassrvr_keep_alive messages
 
     def close(self):
+        self._stop_keep_alive()
         rassrvr_close_db(self.stub, self.connection.session.clientId)
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
                         self.rasmgr_db.dbSessionId)
-        # TODO: Stop sending rassrvr_keep_alive messages
-        # TODO: Stop sending rasmgr_keep_alive messages
 
     def create(self):
         raise NotImplementedError("Sorry, not implemented yet")
 
     def destroy(self):
         raise NotImplementedError("Sorry, not implemented yet")
-
-    def _keep_alive(self):
-        if not self._rassrvr_keep_alive_running:
-            self._rassrvr_keep_alive_running = True
-            if not self._keep_alive_thread:
-                self._keep_alive_thread = StoppableTimeoutThread(rassrvr_keep_alive,
-                                                                 self.connection.session.keepAliveTimeout / 2000,
-                                                                 self.stub, self.connection.session.clientUUID,
-                                                                 self.rasmgr_db.dbSessionId)
-                self._keep_alive_thread.start()
-        else:
-            raise Exception("RasSrvrKeepAlive already running")
-
-    def _stop_keep_alive(self):
-        if self._rassrvr_keep_alive_running is not None:
-            if self._keep_alive_thread is not None:
-                self._rassrvr_keep_alive_running = None
-                self._keep_alive_thread.stop()
-                self._keep_alive_thread.join()
-                self._keep_alive_thread = None
-            else:
-                raise Exception("No thread named _keep_alive_thread to stop")
-        else:
-            raise Exception("rassrvr_keep_alive thread not running")
 
     def transaction(self, rw=False):
         """
@@ -174,6 +150,30 @@ class Database:
         collection = [rassrvr_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
                       result]
         return collection
+
+    def _keep_alive(self):
+        if not self._rassrvr_keep_alive_running:
+            self._rassrvr_keep_alive_running = True
+            if not self._keep_alive_thread:
+                self._keep_alive_thread = StoppableTimeoutThread(rassrvr_keep_alive,
+                                                                 self.connection.session.keepAliveTimeout / 2000,
+                                                                 self.stub, self.connection.session.clientUUID,
+                                                                 self.rasmgr_db.dbSessionId)
+                self._keep_alive_thread.start()
+        else:
+            raise Exception("RasSrvrKeepAlive already running")
+
+    def _stop_keep_alive(self):
+        if self._rassrvr_keep_alive_running is not None:
+            self._rassrvr_keep_alive_running = None
+            if self._keep_alive_thread is not None:
+                self._keep_alive_thread.stop()
+                self._keep_alive_thread.join()
+                self._keep_alive_thread = None
+            else:
+                raise Exception("No thread named _keep_alive_thread to stop")
+        else:
+            raise Exception("rassrvr_keep_alive thread not running")
 
 
 class Collection:
