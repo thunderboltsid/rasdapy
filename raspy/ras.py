@@ -465,7 +465,8 @@ class Array:
             raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
 
 
-def signal_handler(signal, frame)    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
+def signal_handler(signal, frame)
+    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
     os._exit(0)
 
 
