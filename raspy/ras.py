@@ -23,6 +23,7 @@
 """
 
 import numpy as np
+import signal, os
 from grpc.beta import implementations
 # from scipy import sparse
 from utils import *
@@ -462,6 +463,13 @@ class Array:
             raise NotImplementedError("No Support for Pandas yet")
         else:
             raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
+
+
+def signal_handler(signal, frame)    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
+    os._exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
 
 
 class RasCollection:
