@@ -4,6 +4,7 @@ import struct
 import threading
 import time
 
+
 def get_md5_string(input_str):
     """
     Args:
@@ -23,13 +24,28 @@ def get_type_structure_from_string(input_str):
     :return: object {"type", "base_type", "sub_type"(optional)}
     """
     primary_regex = "set\s*<marray\s*<(char|ushort|short|ulong|long|float|double),\s*.*>>"
+    scalar_regex = "set\s*<(char|ushort|short|ulong|long|float|double)\s*>"
     struct_regex = (
         "set\s*<marray\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)},\s*.*>>"
     )
-    m = re.match(primary_regex, input_str)
-    result = {
-        'base_type': 'marray',
-    }
+    complex_scalar_regex = (
+        "set\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)}\s*>"
+    )
+    primary_match = re.match(primary_regex, input_str)
+    scalar_match = re.match(scalar_regex, input_str)
+    complex_scalar_match = re.match(complex_scalar_regex, input_str)
+    struct_match = re.match(struct_regex, input_str)
+    if primary_match is not None or struct_match is not None:
+        result = {
+            'base_type': 'marray',
+        }
+    elif scalar_match is not None or complex_scalar_match is not None:
+        result = {
+            'base_type': 'scalar'
+        }
+    else:
+        raise Exception("Invalid Type Structure: Could not retrieve type structure from String")
+
 
     if m is None:
         m = re.match(struct_regex, input_str)
@@ -66,19 +82,19 @@ def convert_data_from_bin(dtype, data):
     :return: unpacked data
     """
     if dtype == "char":
-        result = struct.unpack("B"*len(data), data)
+        result = struct.unpack("B" * len(data), data)
     elif dtype == "ushort":
-        result = struct.unpack("H"*len(data), data)
+        result = struct.unpack("H" * len(data), data)
     elif dtype == "short":
-        result = struct.unpack("h"*len(data), data)
+        result = struct.unpack("h" * len(data), data)
     elif dtype == "ulong":
-        result = struct.unpack("L"*len(data), data)
+        result = struct.unpack("L" * len(data), data)
     elif dtype == "long":
-        result = struct.unpack("l"*len(data), data)
+        result = struct.unpack("l" * len(data), data)
     elif dtype == "float":
-        result = struct.unpack("f"*len(data), data)
+        result = struct.unpack("f" * len(data), data)
     elif dtype == "double":
-        result = struct.unpack("d"*len(data), data)
+        result = struct.unpack("d" * len(data), data)
     else:
         raise Exception("Unknown Data type provided")
     return result[0]
@@ -138,6 +154,7 @@ class StoppableTimeoutThread(threading.Thread):
     """
     Thread that runs a method over and over again
     """
+
     def __init__(self, target, timeout, *args):
         super(StoppableTimeoutThread, self).__init__()
         self._target = target
