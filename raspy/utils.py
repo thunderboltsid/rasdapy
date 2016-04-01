@@ -35,28 +35,39 @@ def get_type_structure_from_string(input_str):
     scalar_match = re.match(scalar_regex, input_str)
     complex_scalar_match = re.match(complex_scalar_regex, input_str)
     struct_match = re.match(struct_regex, input_str)
-    if primary_match is not None or struct_match is not None:
+    if primary_match is not None:
         result = {
             'base_type': 'marray',
         }
-    elif scalar_match is not None or complex_scalar_match is not None:
+        primary_type = primary_match.group(1)
+        result['type'] = primary_type
+    elif scalar_match is not None:
         result = {
             'base_type': 'scalar'
         }
-    else:
-        raise Exception("Invalid Type Structure: Could not retrieve type structure from String")
-
-
-    if m is None:
-        m = re.match(struct_regex, input_str)
-
-        if m is None:
-            # Invalid input_str, return None
-            return None
-
+        primary_type = scalar_match.group(1)
+        result['type'] = primary_type
+    elif complex_scalar_match is not None:
+        result = {
+            'base_type': 'scalar'
+        }
         # Result of m.groups() is a tuple alike
         # ('int foo,', 'int', 'char bar', 'char')
-        temp = m.groups()[2].split(" ")[:-1]
+        temp = struct_match.groups()[2].split(" ")[:-1]
+        types = temp[0::2]
+        names = temp[1::2]
+
+        sub_type = {"types": types, "names": names}
+
+        result['type'] = 'struct'
+        result['sub_type'] = sub_type
+    elif struct_match is not None:
+        result = {
+            'base_type': 'marray'
+        }
+        # Result of m.groups() is a tuple alike
+        # ('int foo,', 'int', 'char bar', 'char')
+        temp = struct_match.groups()[2].split(" ")[:-1]
         types = temp[0::2]
         names = temp[1::2]
 
@@ -65,11 +76,7 @@ def get_type_structure_from_string(input_str):
         result['type'] = 'struct'
         result['sub_type'] = sub_type
     else:
-        primary_type = m.group(1)
-        result['type'] = primary_type
-
-    if result is None:
-        raise Exception("Failed to retrieve type structure from string")
+        raise Exception("Invalid Type Structure: Could not retrieve type structure from String")
 
     return result
 

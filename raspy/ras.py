@@ -308,7 +308,6 @@ class Query:
         """
         exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId, self.query_str)
-        import pdb; pdb.set_trace()
         if exec_query_resp.status == 4 or exec_query_resp.status == 5:
             raise Exception("Error executing query: err_no = " + str(exec_query_resp.err_no) + ", line_no = " + str(
                 exec_query_resp.line_no) + ", col_no = " + str(
