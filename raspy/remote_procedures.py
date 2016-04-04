@@ -120,14 +120,14 @@ def rassrvr_insert_tile(stub, cid, persistent, domain, type_len, current_format,
 
 
 def rassrvr_end_insert_mdd(stub, cid, persistence):
-    resp = stub.InsertMDD(rassrvr_end_insert_mdd(cid, persistence), _TIMEOUT_SECONDS)
+    resp = stub.InsertMDD(make_rassrvr_end_insert_mdd_req(cid, persistence), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'EndInsertMDD' failed")
     return resp
 
 
 def rassrvr_insert_collection(stub, cid, coll_name, type_name, oid):
-    resp = stub.InsertCollection(rassrvr_insert_collection(cid, coll_name, type_name, oid), _TIMEOUT_SECONDS)
+    resp = stub.InsertCollection(make_rassrvr_insert_collection_req(cid, coll_name, type_name, oid), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'InsertCollection' failed")
     return resp

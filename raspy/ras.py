@@ -140,6 +140,7 @@ class Database:
         transaction = Transaction(self, rw=rw)
         return transaction
 
+    @property
     def collections(self):
         """
         Returns all the collections for this database
@@ -178,22 +179,27 @@ class Database:
 
 
 class Collection:
-    def __init__(self, transaction, name=None):
+    def __init__(self, transaction, name=None, type=None, oid=None):
         """
         Constructor for the class
         :param Transaction transaction: the transaction for which the collections should be returned
         """
         self.transaction = transaction
-        if name:
-            self.data = rassrvr_get_collection_by_name(self.transaction.database.stub,
-                                                       self.transaction.database.connection.session.clientId, name)
+        self.name = name
+        self.type_name = type
+        self.type_structure = None
+        self.oid = oid
+        if self.name:
+            resp = rassrvr_get_collection_by_name(self.transaction.database.stub,
+                                                  self.transaction.database.connection.session.clientId, name)
 
+    @property
     def name(self):
         """
         Returns the name of the collection
         :rtype: str
         """
-        raise NotImplementedError("Sorry, not implemented yet")
+        return self.name
 
     def arrays(self):
         """
@@ -202,19 +208,54 @@ class Collection:
         """
         raise NotImplementedError("Sorry, not implemented yet")
 
+    def create(self):
+        resp = rassrvr_insert_collection(self.transaction.database.stub,
+                                         self.transaction.database.rassrvr_db.dbSessionId, self.name,
+                                         self.type_name, self.oid)
+        if resp.status == 0:
+            return resp.status
+        elif resp.status == 1 or resp.status == 3:
+            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+        elif resp.status == 2:
+            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+        else:
+            raise Exception("Error: Unknown Error. Status: " + str(resp.status))
+
+    def delete_by_name(self):
+        resp = rassrvr_delete_collection_by_name(self.transaction.database.stub,
+                                                 self.transaction.database.rassrvr_db.dbSessionId, self.name)
+        if resp.status == 0:
+            return resp.status
+        elif resp.status == 1 or resp.status == 3:
+            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+        elif resp.status == 2:
+            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+        else:
+            raise Exception("Error: Unknown Error. Status: " + str(resp.status))
+
+    def delete_by_id(self):
+        resp = rassrvr_delete_collection_by_id(self.transaction.database.stub,
+                                               self.transaction.database.rassrvr_db.dbSessionId, self.oid)
+        if resp.status == 0:
+            return resp.status
+        elif resp.status == 1 or resp.status == 3:
+            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+        elif resp.status == 2:
+            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+        else:
+            raise Exception("Error: Unknown Error. Status: " + str(resp.status))
+
     def insert(self, array):
         """
         Inserts an array in the collection
         :param Array array: the array to be inserted
         """
-        raise NotImplementedError("Sorry, not implemented yet")
+        if self.transaction.rw is not True:
+            raise Exception("Transaction is read only. Can't insert MDD")
 
-    def update(self, array):
-        """
-        Updates the array in the collection
-        :param Array array: the array to be updated in the collection
-        """
-        raise NotImplementedError("Sorry, not implemented yet")
+    @name.setter
+    def name(self, value):
+        self._name = value
 
 
 class Transaction:
@@ -360,7 +401,7 @@ class RPCMarray:
         self.storage_format = storage_format
         self.data = data
 
-    def toArray(self):
+    def to_array(self):
         if type == "numpy":
             return np.frombuffer(self.data)
         elif type == "scipy":
@@ -448,7 +489,7 @@ class Array:
         :rtype: int | float
         """
 
-    def toArray(self, type="numpy"):
+    def to_array(self, type="numpy"):
         """
         Returns the serialized array as a numpy, scipy, or pandas data structure
         :param type: valid option - "numpy", "scipy", "pandas"
@@ -465,24 +506,16 @@ class Array:
             raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
 
 
-def signal_handler(signal, frame):
-    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
-    os._exit(0)
-
-
-signal.signal(signal.SIGINT, signal_handler)
-
-
 class RasCollection:
     def __init__(self, name):
-        self.collection = name
-        self.expression = None
-        self.condition = None
+        self._expression = None
+        self._collection = name
+        self._condition = None
+        self._query = None
 
     @property
     def query(self):
-        query = self.collection
-        return query
+        return self._query
 
     def __add__(self, other):
         pass
@@ -524,3 +557,27 @@ class RasCollection:
 
     def __idiv__(self, other):
         pass
+
+    @query.setter
+    def query(self, value):
+        self._query = value
+
+
+class RasExpression:
+    def __init__(self, operation=None, left=None, right=None, parent=None):
+        self._operation = operation
+        self._left = left
+        self._right = right
+        self._parent = parent
+
+    def add_left(self, left):
+        self._left = left
+
+    def add_right(self, right):
+        self._right = right
+
+    def add_operation(self, operation):
+        self._operation = operation
+
+    def add_parent(self, parent):
+        self._parent = parent

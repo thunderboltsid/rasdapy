@@ -3,7 +3,8 @@ import re
 import struct
 import threading
 import time
-
+import os
+import signal
 
 def get_md5_string(input_str):
     """
@@ -179,3 +180,11 @@ class StoppableTimeoutThread(threading.Thread):
 
     def stopped(self):
         return self._stop.isSet()
+
+
+def signal_handler(signal, frame):
+    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
+    os._exit(0)
+
+
+signal.signal(signal.SIGINT, signal_handler)
