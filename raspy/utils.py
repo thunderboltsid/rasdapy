@@ -59,6 +59,12 @@ def get_type_structure_from_string(input_str):
         types = temp[0::2]
         names = temp[1::2]
 
+        for idx, val in enumerate(types):
+            if "," in types[idx]:
+                types[idx] = types[idx][:-1]
+            if "," in names[idx]:
+                names[idx] = names[idx][:-1]
+
         sub_type = {"types": types, "names": names}
 
         result['type'] = 'struct'
@@ -72,6 +78,12 @@ def get_type_structure_from_string(input_str):
         temp = struct_match.groups()[2].split(" ")[:-1]
         types = temp[0::2]
         names = temp[1::2]
+
+        for idx, val in enumerate(types):
+            if "," in types[idx]:
+                types[idx] = types[idx][:-1]
+            if "," in names[idx]:
+                names[idx] = names[idx][:-1]
 
         sub_type = {"types": types, "names": names}
 

@@ -37,38 +37,38 @@ class TestUtils(unittest.TestCase):
 
     def test_type_structure_char(self):
         inp_str = "set <marray <char, [100:140, 40:80]>>"
-        self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"char"})
+        self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type": "marray", "type": "char"})
 
     def test_type_structure_struct(self):
-        inp_str = "set <marray <struct {short foo, char bar}, [100:150, 50:80]>>"
-        self.assertEqual(utils.get_type_structure_from_string(inp_str), {"base_type":"marray", "type":"struct", "sub_type":("short", "char")})
+        inp_str = "set <marray <struct { short foo, char bar }, [100:150, 50:80]>>"
+        self.assertEqual(utils.get_type_structure_from_string(inp_str),
+                         {"base_type": "marray", "type": "struct",
+                          "sub_type": {"names": ["foo", "bar"], "types": ["short", "char"]}})
 
     def test_convert_data_from_bin(self):
-        test_inp = [{"dtype":"char", "data":"\x16"}]
+        test_inp = [{"dtype": "char", "data": "\x16"}]
         test_out = [21]
         if len(test_inp) == len(test_out):
-            for i in xrange(0,len(test_inp)-1):
+            for i in xrange(0, len(test_inp) - 1):
                 self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]), test_out[i])
 
 
-class TestConnectionDefault(unittest.TestCase):
-    def setUp(self):
-        self.connection = ras.Connection()
-
-    def test_disconnect_connection(self):
-        self.connection.disconnect()
-
-    def test_reconnect_connection(self):
-        self.connection.connect()
-
-    def test_connect_default_settings(self):
-        self.assertEqual(self.connection.hostname, "0.0.0.0")
-        self.assertEqual(self.connection.port, 7001)
-        self.assertEqual(self.connection.username, "rasguest")
-        self.assertEquals(self.connection.password, "rasguest")
+# class TestConnectionDefault(unittest.TestCase):
+#     def setUp(self):
+#         self.connection = ras.Connection()
+#
+#     def test_disconnect_connection(self):
+#         self.connection.disconnect()
+#
+#     def test_reconnect_connection(self):
+#         self.connection.connect()
+#
+#     def test_connect_default_settings(self):
+#         self.assertEqual(self.connection.hostname, "0.0.0.0")
+#         self.assertEqual(self.connection.port, 7001)
+#         self.assertEqual(self.connection.username, "rasguest")
+#         self.assertEquals(self.connection.password, "rasguest")
 
 
 if __name__ == "__main__":
     unittest.main()
-
-
