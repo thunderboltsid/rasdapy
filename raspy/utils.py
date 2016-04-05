@@ -6,6 +6,7 @@ import time
 import os
 import signal
 
+
 def get_md5_string(input_str):
     """
     Args:
@@ -90,19 +91,19 @@ def convert_data_from_bin(dtype, data):
     :return: unpacked data
     """
     if dtype == "char":
-        result = struct.unpack("B" * len(data), data)
+        result = struct.unpack("B", data)
     elif dtype == "ushort":
-        result = struct.unpack("H" * len(data), data)
+        result = struct.unpack("H", data)
     elif dtype == "short":
-        result = struct.unpack("h" * len(data), data)
+        result = struct.unpack("h", data)
     elif dtype == "ulong":
-        result = struct.unpack("L" * len(data), data)
+        result = struct.unpack("L", data)
     elif dtype == "long":
-        result = struct.unpack("l" * len(data), data)
+        result = struct.unpack("l", data)
     elif dtype == "float":
-        result = struct.unpack("f" * len(data), data)
+        result = struct.unpack("f", data)
     elif dtype == "double":
-        result = struct.unpack("d" * len(data), data)
+        result = struct.unpack("d", data)
     else:
         raise Exception("Unknown Data type provided")
     return result[0]
@@ -143,18 +144,22 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     :return:
     """
     arr = []
-    if dtype["type"] == "struct":
-        for i in xrange(0, array_len, cell_len):
-            cell_counter = 0
-            temp = []
-            for idx, dt in enumerate(dtype["sub_type"]["types"]):
-                dtsize = get_size_from_data_type(dt)
-                temp.append(convert_data_from_bin(dt, data[i + cell_counter:i + cell_counter + dtsize]))
-                cell_counter += dtsize
-            arr.append(temp)
+    if dtype["base_type"] == "marray" or dtype["base_type"] == "scalar":
+        if dtype["type"] == "struct":
+            for i in xrange(0, array_len, cell_len):
+                cell_counter = 0
+                temp = []
+                for idx, dt in enumerate(dtype["sub_type"]["types"]):
+                    dtsize = get_size_from_data_type(dt)
+                    temp.append(convert_data_from_bin(dt, data[i + cell_counter:i + cell_counter + dtsize]))
+                    cell_counter += dtsize
+                arr.append(temp)
+        else:
+            for i in xrange(0, array_len, cell_len):
+                dtsize = get_size_from_data_type(dtype["type"])
+                arr.append(convert_data_from_bin(dtype["type"], data[i: i + dtsize]))
     else:
-        for i in xrange(0, array_len, cell_len):
-            arr.append(convert_data_from_bin(dtype["type"], data[i]))
+        raise Exception("Unknown base_type: " + dtype["base_type"])
     return arr
 
 

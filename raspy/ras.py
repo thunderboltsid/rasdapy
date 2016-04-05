@@ -402,7 +402,7 @@ class Query:
 
     def get_next_element(self):
         rpcstatus = 0
-        array=[]
+        array = []
         metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
                                  band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
         while rpcstatus == 0:
@@ -411,11 +411,9 @@ class Query:
             rpcstatus = elemresp.status
             if rpcstatus == 2:
                 raise Exception("getNextElement - no transfer or empty element")
-            array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length, 0))
+            array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length,
+                                                      elemresp.data_length)[0])
         return Array(metadata=metadata, values=array)
-
-
-
 
 
 class RPCMarray:
