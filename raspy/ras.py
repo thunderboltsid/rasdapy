@@ -189,9 +189,6 @@ class Collection:
         self.type_name = type
         self.type_structure = None
         self.oid = oid
-        if self.name:
-            resp = rassrvr_get_collection_by_name(self.transaction.database.stub,
-                                                  self.transaction.database.connection.session.clientId, name)
 
     @property
     def name(self):
@@ -201,17 +198,21 @@ class Collection:
         """
         return self.name
 
-    def arrays(self):
+    def array(self):
         """
-        Return all the arrays in this collection
+        Return the arrays in this collection
         :rtype: Array
         """
-        raise NotImplementedError("Sorry, not implemented yet")
+        resp = rassrvr_get_collection_by_name(self.transaction.database.stub,
+                                              self.transaction.database.connection.session.clientId, self.name)
+        return resp
 
     def create(self):
         resp = rassrvr_insert_collection(self.transaction.database.stub,
-                                         self.transaction.database.rassrvr_db.dbSessionId, self.name,
+                                         self.transaction.database.connection.session.clientId, self.name,
                                          self.type_name, self.oid)
+        import pdb;
+        pdb.set_trace()
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
@@ -223,7 +224,7 @@ class Collection:
 
     def delete_by_name(self):
         resp = rassrvr_delete_collection_by_name(self.transaction.database.stub,
-                                                 self.transaction.database.rassrvr_db.dbSessionId, self.name)
+                                                 self.transaction.database.connection.session.clientId, self.name)
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
@@ -235,7 +236,7 @@ class Collection:
 
     def delete_by_id(self):
         resp = rassrvr_delete_collection_by_id(self.transaction.database.stub,
-                                               self.transaction.database.rassrvr_db.dbSessionId, self.oid)
+                                               self.transaction.database.connection.session.clientId, self.oid)
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
@@ -309,6 +310,7 @@ class Query:
         self.transaction = transaction
         self.query_str = query_str
         self.mdd_constants = None
+        self.exec_query_resp = None
 
     def eval(self):
         if "insert" in self.query_str:
@@ -349,16 +351,26 @@ class Query:
         """
         exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId, self.query_str)
+        self.exec_query_resp = exec_query_resp
         if exec_query_resp.status == 4 or exec_query_resp.status == 5:
             raise Exception("Error executing query: err_no = " + str(exec_query_resp.err_no) + ", line_no = " + str(
                 exec_query_resp.line_no) + ", col_no = " + str(
                 exec_query_resp.col_no) + ", token = " + exec_query_resp.token)
+        elif exec_query_resp.status == 0:
+            return self.get_next_collection()
+        elif exec_query_resp.status == 1:
+            return self.get_next_element()
+        elif exec_query_resp.status == 2:
+            raise Exception("Query returned an empty collection")
+        else:
+            raise Exception("Unknown status code returned by ExecuteQuery")
 
-        metadata = ArrayMetadata(spatial_domain=exec_query_resp.type_structure,
-                                 band_types=get_type_structure_from_string(exec_query_resp.type_structure))
+    def get_next_collection(self):
         mddstatus = 0
         tilestatus = 0
         array = []
+        metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
+                                 band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
         while mddstatus == 0:
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
@@ -387,6 +399,23 @@ class Query:
                 break
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
         return Array(values=array, metadata=metadata)
+
+    def get_next_element(self):
+        rpcstatus = 0
+        array=[]
+        metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
+                                 band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
+        while rpcstatus == 0:
+            elemresp = rassrvr_get_next_element(self.transaction.database.stub,
+                                                self.transaction.database.connection.session.clientId)
+            rpcstatus = elemresp.status
+            if rpcstatus == 2:
+                raise Exception("getNextElement - no transfer or empty element")
+            array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length, 0))
+        return Array(metadata=metadata, values=array)
+
+
+
 
 
 class RPCMarray:

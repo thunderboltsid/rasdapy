@@ -54,7 +54,7 @@ def get_type_structure_from_string(input_str):
         }
         # Result of m.groups() is a tuple alike
         # ('int foo,', 'int', 'char bar', 'char')
-        temp = struct_match.groups()[2].split(" ")[:-1]
+        temp = complex_scalar_match.groups()[2].split(" ")[:-1]
         types = temp[0::2]
         names = temp[1::2]
 
