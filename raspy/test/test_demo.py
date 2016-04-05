@@ -17,14 +17,14 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         q = txn.query("create collection " + self.collName + " GreySet")
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
     def test_b_insert_in_collection(self):
         txn = self.db.transaction(rw=True)
-        q = txn.query("insert into " + self.collName + " values marray x in [0:100, 0:100] values 1c")
+        q = txn.query("insert into " + self.collName + " values marray x in [0:2, 0:2] values 1c")
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
     def test_c_read_from_collection(self):
         txn = self.db.transaction(rw=False)
@@ -39,13 +39,14 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         data = q.eval()
         txn.abort()
         self.assertIsInstance(data, ras.Array)
+        self.assertEqual(data.values, [1.0])
 
     def test_e_drop_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("drop collection " + self.collName)
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
 
 class TestDemoCollectionRGBSet(unittest.TestCase):
@@ -62,14 +63,14 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         q = txn.query("create collection " + self.collection_name + " RGBSet")
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
     def test_b_insert_in_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("insert into " + self.collection_name + " values marray x in [0:2, 0:2] values {1c, 2c, 3c}")
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
     def test_c_read_from_collection(self):
         txn = self.db.transaction(rw=False)
@@ -84,13 +85,14 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         data = q.eval()
         txn.abort()
         self.assertIsInstance(data, ras.Array)
+        self.assertEqual(data.values, [[1.0, 2.0, 3.0]])
 
     def test_e_drop_collection(self):
         txn = self.db.transaction(rw=True)
         q = txn.query("drop collection " + self.collection_name)
         res = q.eval()
         txn.commit()
-        self.assertEqual(res, 0)
+        self.assertEqual(res, None)
 
 
 if __name__ == "__main__":
