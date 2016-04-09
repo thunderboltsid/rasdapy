@@ -148,7 +148,7 @@ class Database:
         """
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
-        result = query.execute()
+        result = query._execute_read()
         collection = [rassrvr_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
                       result]
         return collection
@@ -314,15 +314,15 @@ class Query:
 
     def eval(self):
         if "insert" in self.query_str:
-            self.execute_update()
+            self._execute_update()
         elif "create" in self.query_str:
-            self.execute_update()
+            self._execute_update()
         elif "drop" in self.query_str:
-            self.execute_update()
+            self._execute_update()
         else:
-            return self.execute()
+            return self._execute_read()
 
-    def execute_update(self):
+    def _execute_update(self):
         if self.transaction.rw is False:
             raise Exception("Transaction does now have write access")
 
@@ -343,7 +343,7 @@ class Query:
             raise Exception("Error: Transfer failed")
         return exec_update_query_resp.status
 
-    def execute(self):
+    def _execute_read(self):
         """
         Executes the query and returns back a result
         :return: the resulting array returned by the query
@@ -357,15 +357,15 @@ class Query:
                 exec_query_resp.line_no) + ", col_no = " + str(
                 exec_query_resp.col_no) + ", token = " + exec_query_resp.token)
         elif exec_query_resp.status == 0:
-            return self.get_next_collection()
+            return self._get_next_collection()
         elif exec_query_resp.status == 1:
-            return self.get_next_element()
+            return self._get_next_element()
         elif exec_query_resp.status == 2:
             raise Exception("Query returned an empty collection")
         else:
             raise Exception("Unknown status code returned by ExecuteQuery")
 
-    def get_next_collection(self):
+    def _get_next_collection(self):
         mddstatus = 0
         tilestatus = 0
         array = []
@@ -400,7 +400,7 @@ class Query:
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
         return Array(values=array, metadata=metadata)
 
-    def get_next_element(self):
+    def _get_next_element(self):
         rpcstatus = 0
         array = []
         metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
@@ -414,6 +414,33 @@ class Query:
             array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length,
                                                       elemresp.data_length)[0])
         return Array(metadata=metadata, values=array)
+
+    def _send_mdd_constants(self):
+        exec_init_update_resp = rassrvr_init_update(self.transaction.database.stub,
+                                                    self.transaction.database.connection.session.clientId)
+        if exec_init_update_resp.status is not 1:
+            raise Exception("Error: Transfer Failed. ExecInitUpdate returned with a non-zero status: " + str(
+                exec_init_update_resp.status))
+
+        for mdd in self.mdd_constants:
+            insert_trans_mdd_resp = rassrvr_start_insert_trans_mdd(self.transaction.database.stub,
+                                                                   self.transaction.database.connection.session.clientId,
+                                                                   mdd.domain, mdd.type_length, mdd.type_name)
+            if insert_trans_mdd_resp.status is 0:
+                insert_tile_resp = rassrvr_insert_tile(self.transaction.database.stub,
+                                                       self.transaction.database.connection.session.clientId,
+                                                       self.transaction.rw,
+                                                       mdd.domain, mdd.type_length, mdd.current_format,
+                                                       mdd.storage_format, mdd.data,
+                                                       mdd.data_length)
+                if insert_tile_resp.status > 0:
+                    raise Exception("Error: Transfer failed")
+            elif insert_trans_mdd_resp.status is 2:
+                raise Exception("Error: Database Class Undefined")
+            elif insert_trans_mdd_resp.status is 3:
+                raise Exception("Error: Invalid Type")
+            else:
+                raise Exception("Error: Transfer failed")
 
 
 class RPCMarray:
