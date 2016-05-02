@@ -7,3 +7,4 @@ dist/*
 raspy/venv/*
 .DS_Store
 .eggs/*
+venv/*

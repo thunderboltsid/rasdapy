@@ -1,4 +1,5 @@
 from copy import deepcopy
+from ras import *
 
 
 class Node:
@@ -49,6 +50,7 @@ class Coll:
 
     def __add__(self, other):
         return __operation_helper("+", other)
+
 
     @property
     def query(self):
