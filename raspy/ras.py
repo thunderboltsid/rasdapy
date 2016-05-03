@@ -22,6 +22,15 @@
  *
 """
 
+"""
+This module contains the necessary classes and methods for establishing
+connection with a remote / local rasdaman server for accessing the database
+collections and performing remote operations using rasql. It also contains
+the necessary methods for fetching the resulting arrays and converting them
+to a format (i.e. NumPy) that can be used for performing scientific operations
+on the resultant arrays efficiently on the local machine
+"""
+
 import numpy as np
 import signal, os
 from grpc.beta import implementations

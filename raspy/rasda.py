@@ -1,9 +1,22 @@
+"""
+This module contains the necessary classes and methods for query construction
+and evaluation using the rasdapy library via monkey patching (i.e. overloading)
+the python magic methods for certain operations.
+"""
+
 from copy import deepcopy
 from ras import *
 
 
 class Node:
+    """
+    A class to represent a node in the expression for the construction of
+    query evaluation tree
+    """
     def __init__(self, parent=None, value=None, children=[], reflected=False, function=False):
+        """
+        Constructor for the class
+        """
         self._parent = parent
         self._children = children
         self._value = value
@@ -11,24 +24,42 @@ class Node:
         self._function = function
 
     def set_parent(self, parent):
+        """
+        setter for the parent of the node
+        """
         self._parent = parent
 
     def set_value(self, value):
+        """
+        setter for the value of the node
+        """
         self._value = value
 
     def add_child(self, child):
+        """
+        setter for adding a child to the node
+        """
         self._children.append(child)
 
     @property
     def parent(self):
+        """
+        A getter for the parent of the node
+        """
         return self._parent
 
     @property
     def value(self):
+        """
+        A getter for the  value of the node
+        """
         return self._value
 
     @property
     def children(self):
+        """
+        A getter for the children of the node
+        """
         return self._children
 
 
@@ -82,6 +113,12 @@ class Coll:
     def __pow__(self, other):
         return self._operation_helper("exp", other, function=True)
 
+    @property
+    def sdom(self):
+        """
+        Evaluates the SpatialDomain of the expression
+        """
+        pass
 
     @property
     def query(self):
