@@ -3,10 +3,11 @@ from ras import *
 
 
 class Node:
-    def __init__(self, parent=None, value=None, children=[]):
+    def __init__(self, parent=None, value=None, children=[], reflected=False):
         self._parent = parent
         self._children = children
         self._value = value
+        self._reflected = reflected
 
     def set_parent(self, parent):
         self._parent = parent
@@ -38,18 +39,37 @@ class Coll:
         self._leaf = Node(value=name)
         self._root = self._leaf
 
-    def __operation_helper(operator, value):
+    def _operation_helper(self, operator, operand):
         exp = deepcopy(self)
         par = Node(value=operator)
-        par.add_child(Node(value=value, parent=par))
+        par.add_child(Node(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
             par.add_child(exp._root)
-        exp._root.set_parent(par)
+        exp._root = par
+        return exp
+
+    def _reflected_operation_helper(self, operator, operand):
+        exp = deepcopy(self)
+        par = Node(value=operator, reflected=True)
+        par.add_child(Node(value=operand, parent=par))
+        if exp.expression is not None:
+            exp._root.set_parent(par)
+            par.add_child(exp._root)
+        exp._root = par
         return exp
 
     def __add__(self, other):
-        return __operation_helper("+", other)
+        return self._operation_helper("+", other)
+
+    def __radd__(self, other):
+        return self._reflected_operation_helper("+", other)
+
+    def __isub__(self, other):
+        return self._operation_helper("-", other)
+
+    def __rsub__(self, other):
+        return self._reflected_operation_helper("-", other)
 
 
     @property
@@ -65,7 +85,10 @@ class Coll:
         temp = self._leaf
         exp = self.collection
         while temp.parent is not None:
-            exp = "(" + exp + temp.parent.value + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
+            if temp.parent.reflected is False:
+                exp = "(" + exp + temp.parent.value + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
+            else:
+                exp = "(" +  str(temp.parent.children[len(temp.parent.children)-2].value) + temp.parent.value + exp  + ")"
             temp = temp.parent
         return exp
 
