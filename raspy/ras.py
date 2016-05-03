@@ -40,11 +40,17 @@ from remote_procedures import *
 
 
 class Connection:
+    """
+    Class to represent the connection from the python client to the rasdaman
+    server
+    """
     def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest", password="rasguest"):
         """
-        Class to represent the connection from the python client to the rasdaman server
+        Constructor for the connection class
         :param str hostname: the hostname of the rasdaman server
         :param int port: the port on which rasdaman listens on
+        :param str username: username for the database (default: rasguest)
+        :param str password: password for the database (default: rasguest)
         """
         self.hostname = hostname
         self.port = port
@@ -58,17 +64,29 @@ class Connection:
         self.connect()
 
     def disconnect(self):
+        """
+        Method for disconnecting the connection to the RasManager. Stops
+        sending keep alive messages to the RasManager, disconnects, and destroys
+        the session.
+        """
         self._stop_keep_alive()
         rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
         self.session = None
-        # TODO: Stop rasmgr_keep_alive
 
     def connect(self):
+        """
+        Method for connecting to the RasManager. Sends a connection request
+        and once connected starts sending keep alive messages to the
+        RasManager
+        """
         self.session = rasmgr_connect(self.stub, self.username, self.password)
         self._keep_alive()
-        # TODO: Keep running the rasmgr_keep_alive on a separate thread
 
     def _keep_alive(self):
+        """
+        Method for creating and spawning a separate thread for sending keep
+        alive messages to the RasManager
+        """
         if not self._rasmgr_keep_alive_running:
             self._rasmgr_keep_alive_running = True
             if not self._keep_alive_thread:
@@ -80,6 +98,10 @@ class Connection:
             raise Exception("RasMgrKeepAlive already running")
 
     def _stop_keep_alive(self):
+        """
+        Method for stopping the thread that is responsible for sending keep
+        alive messages to the RasManager
+        """
         if self._rasmgr_keep_alive_running is not None:
             self._rasmgr_keep_alive_running = None
             if self._keep_alive_thread is not None:
@@ -94,6 +116,7 @@ class Connection:
     def database(self, name):
         """
         Returns a database object initialized with this connection
+        :param str name: name of the database collection to access
         :rtype: Database
         :return: a new database object
         """
