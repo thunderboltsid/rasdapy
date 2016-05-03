@@ -3,11 +3,12 @@ from ras import *
 
 
 class Node:
-    def __init__(self, parent=None, value=None, children=[], reflected=False):
+    def __init__(self, parent=None, value=None, children=[], reflected=False, function=False):
         self._parent = parent
         self._children = children
         self._value = value
         self._reflected = reflected
+        self._function = function
 
     def set_parent(self, parent):
         self._parent = parent
@@ -39,19 +40,14 @@ class Coll:
         self._leaf = Node(value=name)
         self._root = self._leaf
 
-    def _operation_helper(self, operator, operand):
+    def _operation_helper(self, operator, operand, reflected=False, function=False):
         exp = deepcopy(self)
-        par = Node(value=operator)
-        par.add_child(Node(value=operand, parent=par))
-        if exp.expression is not None:
-            exp._root.set_parent(par)
-            par.add_child(exp._root)
-        exp._root = par
-        return exp
-
-    def _reflected_operation_helper(self, operator, operand):
-        exp = deepcopy(self)
-        par = Node(value=operator, reflected=True)
+        if reflected is False and function is False:
+            par = Node(value=operator)
+        elif reflected is True and function is False:
+            par = Node(value=operator, reflected=True)
+        else:
+            par = Node(value=operator, function=True)
         par.add_child(Node(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
@@ -63,13 +59,28 @@ class Coll:
         return self._operation_helper("+", other)
 
     def __radd__(self, other):
-        return self._reflected_operation_helper("+", other)
+        return self._operation_helper("+", other, reflected=True)
 
-    def __isub__(self, other):
+    def __sub__(self, other):
         return self._operation_helper("-", other)
 
     def __rsub__(self, other):
-        return self._reflected_operation_helper("-", other)
+        return self._operation_helper("-", other, reflected=True)
+
+    def __mul__(self, other):
+        return self._operation_helper("*", other)
+
+    def __rmul__(self, other):
+        return self._operation_helper("*", other, reflected=True)
+
+    def __div__(self, other):
+        return self._operation_helper("/", other)
+
+    def __rdiv__(self, other):
+        return self._operation_helper("/", other, reflected=True)
+
+    def __pow__(self, other):
+        return self._operation_helper("exp", other, function=True)
 
 
     @property
@@ -85,8 +96,10 @@ class Coll:
         temp = self._leaf
         exp = self.collection
         while temp.parent is not None:
-            if temp.parent.reflected is False:
+            if temp.parent._reflected is False and temp.parent._function is False:
                 exp = "(" + exp + temp.parent.value + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
+            elif temp.parent._function is True and temp.parent._reflected is False:
+                exp = temp.parent.value + "(" + exp + "," + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
             else:
                 exp = "(" +  str(temp.parent.children[len(temp.parent.children)-2].value) + temp.parent.value + exp  + ")"
             temp = temp.parent
@@ -99,7 +112,7 @@ class Coll:
 
 class Query:
     def __init__(self, collection, expression, condition):
-        if not condition:
+        if condition is not None:
             self._query_str = "select " + expression + " from " + collection + " where " + condition
         else:
             self._query_str = "select " + expression + " from " + collection
