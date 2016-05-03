@@ -47,8 +47,8 @@ class Connection:
     def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest", password="rasguest"):
         """
         Constructor for the connection class
-        :param str hostname: the hostname of the rasdaman server
-        :param int port: the port on which rasdaman listens on
+        :param str hostname: the hostname of the rasdaman server (default: localhost)
+        :param int port: the port on which rasdaman listens on (default: 7001)
         :param str username: username for the database (default: rasguest)
         :param str password: password for the database (default: rasguest)
         """
@@ -125,10 +125,13 @@ class Connection:
 
 
 class Database:
+    """
+    Class to represent a database stored inside a rasdaman server
+    """
     def __init__(self, connection, name):
         """
-        Class to represent a database stored inside a rasdaman server
-        :param Connection connection: the connection to the rasdaman server
+        Constructor for the Database class
+        :param Connection connection: the connection object for the rasdaman server
         :param str name: the name of the database
         """
         self.connection = connection
@@ -142,6 +145,12 @@ class Database:
         self.open()
 
     def open(self):
+        """
+        Opens a connection to the RasServer on which the database is stored
+        and starts sending the keep alive messages to the RasServer. Also, stops
+        sending keep alive messages to the RasManager in case they are on the
+        same machine.
+        """
         self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
                                         self.connection.session.clientId, self.name)
         if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
@@ -152,20 +161,31 @@ class Database:
         self._keep_alive()
 
     def close(self):
+        """
+        Closes the connection to RasServer and RasManager. Also, stops
+        sending the keep alive messages to the RasServer.
+        """
         self._stop_keep_alive()
         rassrvr_close_db(self.stub, self.connection.session.clientId)
         rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
                         self.rasmgr_db.dbSessionId)
 
     def create(self):
+        """
+        Method for creating a collection
+        """
         raise NotImplementedError("Sorry, not implemented yet")
 
     def destroy(self):
+        """
+        Method for destroying a collection
+        """
         raise NotImplementedError("Sorry, not implemented yet")
 
     def transaction(self, rw=False):
         """
         Returns a new transaction object for this database
+        :param bool rw: Boolean value for write access
         :rtype: Transaction
         :return: a new transaction object
         """
@@ -186,6 +206,10 @@ class Database:
         return collection
 
     def _keep_alive(self):
+        """
+        Method for creating and spawning a separate thread for sending keep
+        alive messages to the RasServer
+        """
         if not self._rassrvr_keep_alive_running:
             self._rassrvr_keep_alive_running = True
             if not self._keep_alive_thread:
@@ -198,6 +222,10 @@ class Database:
             raise Exception("RasSrvrKeepAlive already running")
 
     def _stop_keep_alive(self):
+        """
+        Method for stopping the thread that is responsible for sending keep
+        alive messages to the RasServer
+        """
         if self._rassrvr_keep_alive_running is not None:
             self._rassrvr_keep_alive_running = None
             if self._keep_alive_thread is not None:
