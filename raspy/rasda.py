@@ -66,12 +66,21 @@ class ExpNode:
         """
         self._children.append(child)
 
+    def remove_child(self, child):
+        self._children.pop(child)
+
     @property
     def is_reflected(self):
+        """
+        A getter for whether the node represents a reflected operation or not
+        """
         return self._reflected
 
     @property
     def is_function(self):
+        """
+        A getter for whether the node represents a function or not
+        """
         return self._function
 
     @property
@@ -147,7 +156,12 @@ class RasCollection:
         return self._operation_helper("exp", other, function=True)
 
     def __getitem__(self, *args):
-        return args
+        exp = deepcopy(self)
+        value = [slice_tuple(arg) for arg in args[0]]
+        exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
+        return exp
+
+
 
     @property
     def sdom(self):
@@ -167,7 +181,7 @@ class RasCollection:
     @property
     def expression(self):
         temp = self._leaf
-        exp = self.collection
+        exp = temp.value
         while temp.parent is not None:
             if temp.parent.is_reflected is False and temp.parent.is_function is False:
                 exp = "(" + exp + temp.parent.value + str(

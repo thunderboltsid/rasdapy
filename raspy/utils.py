@@ -204,4 +204,18 @@ def signal_handler(signal, frame):
     os._exit(0)
 
 
+def slice_tuple(slice_):
+    return slice_.start, slice_.stop
+
+
+def represent_subsetting(collection, tuple_arr):
+    repr = collection + "["
+    for value in tuple_arr:
+        repr = repr + str(value[0]) + ":" + str(value[1]) + ","
+    repr = repr[:-1]
+    repr += "]"
+    return repr
+
+
+
 signal.signal(signal.SIGINT, signal_handler)
