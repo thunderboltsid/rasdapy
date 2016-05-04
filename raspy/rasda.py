@@ -137,6 +137,8 @@ class Coll:
     def __pow__(self, other):
         return self._operation_helper("exp", other, function=True)
 
+    def __getitem__(self, *args):
+        return args
     @property
     def sdom(self):
         """
