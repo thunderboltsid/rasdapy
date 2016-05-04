@@ -32,7 +32,7 @@ from copy import deepcopy
 from ras import *
 
 
-class Node:
+class ExpNode:
     """
     A class to represent a node in the expression for the construction of
     query evaluation tree
@@ -87,23 +87,23 @@ class Node:
         return self._children
 
 
-class Coll:
+class RasCollection:
     def __init__(self, name):
         self._collection = name
         self._condition = None
         self._query = None
-        self._leaf = Node(value=name)
+        self._leaf = ExpNode(value=name)
         self._root = self._leaf
 
     def _operation_helper(self, operator, operand, reflected=False, function=False):
         exp = deepcopy(self)
         if reflected is False and function is False:
-            par = Node(value=operator)
+            par = ExpNode(value=operator)
         elif reflected is True and function is False:
-            par = Node(value=operator, reflected=True)
+            par = ExpNode(value=operator, reflected=True)
         else:
-            par = Node(value=operator, function=True)
-        par.add_child(Node(value=operand, parent=par))
+            par = ExpNode(value=operator, function=True)
+        par.add_child(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
             par.add_child(exp._root)
@@ -144,7 +144,7 @@ class Coll:
         """
         Evaluates the SpatialDomain of the expression
         """
-        pass
+        return None
 
     @property
     def query(self):
@@ -173,7 +173,7 @@ class Coll:
         return self._condition
 
 
-class Query:
+class RasQuery:
     def __init__(self, collection, expression, condition):
         if condition is not None:
             self._query_str = "select " + expression + " from " + collection + " where " + condition
@@ -184,7 +184,7 @@ class Query:
         return self._query_str
 
 
-col = Coll("mr")
+col = RasCollection("mr")
 col += 2
 col += 5
 import pdb; pdb.set_trace()
