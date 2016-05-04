@@ -37,6 +37,7 @@ class ExpNode:
     A class to represent a node in the expression for the construction of
     query evaluation tree
     """
+
     def __init__(self, parent=None, value=None, children=[], reflected=False, function=False):
         """
         Constructor for the class
@@ -139,6 +140,7 @@ class RasCollection:
 
     def __getitem__(self, *args):
         return args
+
     @property
     def sdom(self):
         """
@@ -148,7 +150,7 @@ class RasCollection:
 
     @property
     def query(self):
-        return Query(self.collection, self.expression, self.condition)
+        return RasQuery(self.collection, self.expression, self.condition)
 
     @property
     def collection(self):
@@ -160,11 +162,14 @@ class RasCollection:
         exp = self.collection
         while temp.parent is not None:
             if temp.parent._reflected is False and temp.parent._function is False:
-                exp = "(" + exp + temp.parent.value + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
+                exp = "(" + exp + temp.parent.value + str(
+                    temp.parent.children[len(temp.parent.children) - 2].value) + ")"
             elif temp.parent._function is True and temp.parent._reflected is False:
-                exp = temp.parent.value + "(" + exp + "," + str(temp.parent.children[len(temp.parent.children)-2].value) + ")"
+                exp = temp.parent.value + "(" + exp + "," + str(
+                    temp.parent.children[len(temp.parent.children) - 2].value) + ")"
             else:
-                exp = "(" +  str(temp.parent.children[len(temp.parent.children)-2].value) + temp.parent.value + exp  + ")"
+                exp = "(" + str(
+                    temp.parent.children[len(temp.parent.children) - 2].value) + temp.parent.value + exp + ")"
             temp = temp.parent
         return exp
 
@@ -187,4 +192,6 @@ class RasQuery:
 col = RasCollection("mr")
 col += 2
 col += 5
-import pdb; pdb.set_trace()
+import pdb;
+
+pdb.set_trace()
