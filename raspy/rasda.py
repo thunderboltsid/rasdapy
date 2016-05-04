@@ -67,6 +67,14 @@ class ExpNode:
         self._children.append(child)
 
     @property
+    def is_reflected(self):
+        return self._reflected
+
+    @property
+    def is_function(self):
+        return self._function
+
+    @property
     def parent(self):
         """
         A getter for the parent of the node
@@ -161,10 +169,10 @@ class RasCollection:
         temp = self._leaf
         exp = self.collection
         while temp.parent is not None:
-            if temp.parent._reflected is False and temp.parent._function is False:
+            if temp.parent.is_reflected is False and temp.parent.is_function is False:
                 exp = "(" + exp + temp.parent.value + str(
                     temp.parent.children[len(temp.parent.children) - 2].value) + ")"
-            elif temp.parent._function is True and temp.parent._reflected is False:
+            elif temp.parent.is_function is True and temp.parent.is_reflected is False:
                 exp = temp.parent.value + "(" + exp + "," + str(
                     temp.parent.children[len(temp.parent.children) - 2].value) + ")"
             else:
@@ -192,6 +200,5 @@ class RasQuery:
 col = RasCollection("mr")
 col += 2
 col += 5
-import pdb;
-
+import pdb
 pdb.set_trace()
