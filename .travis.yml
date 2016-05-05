@@ -1,7 +1,7 @@
 language: python
 python: "2.7.10"
 install:
-    - "pip install protobuf grpcio"
+    - "pip install protobuf==3.0.0a3 grpcio==0.11.0b1"
     - "python setup.py build"
     - "python setup.py test"
     - "python setup.py install"
