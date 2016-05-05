@@ -1,7 +1,8 @@
 RasPy - Talk RasQL using Python
 ===============================
 
-TODO: Add build status here
+.. image:: https://travis-ci.com/thunderboltsid/rasdaman.svg?token=Wsb489WHHrz6ABU9Q3F3&branch=master
+    :target: https://travis-ci.com/thunderboltsid/rasdaman
 
 Copyright 2003, 2004, 2005, 2006, 2007, 2008, 2009 Peter Baumann /
 rasdaman GmbH.
