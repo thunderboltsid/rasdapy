@@ -1,6 +1,8 @@
 language: python
 python: "2.7.10"
 install:
+    - "wget http://download.rasdaman.org/installer/install.sh"
+    - "bash install.sh"
     - "pip install protobuf==3.0.0b2.post2"
     - "pip install grpcio==0.13.1"
     - "pip install grpc==0.3.post18"
