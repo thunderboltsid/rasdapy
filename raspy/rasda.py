@@ -137,13 +137,30 @@ class Filter(object):
 
 
 class RasCollection(object):
-    def __init__(self, name):
+    def __init__(self, name, db=None):
         self._collection = name
         self._condition = None
         self._query = None
         self._leaf = ExpNode(value=name)
         self._root = self._leaf
         self._filters = []
+        self._db = None
+        self.use_db(db)
+
+    def use_db(self, db):
+        if db is not None:
+            if isinstance(db, Database):
+                self._db = db
+            else:
+                raise Exception("Argument passed not an instance of ras.Database")
+
+    def eval(self):
+        if self._db is not None:
+            txn = self._db.transaction()
+            query = txn.query(str(self.query))
+            data = query.eval()
+            txn.abort()
+            return data
 
     def _operation_helper(self, operator, operand, reflected=False, function=False):
         exp = deepcopy(self)
@@ -243,10 +260,3 @@ class RasQuery(object):
         else:
             query_str = "select " + self._expression + " from " + self._collection
         return query_str
-
-
-col = RasCollection("mr")
-col += 2
-col += 5
-import pdb
-pdb.set_trace()

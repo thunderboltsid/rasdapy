@@ -456,7 +456,8 @@ class Query(object):
                                                metadata.band_types,
                                                tileresp.data,
                                                tileresp.data_length,
-                                               tileresp.cell_type_length)))
+                                               tileresp.cell_type_length,
+                                               metadata.spatial_domain)))
 
             if tilestatus == 0:
                 break
@@ -476,7 +477,7 @@ class Query(object):
             if rpcstatus == 2:
                 raise Exception("getNextElement - no transfer or empty element")
             array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length,
-                                                      elemresp.data_length)[0])
+                                                      elemresp.data_length, metadata.spatial_domain)[0])
         return Array(metadata=metadata, values=array)
 
     def _send_mdd_constants(self):
@@ -611,15 +612,9 @@ class Array(object):
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        plt.imshow(self.to_array().transpose(), interpolation='nearest')
+        plt.imshow(self.to_array()[0], interpolation='nearest')
         plt.savefig(filename)
         plt.close()
-        if not normalize:
-            pass
-            # misc.toimage(self.to_array().transpose(), cmin=0.0).save(filename)
-        else:
-            pass
-            # misc.imsave(filename, self.to_array().transpose())
 
     def to_array(self, type="numpy"):
         """

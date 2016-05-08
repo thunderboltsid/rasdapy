@@ -5,6 +5,7 @@ import threading
 import time
 import os
 import signal
+import numpy as np
 
 
 def get_md5_string(input_str):
@@ -146,7 +147,7 @@ def get_size_from_data_type(dtype):
     return result
 
 
-def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
+def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domain):
     """
     Convert a set of binary data into meaningful data
     :param dtype:
@@ -156,7 +157,13 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     :return:
     """
     arr = []
+    result = []
     if dtype["base_type"] == "marray" or dtype["base_type"] == "scalar":
+        sdom = spatial_domain
+        tile_h = int(sdom.interval_params[0][1])
+        tile_v = int(sdom.interval_params[1][1])
+        tile_h_index = 0
+        tile_v_index = 0
         if dtype["type"] == "struct":
             for i in xrange(0, array_len, cell_len):
                 cell_counter = 0
@@ -166,14 +173,27 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
                     temp.append(convert_data_from_bin(dt, data[i + cell_counter:i + cell_counter + dtsize]))
                     cell_counter += dtsize
                 arr.append(temp)
+                tile_v_index += 1
+                if tile_v_index == tile_v + 1:
+                    tile_v_index = 0
+                    tile_h_index += 1
+                    result.append(arr)
+                    arr = []
         else:
             for i in xrange(0, array_len, cell_len):
                 dtsize = get_size_from_data_type(dtype["type"])
-                arr.append(convert_data_from_bin(dtype["type"], data[i: i + dtsize]))
+                temp = convert_data_from_bin(dtype["type"], data[i: i + dtsize])
+                arr.append(temp)
+                tile_h_index += 1
+                if tile_h_index == tile_h:
+                    tile_h_index = 0
+                    tile_v_index += 1
+                    result.append(arr)
+                    arr = []
     else:
         raise Exception("Unknown base_type: " + dtype["base_type"])
-    return arr
-
+    # return map(list, zip(*result))
+    return result
 
 def get_spatial_domain_from_type_structure(input_str):
     primary_regex = ".*\[(.*)\].*"
