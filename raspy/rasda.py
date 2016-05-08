@@ -32,7 +32,7 @@ from copy import deepcopy
 from ras import *
 
 
-class ExpNode:
+class ExpNode(object):
     """
     A class to represent a node in the expression for the construction of
     query evaluation tree
@@ -73,10 +73,16 @@ class ExpNode:
         """
         self._rchild = child
 
-    def remove_lchild():
+    def remove_lchild(self):
+        """
+        delete the left child from node
+        """
         self._lchild = None
 
-    def remove_rchild():
+    def remove_rchild(self):
+        """
+        delete the right child from node
+        """
         self._rchild = None
 
     @property
@@ -122,7 +128,11 @@ class ExpNode:
         return self._rchild
 
 
-class RasCollection:
+class Filter(object):
+    pass
+
+
+class RasCollection(object):
     def __init__(self, name):
         self._collection = name
         self._condition = None
@@ -217,15 +227,18 @@ class RasCollection:
         return self._condition
 
 
-class RasQuery:
-    def __init__(self, collection, expression, condition):
-        if condition is not None:
-            self._query_str = "select " + expression + " from " + collection + " where " + condition
-        else:
-            self._query_str = "select " + expression + " from " + collection
+class RasQuery(object):
+    def __init__(self, collection=None, expression=None, condition=None):
+        self._collection = collection
+        self._expression = expression
+        self._condition = condition
 
     def __str__(self):
-        return self._query_str
+        if self._condition is not None:
+            query_str = "select " + self._expression + " from " + self._collection + " where " + self._condition
+        else:
+            query_str = "select " + self._expression + " from " + self._collection
+        return query_str
 
 
 col = RasCollection("mr")

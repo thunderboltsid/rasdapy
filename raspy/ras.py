@@ -39,7 +39,7 @@ from utils import *
 from remote_procedures import *
 
 
-class Connection:
+class Connection(object):
     """
     Class to represent the connection from the python client to the rasdaman
     server
@@ -124,7 +124,7 @@ class Connection:
         return database
 
 
-class Database:
+class Database(object):
     """
     Class to represent a database stored inside a rasdaman server
     """
@@ -238,7 +238,7 @@ class Database:
             raise Exception("rassrvr_keep_alive thread not running")
 
 
-class Collection:
+class Collection(object):
     def __init__(self, transaction, name=None, type=None, oid=None):
         """
         Constructor for the class
@@ -319,7 +319,7 @@ class Collection:
         self._name = value
 
 
-class Transaction:
+class Transaction(object):
     def __init__(self, database, rw=False):
         """
         Class to represent a transaction on the selected database
@@ -360,7 +360,7 @@ class Transaction:
         return collection
 
 
-class Query:
+class Query(object):
     def __init__(self, transaction, query_str):
         """
         Class to represent a rasql query that can be executed in a certain transaction
@@ -503,7 +503,7 @@ class Query:
                 raise Exception("Error: Transfer failed")
 
 
-class RPCMarray:
+class RPCMarray(object):
     """
     Class to represent RPC Array
     """
@@ -526,7 +526,7 @@ class RPCMarray:
             raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
 
 
-class BandType:
+class BandType(object):
     """
     Enum containing possible band types in rasdaman
     """
@@ -540,7 +540,7 @@ class BandType:
     DOUBLE = 7
 
 
-class SpatialDomain:
+class SpatialDomain(object):
     def __init__(self, *interval_parameters):
         """
         Class to represent a spatial domain in rasdaman
@@ -549,7 +549,7 @@ class SpatialDomain:
         pass
 
 
-class ArrayMetadata:
+class ArrayMetadata(object):
     def __init__(self, spatial_domain, band_types):
         """
         Class to represent the metadata associated to an array
@@ -560,7 +560,7 @@ class ArrayMetadata:
         self.band_types = band_types
 
 
-class Array:
+class Array(object):
     def __init__(self, metadata=None, values=None):
         """
         Class to represent an array produced by a rasdaman query
