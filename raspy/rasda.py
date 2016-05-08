@@ -129,7 +129,11 @@ class ExpNode(object):
 
 
 class Filter(object):
-    pass
+    def __init__(self, condition=None):
+        self._condition = condition
+
+    def __str__(self):
+        return self._condition
 
 
 class RasCollection(object):
@@ -199,7 +203,7 @@ class RasCollection(object):
 
     @property
     def query(self):
-        return RasQuery(self.collection, self.expression, self.condition)
+        return RasQuery(collection=self.collection, expression=self.expression, condition=self.condition)
 
     @property
     def collection(self):
