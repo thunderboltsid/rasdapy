@@ -38,12 +38,13 @@ class ExpNode:
     query evaluation tree
     """
 
-    def __init__(self, parent=None, value=None, children=[], reflected=False, function=False):
+    def __init__(self, parent=None, value=None, lchild=None, rchild=None, reflected=False, function=False):
         """
         Constructor for the class
         """
         self._parent = parent
-        self._children = children
+        self._lchild = lchild
+        self._rchild = rchild
         self._value = value
         self._reflected = reflected
         self._function = function
@@ -60,14 +61,23 @@ class ExpNode:
         """
         self._value = value
 
-    def add_child(self, child):
+    def set_lchild(self, child):
         """
         setter for adding a child to the node
         """
-        self._children.append(child)
+        self._lchild = child
 
-    def remove_child(self, child):
-        self._children.pop(child)
+    def set_rchild(self, child):
+        """
+        setter for adding a child to the node
+        """
+        self._rchild = child
+
+    def remove_lchild():
+        self._lchild = None
+
+    def remove_rchild():
+        self._rchild = None
 
     @property
     def is_reflected(self):
@@ -98,11 +108,18 @@ class ExpNode:
         return self._value
 
     @property
-    def children(self):
+    def lchild(self):
         """
         A getter for the children of the node
         """
-        return self._children
+        return self._lchild
+
+    @property
+    def rchild(self):
+        """
+        A getter for the children of the node
+        """
+        return self._rchild
 
 
 class RasCollection:
@@ -121,10 +138,10 @@ class RasCollection:
             par = ExpNode(value=operator, reflected=True)
         else:
             par = ExpNode(value=operator, function=True)
-        par.add_child(ExpNode(value=operand, parent=par))
+        par.set_rchild(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
-            par.add_child(exp._root)
+            par.set_lchild(exp._root)
         exp._root = par
         return exp
 
@@ -185,13 +202,13 @@ class RasCollection:
         while temp.parent is not None:
             if temp.parent.is_reflected is False and temp.parent.is_function is False:
                 exp = "(" + exp + temp.parent.value + str(
-                    temp.parent.children[len(temp.parent.children) - 2].value) + ")"
+                    temp.parent.rchild.value) + ")"
             elif temp.parent.is_function is True and temp.parent.is_reflected is False:
                 exp = temp.parent.value + "(" + exp + "," + str(
-                    temp.parent.children[len(temp.parent.children) - 2].value) + ")"
+                    temp.parent.rchild.value) + ")"
             else:
                 exp = "(" + str(
-                    temp.parent.children[len(temp.parent.children) - 2].value) + temp.parent.value + exp + ")"
+                    temp.parent.rchild.value) + temp.parent.value + exp + ")"
             temp = temp.parent
         return exp
 
