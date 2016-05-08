@@ -175,6 +175,20 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len):
     return arr
 
 
+def get_spatial_domain_from_type_structure(input_str):
+    primary_regex = ".*\[(.*)\].*"
+    primary_match = re.match(primary_regex, input_str)
+    secondary_regex = "(.*)\:(.*)"
+    result = []
+    if primary_match is not None:
+        matches = primary_match.groups()[0].split(",")
+        for match in matches:
+            sec_match = re.match(secondary_regex, match)
+            result.append(sec_match.groups())
+    return result
+
+
+
 class StoppableTimeoutThread(threading.Thread):
     """
     Thread that runs a method over and over again

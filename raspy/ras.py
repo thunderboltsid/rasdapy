@@ -34,7 +34,7 @@ on the resultant arrays efficiently on the local machine
 import numpy as np
 import signal, os
 from grpc.beta import implementations
-# from scipy import sparse
+from scipy import sparse, misc
 from utils import *
 from remote_procedures import *
 
@@ -44,6 +44,7 @@ class Connection(object):
     Class to represent the connection from the python client to the rasdaman
     server
     """
+
     def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest", password="rasguest"):
         """
         Constructor for the connection class
@@ -128,6 +129,7 @@ class Database(object):
     """
     Class to represent a database stored inside a rasdaman server
     """
+
     def __init__(self, connection, name):
         """
         Constructor for the Database class
@@ -429,8 +431,9 @@ class Query(object):
         mddstatus = 0
         tilestatus = 0
         array = []
-        metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
-                                 band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
+        metadata = ArrayMetadata(
+            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
         while mddstatus == 0:
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
@@ -463,8 +466,9 @@ class Query(object):
     def _get_next_element(self):
         rpcstatus = 0
         array = []
-        metadata = ArrayMetadata(spatial_domain=self.exec_query_resp.type_structure,
-                                 band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
+        metadata = ArrayMetadata(
+            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
         while rpcstatus == 0:
             elemresp = rassrvr_get_next_element(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId)
@@ -541,12 +545,12 @@ class BandType(object):
 
 
 class SpatialDomain(object):
-    def __init__(self, *interval_parameters):
+    def __init__(self, interval_params):
         """
         Class to represent a spatial domain in rasdaman
         :param list[tuple] interval_parameters: a list of intervals represented as tuples
         """
-        pass
+        self.interval_params = interval_params
 
 
 class ArrayMetadata(object):
@@ -602,6 +606,20 @@ class Array(object):
         not given, an exception should be thrown
         :rtype: int | float
         """
+
+    def to_image(self, filename, normalize=False):
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        plt.imshow(self.to_array().transpose(), interpolation='nearest')
+        plt.savefig(filename)
+        plt.close()
+        if not normalize:
+            pass
+            # misc.toimage(self.to_array().transpose(), cmin=0.0).save(filename)
+        else:
+            pass
+            # misc.imsave(filename, self.to_array().transpose())
 
     def to_array(self, type="numpy"):
         """

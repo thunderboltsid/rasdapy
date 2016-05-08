@@ -143,15 +143,17 @@ class RasCollection(object):
         self._query = None
         self._leaf = ExpNode(value=name)
         self._root = self._leaf
+        self._filters = []
 
     def _operation_helper(self, operator, operand, reflected=False, function=False):
         exp = deepcopy(self)
-        if reflected is False and function is False:
-            par = ExpNode(value=operator)
-        elif reflected is True and function is False:
-            par = ExpNode(value=operator, reflected=True)
-        else:
-            par = ExpNode(value=operator, function=True)
+        # if reflected is False and function is False:
+        #     par = ExpNode(value=operator)
+        # elif reflected is True and function is False:
+        #     par = ExpNode(value=operator, reflected=True)
+        # else:
+        #     par = ExpNode(value=operator, function=True)
+        par = ExpNode(value=operator, reflected=reflected, function=function)
         par.set_rchild(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
@@ -191,8 +193,6 @@ class RasCollection(object):
         value = [slice_tuple(arg) for arg in args[0]]
         exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
         return exp
-
-
 
     @property
     def sdom(self):
