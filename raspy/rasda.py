@@ -207,7 +207,7 @@ class RasCollection(object):
             value = [slice_tuple(arg) for arg in args[0]]
             exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
         elif type(args[0]) is slice:  # If type is slice
-            exp._leaf.set_value(exp._leaf.value + "[" + str(args[0].start) + "," + str(args[0].stop) + "]")
+            exp._leaf.set_value(exp._leaf.value + "[" + str(args[0].start) + ":" + str(args[0].stop) + "]")
         else:
             exp._leaf.set_value(exp._leaf.value + "[" + str(args[0]) + "]")
         return exp

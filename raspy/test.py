@@ -1,8 +1,10 @@
 from rasda import *
-con = Connection(hostname="martoaga", username="rasadmin", password="rasadmin")
+con = Connection(hostname="192.168.0.103", username="rasadmin", password="rasadmin")
 db = con.database("RASBASE")
-col = RasCollection("a")
-col = col.avg_cells()
+col = RasCollection("rgb")
+# col = col[0:2]
+# col /= 3
+# col -= 10
 col.use_db(db)
-foo = col.eval()
 import pdb; pdb.set_trace()
+foo = col.eval()

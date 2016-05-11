@@ -425,7 +425,7 @@ class Query(object):
         elif exec_query_resp.status == 2:
             raise Exception("Query returned an empty collection")
         else:
-            raise Exception("Unknown status code returned by ExecuteQuery")
+            raise Exception("Unknown status code: " + str(exec_query_resp.status) + " returned by ExecuteQuery")
 
     def _get_next_collection(self):
         mddstatus = 0
