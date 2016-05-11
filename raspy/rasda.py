@@ -213,7 +213,7 @@ class RasCollection(object):
         return exp
 
     def __abs__(self):
-        pass
+        return self._operation_helper("abs", [], function=True)
 
     def exp(self, other):
         return self._operation_helper("exp", [other], function=True)
@@ -222,40 +222,40 @@ class RasCollection(object):
         return self._operation_helper("sqrt", [], function=True)
 
     def log(self):
-        pass
+        return self._operation_helper("log", [], function=True)
 
     def ln(self):
-        pass
+        return self._operation_helper("ln", [], function=True)
 
     def sin(self):
-        pass
+        return self._operation_helper("sin", [], function=True)
 
     def cos(self):
-        pass
+        return self._operation_helper("cos", [], function=True)
 
     def tan(self):
-        pass
+        return self._operation_helper("tan", [], function=True)
 
     def sinh(self):
-        pass
+        return self._operation_helper("sinh", [], function=True)
 
     def cosh(self):
-        pass
+        return self._operation_helper("cosh", [], function=True)
 
     def tanh(self):
-        pass
+        return self._operation_helper("tanh", [], function=True)
 
     def arcsin(self):
-        pass
+        return self._operation_helper("arcsin", [], function=True)
 
     def arccos(self):
-        pass
+        return self._operation_helper("arccos", [], function=True)
 
     def arctan(self):
-        pass
+        return self._operation_helper("arctan", [], function=True)
 
     def avg_cells(self):
-        pass
+        return self._operation_helper("avg_cells", [], function=True)
 
     def sdom(self):
         sdom_q = self._operation_helper("sdom", [], function=True)
