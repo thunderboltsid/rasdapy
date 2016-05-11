@@ -203,13 +203,71 @@ class RasCollection(object):
         return self._operation_helper("/", other, reflected=True)
 
     def __pow__(self, other):
-        return self._operation_helper("exp", other, function=True)
+        return self._operation_helper("pow", [other], function=True)
 
     def __getitem__(self, *args):
         exp = deepcopy(self)
-        value = [slice_tuple(arg) for arg in args[0]]
-        exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
+        if len(args) == 0:
+            return exp
+        if type(args[0]) is tuple:  # If type is tuple
+            value = [slice_tuple(arg) for arg in args[0]]
+            exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
+        elif type(args[0]) is slice:  # If type is slice
+            exp._leaf.set_value(exp._leaf.value + "[" + str(args[0].start) + "," + str(args[0].stop) + "]")
+        else:
+            exp._leaf.set_value(exp._leaf.value + "[" + str(args[0]) + "]")
         return exp
+
+    def __abs__(self):
+        pass
+
+    def exp(self, other):
+        return self._operation_helper("exp", [other], function=True)
+
+    def sdom(self):
+        sdom_q = self._operation_helper("sdom", [], function=True)
+        return sdom_q.eval()
+
+    def sqrt(self):
+        return self._operation_helper("sqrt", [], function=True)
+
+    def log(self):
+        pass
+
+    def ln(self):
+        pass
+
+    def sin(self):
+        pass
+
+    def cos(self):
+        pass
+
+    def tan(self):
+        pass
+
+    def sinh(self):
+        pass
+
+    def cosh(self):
+        pass
+
+    def tanh(self):
+        pass
+
+    def arcsin(self):
+        pass
+
+    def arccos(self):
+        pass
+
+    def arctan(self):
+        pass
+
+    def avg_cells(self):
+        pass
+
+
 
     @property
     def sdom(self):
@@ -235,8 +293,17 @@ class RasCollection(object):
                 exp = "(" + exp + temp.parent.value + str(
                     temp.parent.rchild.value) + ")"
             elif temp.parent.is_function is True and temp.parent.is_reflected is False:
-                exp = temp.parent.value + "(" + exp + "," + str(
-                    temp.parent.rchild.value) + ")"
+                args = temp.parent.rchild.value
+                arg_str = ","
+                for arg in args:
+                    arg_str += str(arg)
+                    arg_str += ","
+                if arg_str != ",":
+                    arg_str = arg_str[:-1]
+                else:
+                    arg_str = ""
+
+                exp = temp.parent.value + "(" + exp + arg_str + ")"
             else:
                 exp = "(" + str(
                     temp.parent.rchild.value) + temp.parent.value + exp + ")"
@@ -260,3 +327,10 @@ class RasQuery(object):
         else:
             query_str = "select " + self._expression + " from " + self._collection
         return query_str
+
+
+col = RasCollection("mr")
+col /= 9
+col **= 2
+col = col[1:10]
+import pdb; pdb.set_trace()

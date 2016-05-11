@@ -34,7 +34,7 @@ on the resultant arrays efficiently on the local machine
 import numpy as np
 import signal, os
 from grpc.beta import implementations
-from scipy import sparse, misc
+# from scipy import sparse, misc
 from utils import *
 from remote_procedures import *
 
