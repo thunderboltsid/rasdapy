@@ -164,12 +164,6 @@ class RasCollection(object):
 
     def _operation_helper(self, operator, operand, reflected=False, function=False):
         exp = deepcopy(self)
-        # if reflected is False and function is False:
-        #     par = ExpNode(value=operator)
-        # elif reflected is True and function is False:
-        #     par = ExpNode(value=operator, reflected=True)
-        # else:
-        #     par = ExpNode(value=operator, function=True)
         par = ExpNode(value=operator, reflected=reflected, function=function)
         par.set_rchild(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
@@ -224,10 +218,6 @@ class RasCollection(object):
     def exp(self, other):
         return self._operation_helper("exp", [other], function=True)
 
-    def sdom(self):
-        sdom_q = self._operation_helper("sdom", [], function=True)
-        return sdom_q.eval()
-
     def sqrt(self):
         return self._operation_helper("sqrt", [], function=True)
 
@@ -267,14 +257,15 @@ class RasCollection(object):
     def avg_cells(self):
         pass
 
-
-
-    @property
     def sdom(self):
-        """
-        Evaluates the SpatialDomain of the expression
-        """
-        return None
+        sdom_q = self._operation_helper("sdom", [], function=True)
+        return sdom_q.eval()
+
+    def filter(self, **kwargs):
+        for key in kwargs:
+            filter = str(key) + "=" + str(kwargs[key])
+            self._filters.append(Filter(condition=filter))
+        self._condition = " and ".join(str(fltr) for fltr in self._filters)
 
     @property
     def query(self):
@@ -333,4 +324,5 @@ col = RasCollection("mr")
 col /= 9
 col **= 2
 col = col[1:10]
+col.filter(oid=2)
 import pdb; pdb.set_trace()
