@@ -25,6 +25,8 @@ from raspy import ras
 from raspy import utils
 import unittest
 
+from raspy.rasda import ExpNode, RasCollection
+
 
 class TestUtils(unittest.TestCase):
     def test_md5_hash(self):
@@ -51,6 +53,60 @@ class TestUtils(unittest.TestCase):
         if len(test_inp) == len(test_out):
             for i in xrange(0, len(test_inp) - 1):
                 self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]), test_out[i])
+
+
+class TestExpNode(unittest.TestCase):
+    def setUp(self):
+        self.value = "+"
+        self.lchild = "mr"
+        self.rchild = "5"
+
+    def test_exp_node_creation(self):
+        node = ExpNode(value=self.value, lchild=self.lchild, rchild=self.rchild)
+        self.assertEqual(node.value, self.value)
+        self.assertEqual(node.lchild, self.lchild)
+        self.assertEqual(node.rchild, self.rchild)
+
+
+class TestQueryConstruction(unittest.TestCase):
+    def setUp(self):
+        self.query_simple = "select mr from mr"
+        self.query_avg_with_subsetting = "select avg_cells(mr[1:10]) from mr"
+        self.query_subsetting_with_condition = "select mr[1:10] from mr where oid=2"
+        self.query_arithmetic_operations = "select pow(((((mr+9)/2)-3)*5),2) from mr"
+        self.query_trigonometric_operations = "select tan(cos(sin(mr))) from mr"
+
+    def test_query_simple(self):
+        col = RasCollection("mr")
+        self.assertEqual(self.query_simple, str(col.query))
+
+    def test_query_avg_with_subsetting(self):
+        col = RasCollection("mr")
+        col = col[1:10]
+        col = col.avg_cells()
+        self.assertEqual(self.query_avg_with_subsetting, str(col.query))
+
+    def test_query_subsetting_with_condition(self):
+        col = RasCollection("mr")
+        col = col[1:10]
+        col.filter(oid=2)
+        self.assertEqual(self.query_subsetting_with_condition, str(col.query))
+
+    def test_query_arithmetic_operations(self):
+        col = RasCollection("mr")
+        col += 9
+        col /= 2
+        col -= 3
+        col *= 5
+        col **= 2
+        self.assertEqual(self.query_arithmetic_operations, str(col.query))
+
+    def test_query_trigonometric_operations(self):
+        col = RasCollection("mr")
+        col = col.sin()
+        col = col.cos()
+        col = col.tan()
+        self.assertEqual(self.query_trigonometric_operations, str(col.query))
 
 
 if __name__ == "__main__":
