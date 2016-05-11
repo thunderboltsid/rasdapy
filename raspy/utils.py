@@ -195,8 +195,8 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
                 return temp
     else:
         raise Exception("Unknown base_type: " + dtype["base_type"])
-    # return map(list, zip(*result))
     return result
+
 
 def get_spatial_domain_from_type_structure(input_str):
     primary_regex = ".*\[(.*)\].*"

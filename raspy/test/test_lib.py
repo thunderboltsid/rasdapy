@@ -53,22 +53,5 @@ class TestUtils(unittest.TestCase):
                 self.assertEqual(utils.convert_data_from_bin(test_inp[i]["dtype"], test_inp[i]["data"]), test_out[i])
 
 
-# class TestConnectionDefault(unittest.TestCase):
-#     def setUp(self):
-#         self.connection = ras.Connection()
-#
-#     def test_disconnect_connection(self):
-#         self.connection.disconnect()
-#
-#     def test_reconnect_connection(self):
-#         self.connection.connect()
-#
-#     def test_connect_default_settings(self):
-#         self.assertEqual(self.connection.hostname, "0.0.0.0")
-#         self.assertEqual(self.connection.port, 7001)
-#         self.assertEqual(self.connection.username, "rasguest")
-#         self.assertEquals(self.connection.password, "rasguest")
-
-
 if __name__ == "__main__":
     unittest.main()

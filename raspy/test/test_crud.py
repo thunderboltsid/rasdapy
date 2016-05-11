@@ -1,6 +1,5 @@
 import unittest
 import raspy.ras as ras
-import numpy as np
 
 
 class TestDemoCollectionGreySet(unittest.TestCase):
