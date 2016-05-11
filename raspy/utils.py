@@ -160,11 +160,11 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
     result = []
     if dtype["base_type"] == "marray" or dtype["base_type"] == "scalar":
         sdom = spatial_domain
-        tile_h = int(sdom.interval_params[0][1])
-        tile_v = int(sdom.interval_params[1][1])
-        tile_h_index = 0
-        tile_v_index = 0
-        if dtype["type"] == "struct":
+        if dtype["base_type"] == "marray" and dtype["type"] == "struct":
+            tile_h = int(sdom.interval_params[0][1])
+            tile_v = int(sdom.interval_params[1][1])
+            tile_h_index = 0
+            tile_v_index = 0
             for i in xrange(0, array_len, cell_len):
                 cell_counter = 0
                 temp = []
@@ -179,7 +179,11 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
                     tile_h_index += 1
                     result.append(arr)
                     arr = []
-        else:
+        elif dtype["base_type"] == "marray" and dtype["type"] != "struct":
+            tile_h = int(sdom.interval_params[0][1])
+            tile_v = int(sdom.interval_params[1][1])
+            tile_h_index = 0
+            tile_v_index = 0
             for i in xrange(0, array_len, cell_len):
                 dtsize = get_size_from_data_type(dtype["type"])
                 temp = convert_data_from_bin(dtype["type"], data[i: i + dtsize])
@@ -190,6 +194,11 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
                     tile_v_index += 1
                     result.append(arr)
                     arr = []
+        else:
+            for i in xrange(0, array_len, cell_len):
+                dtsize = get_size_from_data_type(dtype["type"])
+                temp = convert_data_from_bin(dtype["type"], data[i: i + dtsize])
+                return temp
     else:
         raise Exception("Unknown base_type: " + dtype["base_type"])
     # return map(list, zip(*result))

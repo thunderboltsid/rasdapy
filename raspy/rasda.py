@@ -318,11 +318,3 @@ class RasQuery(object):
         else:
             query_str = "select " + self._expression + " from " + self._collection
         return query_str
-
-
-col = RasCollection("mr")
-col /= 9
-col **= 2
-col = col[1:10]
-col.filter(oid=2)
-import pdb; pdb.set_trace()

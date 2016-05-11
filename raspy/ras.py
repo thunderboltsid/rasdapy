@@ -477,8 +477,8 @@ class Query(object):
             if rpcstatus == 2:
                 raise Exception("getNextElement - no transfer or empty element")
             array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length,
-                                                      elemresp.data_length, metadata.spatial_domain)[0])
-        return Array(metadata=metadata, values=array)
+                                                      elemresp.data_length, metadata.spatial_domain))
+        return array
 
     def _send_mdd_constants(self):
         exec_init_update_resp = rassrvr_init_update(self.transaction.database.stub,

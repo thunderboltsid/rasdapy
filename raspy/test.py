@@ -1,7 +1,8 @@
-import ras
-con = ras.Connection(username="rasadmin", password="rasadmin")
+from rasda import *
+con = Connection(hostname="martoaga", username="rasadmin", password="rasadmin")
 db = con.database("RASBASE")
-txn = db.transaction(rw=True)
-q = txn.query("select ((rgb/3) - 10) from rgb")
-example = q.eval()
+col = RasCollection("a")
+col = col.avg_cells()
+col.use_db(db)
+foo = col.eval()
 import pdb; pdb.set_trace()
