@@ -4,6 +4,7 @@ include *.rst
 setup.py
 raspy/__init__.py
 raspy/ras.py
+raspy/rasda.py
 raspy/remote_procedures.py
 raspy/request_factories.py
 raspy/utils.py
@@ -13,7 +14,9 @@ raspy/stubs/common_service_pb2.py
 raspy/stubs/error_message_pb2.py
 raspy/stubs/rasmgr_client_service_pb2.py
 test/test_lib.py
-test/test_mock_server.py
+test/test_crud.py
+test/test_rasmgr_stubs.py
+test/test_rassrvr_stubs.py
 test/stubs/__init__.py
 protomessages/rasmgr_client_service.proto
 protomessages/client_rassrvr_service.proto

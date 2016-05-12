@@ -25,6 +25,7 @@ def get_type_structure_from_string(input_str):
     Gives a type structure from a string defining type structure
     :param input_str:
     :return: object {"type", "base_type", "sub_type"(optional)}
+    TODO: SDOM might not be a scalar. Look into the result type
     """
     primary_regex = "set\s*<marray\s*<(char|ushort|short|ulong|long|float|double),\s*.*>>"
     scalar_regex = "set\s*<(char|ushort|short|ulong|long|float|double)\s*>"

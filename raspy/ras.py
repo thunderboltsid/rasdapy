@@ -371,6 +371,7 @@ class Query(object):
         self.exec_query_resp = None
 
     def eval(self):
+        # TODO: Only if query starts with keyword
         if "insert" in self.query_str:
             self._execute_update()
         elif "create" in self.query_str:

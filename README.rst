@@ -35,7 +35,7 @@ unexpected behaviour.
 Installation
 ============
 
-1) Make sure you have Python 2.6 or newer. If in doubt, run:
+1) Make sure you have Python 2.6 or newer. Python 3.x and PyPy are not supported at the moment. If in doubt, run:
 
 ::
 
