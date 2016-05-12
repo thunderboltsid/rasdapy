@@ -1,5 +1,5 @@
-RasPy - Talk RasQL using Python
-===============================
+RasdaPy - Talk RasQL using Python
+=================================
 
 .. image:: https://travis-ci.com/thunderboltsid/rasdaman.svg?token=Wsb489WHHrz6ABU9Q3F3&branch=master
     :target: https://travis-ci.com/thunderboltsid/rasdaman
@@ -7,10 +7,10 @@ RasPy - Talk RasQL using Python
 Copyright 2003, 2004, 2005, 2006, 2007, 2008, 2009 Peter Baumann /
 rasdaman GmbH.
 
-RasPy is a client side interface for Rasdaman that enables execution of
+RasdaPy is a client side interface for Rasdaman that enables execution of
 RasQL queries using the python programming languae.
 
-This directory contains the RasPy library.
+This directory contains the RasdaPy library.
 
 Normally, this directory comes as part of the rasdaman package,
 available from:
@@ -87,10 +87,11 @@ for the library can be found in requirements.txt in project root.
 Usage: For low level API
 ========================
 
-The complete documentation for RasdaPy can be found in Sphinx docs under the docs directory.
+The complete documentation for RasdaPy can be found in Sphinx docs under the docs directory. Examples
+can be found in the examples directory.
 
-Import Raspy
-------------
+Import RasdaPy
+--------------
 
 ::
 

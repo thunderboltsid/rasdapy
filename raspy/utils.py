@@ -143,7 +143,7 @@ def get_size_from_data_type(dtype):
     elif dtype == "double":
         result = 8
     else:
-        raise Exception("Unknown Data type provided")
+        raise Exception("Unknown Data type provided: " + dtype)
     return result
 
 
@@ -188,11 +188,18 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
                     tile_h_index = 0
                     result.append(arr)
                     arr = []
+        elif dtype["base_type"] == "scalar" and dtype["type"] == "struct":
+            temp = []
+            cell_counter = 0
+            for idx, dt in enumerate(dtype["sub_type"]["types"]):
+                dtsize = get_size_from_data_type(dt)
+                temp.append(convert_data_from_bin(dt, data[idx + cell_counter: idx + cell_counter + dtsize]))
+                cell_counter += 1
+            return temp
         else:
-            for i in xrange(0, array_len, cell_len):
-                dtsize = get_size_from_data_type(dtype["type"])
-                temp = convert_data_from_bin(dtype["type"], data[i: i + dtsize])
-                return temp
+            dtsize = get_size_from_data_type(dtype["type"])
+            temp = convert_data_from_bin(dtype["type"], data)
+            return temp
     else:
         raise Exception("Unknown base_type: " + dtype["base_type"])
     return result
