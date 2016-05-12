@@ -21,11 +21,9 @@
  * or contact Peter Baumann via <baumann@rasdaman.com>.
  *
 """
-from raspy import ras
 from raspy import utils
-import unittest
-
 from raspy.rasda import ExpNode, RasCollection
+import unittest
 
 
 class TestUtils(unittest.TestCase):
@@ -107,6 +105,17 @@ class TestQueryConstruction(unittest.TestCase):
         col = col.cos()
         col = col.tan()
         self.assertEqual(self.query_trigonometric_operations, str(col.query))
+
+    def test_query_equal(self):
+        col_1 = RasCollection("mr")
+        col_1 += 9
+        col_1 = col_1[1:10]
+        col_1 **= 2
+        col_2 = RasCollection("mr")
+        col_2 += 9
+        col_2 = col_2[1:10]
+        col_2 **= 2
+        self.assertTrue(col_1 == col_2)
 
 
 if __name__ == "__main__":

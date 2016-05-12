@@ -198,6 +198,10 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
     return result
 
 
+def convert_numpy_arr_to_bin(arr):
+    return arr.to_bytes()
+
+
 def get_spatial_domain_from_type_structure(input_str):
     primary_regex = ".*\[(.*)\].*"
     primary_match = re.match(primary_regex, input_str)
@@ -209,7 +213,6 @@ def get_spatial_domain_from_type_structure(input_str):
             sec_match = re.match(secondary_regex, match)
             result.append(sec_match.groups())
     return result
-
 
 
 class StoppableTimeoutThread(threading.Thread):
