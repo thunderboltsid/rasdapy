@@ -39,7 +39,7 @@ Installation
 
 ::
 
-   $ python -V
+   $ python --version
 
 2) If you do not have setuptools, numpy, scipy, grpcio, and protobuf
    installed, note that they will be downloaded and installed
@@ -81,47 +81,49 @@ this bug will affect users in practice.
 
    $ python setup.py install
 
-This step may require superuser privileges.
+This step may require superuser privileges. In case the setup fails because of library issues, the dependencies
+for the library can be found in requirements.txt in project root.
 
-Usage
-=====
+Usage: For low level API
+========================
 
-The complete documentation for RasPy is still under development.
+The complete documentation for RasdaPy can be found in Sphinx docs under the docs directory.
 
 Import Raspy
 ------------
 
 ::
 
-    $ import raspy
+    $ from raspy.rasda import *
 
 Connect to default port 7001 if not specified
 ---------------------------------------------
 
 ::
 
-    $ ras = raspy.Connection(hostname="0.0.0.0", username="myuser", password="mypass", port=7000)
+    $ con = Connection(hostname="0.0.0.0", username="myuser", password="mypass", port=7000)
 
 Open the database given a db name
 ---------------------------------
 
 ::
 
-    $ db = ras.database("dbname")
+    $ db = con.database("dbname")
 
 List of all the collections available
 -------------------------------------
 
 ::
 
-    $ collection_list = db.collections ()
+    $ collection_list = db.collections
+    $ print(collection_list)
 
 Begin transaction
 -----------------
 
 ::
 
-    $ txn = db.transaction ()
+    $ txn = db.transaction()
 
 Get array data from rasdaman server using RasQL query
 -----------------------------------------------------
@@ -131,26 +133,27 @@ Get array data from rasdaman server using RasQL query
     $ query = txn.query("select m[0:10 ,0:10] from mr as m")
     $ data = query.execute()
 
-End transaction
----------------
+End transaction (commit or abort as preferred)
+----------------------------------------------
 
 ::
 
-    $ del txn
+    $ txn.abort()
+    $ txn.commit()
 
 Close the database connection
 -----------------------------
 
 ::
 
-    $ del db
+    $ db.close()
 
 Convert to Numpy Array
 ----------------------
 
 ::
 
-    $ data = data.toArray()
+    $ data = data.to_array()
 
 Numpy Operations
 ----------------
@@ -158,6 +161,42 @@ Numpy Operations
 ::
 
     $ data += 1
+
+Usage: For Query Construction
+=============================
+Initialize RasCollection with collection name
+---------------------------------------------
+::
+
+    $ col = RasCollection("rgb")
+
+Perform operations as desired
+-----------------------------
+::
+
+    $ col /= 3
+    $ col += 10
+    $ col = col.avg_cells()
+    $ data = col.eval()
+
+Add the associated database instance
+------------------------------------
+::
+
+    $ col.use_db(db)
+
+Get the data from db
+--------------------
+::
+
+    $ arr = col.eval()
+    $ data = col.to_array()
+
+Convert array to image
+----------------------
+::
+
+    $ arr.to_image("example.png")
 
 Contributors
 ============
@@ -167,4 +206,6 @@ Thanks also to
 ==============
 * Alex Mircea Dumitru
 * Vlad Merticariu
+* George Merticariu
+* Alex Toader
 * Peter Baumann

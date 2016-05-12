@@ -203,9 +203,7 @@ class Database(object):
         transaction = self.transaction()
         query = transaction.query("select r from RAS_COLLECTIONNAMES as r")
         result = query._execute_read()
-        collection = [rassrvr_get_collection_by_name(self.stub, self.connection.session.clientId, name) for name in
-                      result]
-        return collection
+        return result
 
     def _keep_alive(self):
         """
@@ -273,8 +271,6 @@ class Collection(object):
         resp = rassrvr_insert_collection(self.transaction.database.stub,
                                          self.transaction.database.connection.session.clientId, self.name,
                                          self.type_name, self.oid)
-        import pdb;
-        pdb.set_trace()
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
@@ -448,21 +444,27 @@ class Query(object):
                 if tilestatus == 4:
                     raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
                 else:
-                    array.append(RPCMarray(domain=tileresp.domain,
-                                           cell_type_length=tileresp.cell_type_length,
-                                           current_format=tileresp.current_format,
-                                           storage_format=tileresp.storage_format,
-                                           data=convert_data_stream_from_bin(
-                                               metadata.band_types,
-                                               tileresp.data,
-                                               tileresp.data_length,
-                                               tileresp.cell_type_length,
-                                               metadata.spatial_domain)))
+                    if self.query_str == "select r from RAS_COLLECTIONNAMES as r":
+                        array.append(tileresp.data[:-1])
+                    else:
+                        array.append(RPCMarray(domain=tileresp.domain,
+                                               cell_type_length=tileresp.cell_type_length,
+                                               current_format=tileresp.current_format,
+                                               storage_format=tileresp.storage_format,
+                                               data=convert_data_stream_from_bin(
+                                                   metadata.band_types,
+                                                   tileresp.data,
+                                                   tileresp.data_length,
+                                                   tileresp.cell_type_length,
+                                                   metadata.spatial_domain)))
 
             if tilestatus == 0:
                 break
         rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
-        return Array(values=array, metadata=metadata)
+        if self.query_str == "select r from RAS_COLLECTIONNAMES as r":
+            return array
+        else:
+            return Array(values=array, metadata=metadata)
 
     def _get_next_element(self):
         rpcstatus = 0
@@ -575,38 +577,6 @@ class Array(object):
         """
         self.metadata = metadata
         self.values = values
-
-    def __getitem__(self, item):
-        """
-        Operator overloading for [], it will slice the array on the first dimension available
-        :param slice | int item: the slicing index
-        :return: an array with one less dimensions
-        :rtype: Array
-        """
-        pass
-
-    def subset(self, spatial_domain):
-        """
-        Subsets the array based on the given spatial domain
-        :param SpatialDomain spatial_domain: the spatial domain to restrict to
-        :rtype: Array
-        """
-        pass
-
-    def get(self):
-        """
-        Returns the array contents as a one dimensional list containing a tuple of each band value for the array cell
-        :rtype: list[tuple(int | float)]
-        """
-        pass
-
-    def point(self, *dimension_indices):
-        """
-        Returns the point at the given position
-        :param list[int] dimension_indices: the indices on each of the existing axis. If one of the dimension index is
-        not given, an exception should be thrown
-        :rtype: int | float
-        """
 
     def to_image(self, filename, normalize=False):
         import matplotlib

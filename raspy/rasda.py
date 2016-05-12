@@ -586,7 +586,7 @@ class RasQuery(object):
         """
         Overloading the str() method for returning the complete query
         """
-        if self._condition is not None:
+        if self._condition != "":
             query_str = "select " + self._expression + " from " + self._collection + " where " + self._condition
         else:
             query_str = "select " + self._expression + " from " + self._collection
