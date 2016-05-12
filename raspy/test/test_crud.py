@@ -37,8 +37,8 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         q = txn.query("select avg_cells(" + self.collName + ") from " + self.collName)
         data = q.eval()
         txn.abort()
-        self.assertIsInstance(data, ras.Array)
-        self.assertEqual(data.values, [1.0])
+        self.assertIsInstance(data, list)
+        self.assertEqual(data, [1.0])
 
     def test_e_drop_collection(self):
         txn = self.db.transaction(rw=True)
@@ -83,8 +83,8 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         q = txn.query("select avg_cells(" + self.collection_name + ") from " + self.collection_name)
         data = q.eval()
         txn.abort()
-        self.assertIsInstance(data, ras.Array)
-        self.assertEqual(data.values, [[1.0, 2.0, 3.0]])
+        self.assertIsInstance(data, list)
+        self.assertEqual(data, [[1.0, 2.0, 3.0]])
 
     def test_e_drop_collection(self):
         txn = self.db.transaction(rw=True)
