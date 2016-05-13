@@ -201,7 +201,7 @@ class RasCollection(object):
         else:
             raise Exception("No database object associated with the collection")
 
-    def _operation_helper(self, operator, operand, reflected=False, function=False):
+    def _operation_helper(self, operator, operand, reflected=False, function=False, parenthesis=False):
         """
         Generic operation method. Creates nodes and keeps track of the query tree for all operations.
         Syntactically, there are three possible types of operations:
@@ -219,7 +219,7 @@ class RasCollection(object):
         A new copy of the object with the added operation in the query tree.
         """
         exp = deepcopy(self)
-        par = ExpNode(value=operator, reflected=reflected, function=function)
+        par = ExpNode(value=operator, reflected=reflected, function=function, parenthesis=parenthesis)
         par.set_rchild(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
