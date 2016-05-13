@@ -444,6 +444,18 @@ class RasCollection(object):
         """
         return not self.__eq__(other)
 
+    def __lt__(self, other):
+        return self._operation_helper("<", other)
+
+    def __leq__(self, other):
+        return self._operation_helper("<=", other)
+
+    def __gt__(self, other):
+        return self._operation_helper(">", other)
+
+    def __geq__(self, other):
+        return self._operation_helper(">=", other)
+
     # Begin Condensers
 
     def avg_cells(self):
@@ -489,6 +501,16 @@ class RasCollection(object):
         return self._operation_helper("all_cells", [], function=True)
 
     # End Condensers
+
+    def band(self, band_):
+        return self._operation_helper(".", band_)
+
+
+    def encode(self, format):
+        """
+        Method for specifying encoding of data in RasQL
+        """
+        return self._operation_helper("encode", [format], function=True)
 
     def filter(self, **kwargs):
         """
@@ -537,8 +559,12 @@ class RasCollection(object):
         exp = temp.value
         while temp.parent is not None:
             if temp.parent.is_reflected is False and temp.parent.is_function is False:
-                exp = "(" + exp + temp.parent.value + str(
-                    temp.parent.rchild.value) + ")"
+                if type(temp.parent.rchild.value) == RasCollection:
+                    exp = "(" + exp + temp.parent.value + str(
+                    temp.parent.rchild.value.expression) + ")"
+                else:
+                    exp = "(" + exp + temp.parent.value + str(
+                        temp.parent.rchild.value) + ")"
             elif temp.parent.is_function is True and temp.parent.is_reflected is False:
                 args = temp.parent.rchild.value
                 arg_str = ","
@@ -552,8 +578,11 @@ class RasCollection(object):
 
                 exp = temp.parent.value + "(" + exp + arg_str + ")"
             else:
-                exp = "(" + str(
-                    temp.parent.rchild.value) + temp.parent.value + exp + ")"
+                if type(temp.parent.rchild.value) == RasCollection:
+                    exp = "(" + temp.parent.rchild.value.expression + temp.parent.value + exp + ")"
+                else:
+                    exp = "(" + str(
+                        temp.parent.rchild.value) + temp.parent.value + exp + ")"
             temp = temp.parent
         return exp
 
