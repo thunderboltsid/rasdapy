@@ -38,7 +38,7 @@ class ExpNode(object):
     query evaluation tree
     """
 
-    def __init__(self, parent=None, value=None, lchild=None, rchild=None, reflected=False, function=False):
+    def __init__(self, parent=None, value=None, lchild=None, rchild=None, reflected=False, function=False, parenthesis=False):
         """
         Constructor for the class
         """
@@ -48,6 +48,7 @@ class ExpNode(object):
         self._value = value
         self._reflected = reflected
         self._function = function
+        self._parenthesis = parenthesis
 
     def set_parent(self, parent):
         """
@@ -510,7 +511,7 @@ class RasCollection(object):
         """
         Method for specifying encoding of data in RasQL
         """
-        return self._operation_helper("encode", [format], function=True)
+        return self._operation_helper("encode", [format], function=True, parenthesis=True)
 
     def filter(self, **kwargs):
         """
@@ -569,7 +570,10 @@ class RasCollection(object):
                 args = temp.parent.rchild.value
                 arg_str = ","
                 for arg in args:
-                    arg_str += str(arg)
+                    if temp.parent._parenthesis:
+                        arg_str = arg_str + '"' + str(arg) + '"'
+                    else:
+                        arg_str += str(arg)
                     arg_str += ","
                 if arg_str != ",":
                     arg_str = arg_str[:-1]
