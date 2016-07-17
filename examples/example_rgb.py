@@ -1,5 +1,5 @@
 # Import library
-from raspy.rasda import *
+from lib.rasda import *
 
 # Initialize Connection and database instance
 con = Connection()

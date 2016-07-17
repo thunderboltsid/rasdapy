@@ -251,7 +251,7 @@ def signal_handler(signal, frame):
     """
     Signal handler for SIGINT
     """
-    print 'SIGINT: You pressed Ctrl+C - or killed execution with -2'
+    print('SIGINT: You pressed Ctrl+C - or killed execution with -2')
     os._exit(0)
 
 

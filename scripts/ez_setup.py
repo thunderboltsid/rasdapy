@@ -240,7 +240,7 @@ def has_powershell():
     """Determine if Powershell is available."""
     if platform.system() != 'Windows':
         return False
-    cmd = ['powershell', '-Command', 'echo test']
+    cmd = ['powershell', '-Command', 'echo tests']
     with open(os.path.devnull, 'wb') as devnull:
         try:
             subprocess.check_call(cmd, stdout=devnull, stderr=devnull)

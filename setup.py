@@ -25,14 +25,14 @@
 from setuptools import setup
 
 if __name__ == '__main__':
-    setup(name='raspy',
+    setup(name='lib',
           version='0.2dev',
           description='Python interface to Rasdaman',
           author='Siddharth Shukla',
           author_email='s.shukla@jacobs-university.de',
           license='LGPL',
-          packages=['raspy', 'raspy.stubs', 'raspy.test'],
-          scripts=['bin/ez_setup.py', 'bin/stub_generator.py'],
+          packages=['lib', 'lib.stubs', 'lib.tests'],
+          scripts=['scripts/ez_setup.py', 'scripts/stub_generator.py'],
           long_description=open('README.rst').read(),
           url='http://rasdaman.org',
           install_requires=['grpcio', 'protobuf'],

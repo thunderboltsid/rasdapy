@@ -33,12 +33,12 @@ from distutils.spawn import find_executable
 if 'PROTOC' in os.environ and os.path.exists(os.environ['PROTOC']):
     protoc = os.environ['PROTOC']
     grpc_plugin = os.environ['GRPC_PYTHON_PLUGIN']
-elif os.path.exists('/usr/local/bin/protoc'):
-    protoc = "/usr/local/bin/protoc"
-    grpc_plugin = "/usr/local/bin/grpc_python_plugin"
-elif os.path.exists('/usr/bin/protoc'):
-    protoc = "/usr/bin/protoc"
-    grpc_plugin = "/usr/bin/grpc_python_plugin"
+elif os.path.exists('/usr/local/scripts/protoc'):
+    protoc = "/usr/local/scripts/protoc"
+    grpc_plugin = "/usr/local/scripts/grpc_python_plugin"
+elif os.path.exists('/usr/scripts/protoc'):
+    protoc = "/usr/scripts/protoc"
+    grpc_plugin = "/usr/scripts/grpc_python_plugin"
 else:
     protoc = find_executable("protoc")
     grpc_plugin = find_executable("grpc_python_plugin")
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto', 'error_message.proto',
                   'rasmgr_client_service.proto']
     proto_dir = "../protomessages/"
-    stubs_dir = "../raspy/stubs/"
+    stubs_dir = "../lib/stubs/"
     for proto_file in proto_list:
         pb2_file = proto_file.replace(".proto", "_pb2.py")
         generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir, stubs_dir, require=True)
