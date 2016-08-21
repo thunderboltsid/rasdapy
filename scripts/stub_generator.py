@@ -87,7 +87,7 @@ def generate_proto(source, destination, proto_dir, stubs_dir, require=True):
 if __name__ == '__main__':
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto', 'error_message.proto',
                   'rasmgr_client_service.proto']
-    proto_dir = "../protomessages/"
+    proto_dir = "../../../rasnet/protomessages/"
     stubs_dir = "../lib/stubs/"
     for proto_file in proto_list:
         pb2_file = proto_file.replace(".proto", "_pb2.py")
