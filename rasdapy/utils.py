@@ -92,7 +92,8 @@ def get_type_structure_from_string(input_str):
         result['type'] = 'struct'
         result['sub_type'] = sub_type
     else:
-        raise Exception("Invalid Type Structure: Could not retrieve type structure from String")
+        raise Exception(
+            "Invalid Type Structure: Could not retrieve type structure from String")
 
     return result
 
@@ -148,7 +149,8 @@ def get_size_from_data_type(dtype):
     return result
 
 
-def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domain):
+def convert_data_stream_from_bin(dtype, data, array_len, cell_len,
+                                 spatial_domain):
     """
     Convert a set of binary data into meaningful data
     :param dtype:
@@ -169,7 +171,8 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
                 temp = []
                 for idx, dt in enumerate(dtype["sub_type"]["types"]):
                     dtsize = get_size_from_data_type(dt)
-                    temp.append(convert_data_from_bin(dt, data[i + cell_counter:i + cell_counter + dtsize]))
+                    temp.append(convert_data_from_bin(dt, data[
+                                                          i + cell_counter:i + cell_counter + dtsize]))
                     cell_counter += dtsize
                 arr.append(temp)
                 tile_v_index += 1
@@ -194,7 +197,8 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len, spatial_domai
             cell_counter = 0
             for idx, dt in enumerate(dtype["sub_type"]["types"]):
                 dtsize = get_size_from_data_type(dt)
-                temp.append(convert_data_from_bin(dt, data[idx + cell_counter: idx + cell_counter + dtsize]))
+                temp.append(convert_data_from_bin(dt, data[
+                                                      idx + cell_counter: idx + cell_counter + dtsize]))
                 cell_counter += 1
             return temp
         else:
