@@ -84,7 +84,7 @@ def generate_proto(source, destination, proto_dir, stubs_dir, require=True):
             sys.exit(-1)
 
 
-if __name__ == '__main__':
+def main(args=None):
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto', 'error_message.proto',
                   'rasmgr_client_service.proto']
     proto_dir = "../../../rasnet/protomessages/"
@@ -99,3 +99,7 @@ if __name__ == '__main__':
         f.truncate()
         f.write(f_content)
         f.close()
+
+
+if __name__ == '__main__':
+    main()
