@@ -90,6 +90,7 @@ def main(args=None):
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto',
                   'error_message.proto',
                   'rasmgr_client_service.proto']
+    current_dir = ['']
     proto_dir = "../../../rasnet/protomessages/"
     stubs_dir = "../rasdapy/stubs/"
     for proto_file in proto_list:
