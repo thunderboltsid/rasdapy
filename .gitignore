@@ -8,3 +8,4 @@ raspy/venv/*
 .DS_Store
 .eggs/*
 venv/*
+*_pb2.py
