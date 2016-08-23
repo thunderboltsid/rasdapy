@@ -38,7 +38,8 @@ class ExpNode(object):
     query evaluation tree
     """
 
-    def __init__(self, parent=None, value=None, lchild=None, rchild=None, reflected=False, function=False, parenthesis=False):
+    def __init__(self, parent=None, value=None, lchild=None, rchild=None,
+                 reflected=False, function=False, parenthesis=False):
         """
         Constructor for the class
         """
@@ -133,6 +134,7 @@ class Filter(object):
     """
     Class representing filters. Currently each filter just has a condition string
     """
+
     def __init__(self, condition=None):
         """
         Contructor for class Filter
@@ -155,6 +157,7 @@ class RasCollection(object):
     and each of them modify the query tree which can be stringified into a query string to be passed to the eval()
     method.
     """
+
     def __init__(self, name, db=None):
         """
         Constructor for the RasCollection class
@@ -183,7 +186,8 @@ class RasCollection(object):
             if isinstance(db, Database):
                 self._db = db
             else:
-                raise Exception("Argument passed not an instance of ras.Database")
+                raise Exception(
+                    "Argument passed not an instance of ras.Database")
 
     def eval(self):
         """
@@ -201,7 +205,8 @@ class RasCollection(object):
         else:
             raise Exception("No database object associated with the collection")
 
-    def _operation_helper(self, operator, operand, reflected=False, function=False, parenthesis=False):
+    def _operation_helper(self, operator, operand, reflected=False,
+                          function=False, parenthesis=False):
         """
         Generic operation method. Creates nodes and keeps track of the query tree for all operations.
         Syntactically, there are three possible types of operations:
@@ -219,7 +224,8 @@ class RasCollection(object):
         A new copy of the object with the added operation in the query tree.
         """
         exp = deepcopy(self)
-        par = ExpNode(value=operator, reflected=reflected, function=function, parenthesis=parenthesis)
+        par = ExpNode(value=operator, reflected=reflected, function=function,
+                      parenthesis=parenthesis)
         par.set_rchild(ExpNode(value=operand, parent=par))
         if exp.expression is not None:
             exp._root.set_parent(par)
@@ -413,7 +419,9 @@ class RasCollection(object):
             value = [slice_tuple(arg) for arg in args[0]]
             exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
         elif type(args[0]) is slice:  # If type is slice
-            exp._leaf.set_value(exp._leaf.value + "[" + str(args[0].start) + ":" + str(args[0].stop) + "]")
+            exp._leaf.set_value(
+                exp._leaf.value + "[" + str(args[0].start) + ":" + str(
+                    args[0].stop) + "]")
         else:
             exp._leaf.set_value(exp._leaf.value + "[" + str(args[0]) + "]")
         return exp
@@ -506,12 +514,12 @@ class RasCollection(object):
     def band(self, band_):
         return self._operation_helper(".", band_)
 
-
     def encode(self, format):
         """
         Method for specifying encoding of data in RasQL
         """
-        return self._operation_helper("encode", [format], function=True, parenthesis=True)
+        return self._operation_helper("encode", [format], function=True,
+                                      parenthesis=True)
 
     def filter(self, **kwargs):
         """
@@ -539,7 +547,8 @@ class RasCollection(object):
         -------
         RasQuery object
         """
-        return RasQuery(collection=self.collection, expression=self.expression, condition=self.condition)
+        return RasQuery(collection=self.collection, expression=self.expression,
+                        condition=self.condition)
 
     @property
     def collection(self):
@@ -562,7 +571,7 @@ class RasCollection(object):
             if temp.parent.is_reflected is False and temp.parent.is_function is False:
                 if type(temp.parent.rchild.value) == RasCollection:
                     exp = "(" + exp + temp.parent.value + str(
-                    temp.parent.rchild.value.expression) + ")"
+                        temp.parent.rchild.value.expression) + ")"
                 else:
                     exp = "(" + exp + temp.parent.value + str(
                         temp.parent.rchild.value) + ")"
@@ -602,6 +611,7 @@ class RasQuery(object):
     """
     Class representing a RasQuery object
     """
+
     def __init__(self, collection=None, expression=None, condition=None):
         """
         Constructor for the RasQuery object

@@ -28,14 +28,16 @@ _TIMEOUT_SECONDS = 60
 
 
 def rasmgr_connect(stub, username, password):
-    connection = stub.Connect(make_rasmgr_connect_req(username, password), _TIMEOUT_SECONDS)
+    connection = stub.Connect(make_rasmgr_connect_req(username, password),
+                              _TIMEOUT_SECONDS)
     if not connection:
         raise Exception("Remote function 'Connect' did not return anything")
     return connection
 
 
 def rasmgr_disconnect(stub, cuuid, cid):
-    return stub.Disconnect(make_rasmgr_disconnect_req(cuuid, cid), _TIMEOUT_SECONDS)
+    return stub.Disconnect(make_rasmgr_disconnect_req(cuuid, cid),
+                           _TIMEOUT_SECONDS)
 
 
 def rasmgr_keep_alive(stub, cuuid):
@@ -43,76 +45,96 @@ def rasmgr_keep_alive(stub, cuuid):
 
 
 def rasmgr_open_db(stub, cuuid, cid, dbname):
-    resp = stub.OpenDb(make_rasmgr_open_db_req(cuuid, cid, dbname), _TIMEOUT_SECONDS)
+    resp = stub.OpenDb(make_rasmgr_open_db_req(cuuid, cid, dbname),
+                       _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'OpenDb' did not return anything")
     return resp
 
 
 def rasmgr_close_db(stub, cuuid, cid, dbid):
-    return stub.CloseDb(make_rasmgr_close_db_req(cuuid, cid, dbid), _TIMEOUT_SECONDS)
+    return stub.CloseDb(make_rasmgr_close_db_req(cuuid, cid, dbid),
+                        _TIMEOUT_SECONDS)
 
 
 # Start RasServer RPCs
 
 
 def rassrvr_open_db(stub, cid, dbname):
-    resp = stub.OpenServerDatabase(make_rassrvr_open_db_req(cid, dbname), _TIMEOUT_SECONDS)
+    resp = stub.OpenServerDatabase(make_rassrvr_open_db_req(cid, dbname),
+                                   _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'OpenDB' did not return anything")
     return resp
 
 
 def rassrvr_close_db(stub, cid):
-    return stub.CloseServerDatabase(make_rassrvr_close_db_req(cid), _TIMEOUT_SECONDS)
+    return stub.CloseServerDatabase(make_rassrvr_close_db_req(cid),
+                                    _TIMEOUT_SECONDS)
 
 
 def rassrvr_create_db(stub, cid, dbname):
-    return stub.CreateDatabase(make_rassrvr_create_db_req(cid, dbname), _TIMEOUT_SECONDS)
+    return stub.CreateDatabase(make_rassrvr_create_db_req(cid, dbname),
+                               _TIMEOUT_SECONDS)
 
 
 def rassrvr_destroy_db(stub, cid, dbname):
-    return stub.DestroyDatabase(make_rassrvr_destroy_db_req(cid, dbname), _TIMEOUT_SECONDS)
+    return stub.DestroyDatabase(make_rassrvr_destroy_db_req(cid, dbname),
+                                _TIMEOUT_SECONDS)
 
 
 def rassrvr_begin_transaction(stub, cid, rw):
-    return stub.BeginTransaction(make_rassrvr_begin_transaction_req(cid, rw), _TIMEOUT_SECONDS)
+    return stub.BeginTransaction(make_rassrvr_begin_transaction_req(cid, rw),
+                                 _TIMEOUT_SECONDS)
 
 
 def rassrvr_commit_transaction(stub, cid):
-    return stub.CommitTransaction(make_rassrvr_commit_transaction_req(cid), _TIMEOUT_SECONDS)
+    return stub.CommitTransaction(make_rassrvr_commit_transaction_req(cid),
+                                  _TIMEOUT_SECONDS)
 
 
 def rassrvr_abort_transaction(stub, cid):
-    return stub.AbortTransaction(make_rassrvr_abort_transaction_req(cid), _TIMEOUT_SECONDS)
+    return stub.AbortTransaction(make_rassrvr_abort_transaction_req(cid),
+                                 _TIMEOUT_SECONDS)
 
 
 def rassrvr_is_transaction_open(stub, cid):
-    resp = stub.IsTransactionOpen(make_rassrvr_is_transaction_open_req(cid), _TIMEOUT_SECONDS)
+    resp = stub.IsTransactionOpen(make_rassrvr_is_transaction_open_req(cid),
+                                  _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'IsTransactionOpen' did not return anything")
+        raise Exception(
+            "Remote function 'IsTransactionOpen' did not return anything")
     return resp
 
 
-def rassrvr_start_insert_mdd(stub, cid, coll_name, domain, type_len, type_name, oid):
-    resp = stub.StartInsertMDD(make_rassrvr_start_insert_mdd(cid, coll_name, domain, type_len, type_name, oid),
-                               _TIMEOUT_SECONDS)
+def rassrvr_start_insert_mdd(stub, cid, coll_name, domain, type_len, type_name,
+                             oid):
+    resp = stub.StartInsertMDD(
+        make_rassrvr_start_insert_mdd(cid, coll_name, domain, type_len,
+                                      type_name, oid),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'StartInsertMDD' did not return anything")
+        raise Exception(
+            "Remote function 'StartInsertMDD' did not return anything")
     return resp
 
 
 def rassrvr_start_insert_trans_mdd(stub, cid, domain, type_len, type_name):
-    resp = stub.StartInsertTransMDD(make_rassrvr_start_insert_trans_mdd(cid, domain, type_len, type_name),
-                                    _TIMEOUT_SECONDS)
+    resp = stub.StartInsertTransMDD(
+        make_rassrvr_start_insert_trans_mdd(cid, domain, type_len, type_name),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'StartInsertTransMDD' did not return anything")
+        raise Exception(
+            "Remote function 'StartInsertTransMDD' did not return anything")
     return resp
 
 
-def rassrvr_insert_tile(stub, cid, persistent, domain, type_len, current_format, storage_format, data, data_len):
+def rassrvr_insert_tile(stub, cid, persistent, domain, type_len, current_format,
+                        storage_format, data, data_len):
     resp = stub.InsertTile(
-        make_rassrvr_insert_tile_req(cid, persistent, domain, type_len, current_format, storage_format, data, data_len),
+        make_rassrvr_insert_tile_req(cid, persistent, domain, type_len,
+                                     current_format, storage_format, data,
+                                     data_len),
         _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'InsertTile' did not return anything")
@@ -120,70 +142,85 @@ def rassrvr_insert_tile(stub, cid, persistent, domain, type_len, current_format,
 
 
 def rassrvr_end_insert_mdd(stub, cid, persistence):
-    resp = stub.InsertMDD(make_rassrvr_end_insert_mdd_req(cid, persistence), _TIMEOUT_SECONDS)
+    resp = stub.InsertMDD(make_rassrvr_end_insert_mdd_req(cid, persistence),
+                          _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'EndInsertMDD' failed")
     return resp
 
 
 def rassrvr_insert_collection(stub, cid, coll_name, type_name, oid):
-    resp = stub.InsertCollection(make_rassrvr_insert_collection_req(cid, coll_name, type_name, oid), _TIMEOUT_SECONDS)
+    resp = stub.InsertCollection(
+        make_rassrvr_insert_collection_req(cid, coll_name, type_name, oid),
+        _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'InsertCollection' failed")
     return resp
 
 
 def rassrvr_delete_collection_by_name(stub, cid, coll_name):
-    resp = stub.DeleteCollectionByName(make_rassrvr_delete_collection_by_name_req(cid, coll_name), _TIMEOUT_SECONDS)
+    resp = stub.DeleteCollectionByName(
+        make_rassrvr_delete_collection_by_name_req(cid, coll_name),
+        _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'DeleteCollectionByName' failed")
     return resp
 
 
 def rassrvr_delete_collection_by_id(stub, cid, oid):
-    resp = stub.DeleteCollectionByOid(make_rassrvr_delete_collection_by_name_req(cid, oid), _TIMEOUT_SECONDS)
+    resp = stub.DeleteCollectionByOid(
+        make_rassrvr_delete_collection_by_name_req(cid, oid), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'DeleteCollectionByOid' failed")
     return resp
 
 
 def rassrvr_remove_object_from_collection(stub, cid, coll_name, oid):
-    resp = stub.RemoveObjectFromCollection(make_rassrvr_remove_object_from_collection_req(cid, coll_name, oid),
-                                           _TIMEOUT_SECONDS)
+    resp = stub.RemoveObjectFromCollection(
+        make_rassrvr_remove_object_from_collection_req(cid, coll_name, oid),
+        _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'RemoveObjectFromCollection' failed")
     return resp
 
 
 def rassrvr_get_collection_by_name(stub, cid, name):
-    resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_by_name_or_id_req(cid, name, True),
-                                         _TIMEOUT_SECONDS)
+    resp = stub.GetCollectionByNameOrOid(
+        make_rassrvr_get_collection_by_name_or_id_req(cid, name, True),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
+        raise Exception(
+            "Remote function 'GetCollectionByNameOrOid' did not return anything")
     return resp
 
 
 def rassrvr_get_collection_by_id(stub, cid, oid):
-    resp = stub.GetCollectionByNameOrOid(make_rassrvr_get_collection_by_name_or_id_req(cid, oid, False),
-                                         _TIMEOUT_SECONDS)
+    resp = stub.GetCollectionByNameOrOid(
+        make_rassrvr_get_collection_by_name_or_id_req(cid, oid, False),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetCollectionByNameOrOid' did not return anything")
+        raise Exception(
+            "Remote function 'GetCollectionByNameOrOid' did not return anything")
     return resp
 
 
 def rassrvr_get_collection_oids_by_id(stub, cid, coll_id):
-    resp = stub.GetCollOidsByNameOrOid(make_rassrvr_get_collection_oids_by_name_or_id(cid, coll_id, False),
-                                       _TIMEOUT_SECONDS)
+    resp = stub.GetCollOidsByNameOrOid(
+        make_rassrvr_get_collection_oids_by_name_or_id(cid, coll_id, False),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetCollOidsByNameOrOid' did not return anything")
+        raise Exception(
+            "Remote function 'GetCollOidsByNameOrOid' did not return anything")
     return resp
 
 
 def rassrvr_get_collection_oids_by_name(stub, cid, coll_name):
-    resp = stub.GetCollOidsByNameOrOid(make_rassrvr_get_collection_oids_by_name_or_id(cid, coll_name, True),
-                                       _TIMEOUT_SECONDS)
+    resp = stub.GetCollOidsByNameOrOid(
+        make_rassrvr_get_collection_oids_by_name_or_id(cid, coll_name, True),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetCollOidsByNameOrOid' did not return anything")
+        raise Exception(
+            "Remote function 'GetCollOidsByNameOrOid' did not return anything")
     return resp
 
 
@@ -195,14 +232,16 @@ def rassrvr_get_next_mdd(stub, cid):
 
 
 def rassrvr_get_next_tile(stub, cid):
-    resp = stub.GetNextTile(make_rassrvr_get_next_tile_req(cid), _TIMEOUT_SECONDS)
+    resp = stub.GetNextTile(make_rassrvr_get_next_tile_req(cid),
+                            _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNextTile' did not return anything")
     return resp
 
 
 def rassrvr_end_transfer(stub, cid):
-    resp = stub.EndTransfer(make_rassrvr_end_transfer_req(cid), _TIMEOUT_SECONDS)
+    resp = stub.EndTransfer(make_rassrvr_end_transfer_req(cid),
+                            _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'EndTransfer' did not return anything")
     return resp
@@ -216,86 +255,109 @@ def rassrvr_init_update(stub, cid):
 
 
 def rassrvr_execute_query(stub, cid, query):
-    resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query), _TIMEOUT_SECONDS)
+    resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query),
+                             _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'ExecuteQuery' did not return anything")
+        raise Exception(
+            "Remote function 'ExecuteQuery' did not return anything")
     return resp
 
 
 def rassrvr_execute_http_query(stub, cid, data):
-    resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data), _TIMEOUT_SECONDS)
+    resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data),
+                                 _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'ExecuteHttpQuery' did not return anything")
+        raise Exception(
+            "Remote function 'ExecuteHttpQuery' did not return anything")
     return resp
 
 
 def rassrvr_get_next_element(stub, cid):
-    resp = stub.GetNextElement(make_rassrvr_get_next_element_req(cid), _TIMEOUT_SECONDS)
+    resp = stub.GetNextElement(make_rassrvr_get_next_element_req(cid),
+                               _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetNextElement' did not return anything")
+        raise Exception(
+            "Remote function 'GetNextElement' did not return anything")
     return resp
 
 
 def rassrvr_execute_update_query(stub, cid, query):
-    resp = stub.ExecuteUpdateQuery(make_rassrvr_execute_update_query_req(cid, query), _TIMEOUT_SECONDS)
+    resp = stub.ExecuteUpdateQuery(
+        make_rassrvr_execute_update_query_req(cid, query), _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'ExecuteUpdateQuery' did not return anything")
+        raise Exception(
+            "Remote function 'ExecuteUpdateQuery' did not return anything")
     return resp
 
 
 def rassrvr_execute_insert_query(stub, cid, query):
-    resp = stub.ExecuteInsertQuery(make_rassrvr_execute_insert_query_req(cid, query), _TIMEOUT_SECONDS)
+    resp = stub.ExecuteInsertQuery(
+        make_rassrvr_execute_insert_query_req(cid, query), _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'ExecuteInsertQuery' did not return anything")
+        raise Exception(
+            "Remote function 'ExecuteInsertQuery' did not return anything")
     return resp
 
 
 def rassrvr_get_new_oid(stub, cid, obj_type):
-    resp = stub.GetNewOid(make_rassrvr_get_new_oid_req(cid, obj_type), _TIMEOUT_SECONDS)
+    resp = stub.GetNewOid(make_rassrvr_get_new_oid_req(cid, obj_type),
+                          _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNewOid' did not return anything")
     return resp
 
 
 def rassrvr_get_object_type(stub, cid, oid):
-    resp = stub.GetObjectType(make_rassrvr_get_object_type_req(cid, oid), _TIMEOUT_SECONDS)
+    resp = stub.GetObjectType(make_rassrvr_get_object_type_req(cid, oid),
+                              _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetObjectType' did not return anything")
+        raise Exception(
+            "Remote function 'GetObjectType' did not return anything")
     return resp
 
 
 def rassrvr_get_type_structure(stub, cid, type_name, type_type):
-    resp = stub.GetTypeStructure(make_rassrvr_get_type_structure_req(cid, type_name, type_type), _TIMEOUT_SECONDS)
+    resp = stub.GetTypeStructure(
+        make_rassrvr_get_type_structure_req(cid, type_name, type_type),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetTypeStructure' did not return anything")
+        raise Exception(
+            "Remote function 'GetTypeStructure' did not return anything")
     return resp
 
 
 def rassrvr_set_format(stub, cid, transfer_format, format, format_params):
-    resp = stub.SetFormat(make_rassrvr_set_format_req(cid, transfer_format, format, format_params), _TIMEOUT_SECONDS)
+    resp = stub.SetFormat(
+        make_rassrvr_set_format_req(cid, transfer_format, format,
+                                    format_params), _TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'SetFormat' did not return anything")
     return resp
 
 
 def rassrvr_keep_alive(stub, client_uuid, session_id):
-    resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id), _TIMEOUT_SECONDS)
+    resp = stub.KeepAlive(make_rassrvr_keep_alive_req(client_uuid, session_id),
+                          _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'KeepAlive' from RasServer did not return anything")
+        raise Exception(
+            "Remote function 'KeepAlive' from RasServer did not return anything")
     return resp
 
 
 def rassrvr_begin_streamed_http_query(stub, cuuid, data):
-    resp = stub.BeginStreamedHttpQuery(make_rassrvr_begin_streamed_http_query_req(cuuid, data), _TIMEOUT_SECONDS)
+    resp = stub.BeginStreamedHttpQuery(
+        make_rassrvr_begin_streamed_http_query_req(cuuid, data),
+        _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'BeginStreamedHttpQuery' from RasServer did not return anything")
+        raise Exception(
+            "Remote function 'BeginStreamedHttpQuery' from RasServer did not return anything")
     return resp
 
 
 def rassrvr_get_next_streamed_http_query(stub, uuid):
-    resp = stub.GetNextStreamedHttpQuery(make_rassrvr_get_next_streamed_http_query_req(uuid), _TIMEOUT_SECONDS)
+    resp = stub.GetNextStreamedHttpQuery(
+        make_rassrvr_get_next_streamed_http_query_req(uuid), _TIMEOUT_SECONDS)
     if not resp:
-        raise Exception("Remote function 'GetNextStreamedHttpQuery' from RasServer did not return anything")
+        raise Exception(
+            "Remote function 'GetNextStreamedHttpQuery' from RasServer did not return anything")
     return resp
-
-

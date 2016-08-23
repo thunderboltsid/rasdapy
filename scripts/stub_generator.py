@@ -60,7 +60,8 @@ def generate_proto(source, destination, proto_dir, stubs_dir, require=True):
         return
 
     if not require and protoc is None:
-        sys.stderr.write("Can't find protoc. Make sure you've installed protocol buffers")
+        sys.stderr.write(
+            "Can't find protoc. Make sure you've installed protocol buffers")
         return
 
     if (not os.path.exists(destination) or
@@ -74,25 +75,28 @@ def generate_proto(source, destination, proto_dir, stubs_dir, require=True):
 
         if protoc is None:
             sys.stderr.write(
-                    "protoc is not installed nor found in ../src.  Please compile it "
-                    "or install the binary package.\n")
+                "protoc is not installed nor found in ../src.  Please compile it "
+                "or install the binary package.\n")
             sys.exit(-1)
 
-        protoc_command = [protoc, "-I" + proto_dir, "--python_out=" + stubs_dir, "--grpc_out=" + stubs_dir,
+        protoc_command = [protoc, "-I" + proto_dir, "--python_out=" + stubs_dir,
+                          "--grpc_out=" + stubs_dir,
                           "--plugin=protoc-gen-grpc=" + grpc_plugin, source]
         if subprocess.call(protoc_command) != 0:
             sys.exit(-1)
 
 
 def main(args=None):
-    proto_list = ['client_rassrvr_service.proto', 'common_service.proto', 'error_message.proto',
+    proto_list = ['client_rassrvr_service.proto', 'common_service.proto',
+                  'error_message.proto',
                   'rasmgr_client_service.proto']
     proto_dir = "../../../rasnet/protomessages/"
     stubs_dir = "../rasdapy/stubs/"
     for proto_file in proto_list:
         pb2_file = proto_file.replace(".proto", "_pb2.py")
-        generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir, stubs_dir, require=True)
-        f = open(stubs_dir+pb2_file, "r+b")
+        generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir,
+                       stubs_dir, require=True)
+        f = open(stubs_dir + pb2_file, "r+b")
         f_content = f.read()
         f_content = re.sub(r"syntax='proto3',", r"#syntax='proto3'", f_content)
         f.seek(0)

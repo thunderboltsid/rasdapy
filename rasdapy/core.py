@@ -45,7 +45,8 @@ class Connection(object):
     server
     """
 
-    def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest", password="rasguest"):
+    def __init__(self, hostname="0.0.0.0", port=7001, username="rasguest",
+                 password="rasguest"):
         """
         Constructor for the connection class
         :param str hostname: the hostname of the rasdaman server (default: localhost)
@@ -71,7 +72,8 @@ class Connection(object):
         the session.
         """
         self._stop_keep_alive()
-        rasmgr_disconnect(self.stub, self.session.clientUUID, self.session.clientId)
+        rasmgr_disconnect(self.stub, self.session.clientUUID,
+                          self.session.clientId)
         self.session = None
 
     def connect(self):
@@ -91,9 +93,10 @@ class Connection(object):
         if not self._rasmgr_keep_alive_running:
             self._rasmgr_keep_alive_running = True
             if not self._keep_alive_thread:
-                self._keep_alive_thread = StoppableTimeoutThread(rasmgr_keep_alive,
-                                                                 self.session.keepAliveTimeout / 2000,
-                                                                 self.stub, self.session.clientUUID)
+                self._keep_alive_thread = StoppableTimeoutThread(
+                    rasmgr_keep_alive,
+                    self.session.keepAliveTimeout / 2000,
+                    self.stub, self.session.clientUUID)
                 self._keep_alive_thread.start()
         else:
             raise Exception("RasMgrKeepAlive already running")
@@ -153,13 +156,18 @@ class Database(object):
         sending keep alive messages to the RasManager in case they are on the
         same machine.
         """
-        self.rasmgr_db = rasmgr_open_db(self.connection.stub, self.connection.session.clientUUID,
-                                        self.connection.session.clientId, self.name)
+        self.rasmgr_db = rasmgr_open_db(self.connection.stub,
+                                        self.connection.session.clientUUID,
+                                        self.connection.session.clientId,
+                                        self.name)
         if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
             self.connection._stop_keep_alive()
-        self.channel = implementations.insecure_channel(self.rasmgr_db.serverHostName, self.rasmgr_db.port)
+        self.channel = implementations.insecure_channel(
+            self.rasmgr_db.serverHostName, self.rasmgr_db.port)
         self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
-        self.rassrvr_db = rassrvr_open_db(self.stub, self.connection.session.clientId, self.name)
+        self.rassrvr_db = rassrvr_open_db(self.stub,
+                                          self.connection.session.clientId,
+                                          self.name)
         self._keep_alive()
 
     def close(self):
@@ -169,7 +177,9 @@ class Database(object):
         """
         self._stop_keep_alive()
         rassrvr_close_db(self.stub, self.connection.session.clientId)
-        rasmgr_close_db(self.connection.stub, self.connection.session.clientUUID, self.connection.session.clientId,
+        rasmgr_close_db(self.connection.stub,
+                        self.connection.session.clientUUID,
+                        self.connection.session.clientId,
                         self.rasmgr_db.dbSessionId)
 
     def create(self):
@@ -213,10 +223,11 @@ class Database(object):
         if not self._rassrvr_keep_alive_running:
             self._rassrvr_keep_alive_running = True
             if not self._keep_alive_thread:
-                self._keep_alive_thread = StoppableTimeoutThread(rassrvr_keep_alive,
-                                                                 self.connection.session.keepAliveTimeout / 2000,
-                                                                 self.stub, self.connection.session.clientUUID,
-                                                                 self.rasmgr_db.dbSessionId)
+                self._keep_alive_thread = StoppableTimeoutThread(
+                    rassrvr_keep_alive,
+                    self.connection.session.keepAliveTimeout / 2000,
+                    self.stub, self.connection.session.clientUUID,
+                    self.rasmgr_db.dbSessionId)
                 self._keep_alive_thread.start()
         else:
             raise Exception("RasSrvrKeepAlive already running")
@@ -264,43 +275,53 @@ class Collection(object):
         :rtype: Array
         """
         resp = rassrvr_get_collection_by_name(self.transaction.database.stub,
-                                              self.transaction.database.connection.session.clientId, self.name)
+                                              self.transaction.database.connection.session.clientId,
+                                              self.name)
         return resp
 
     def create(self):
         resp = rassrvr_insert_collection(self.transaction.database.stub,
-                                         self.transaction.database.connection.session.clientId, self.name,
+                                         self.transaction.database.connection.session.clientId,
+                                         self.name,
                                          self.type_name, self.oid)
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
-            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
-            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
     def delete_by_name(self):
         resp = rassrvr_delete_collection_by_name(self.transaction.database.stub,
-                                                 self.transaction.database.connection.session.clientId, self.name)
+                                                 self.transaction.database.connection.session.clientId,
+                                                 self.name)
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
-            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
-            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
     def delete_by_id(self):
         resp = rassrvr_delete_collection_by_id(self.transaction.database.stub,
-                                               self.transaction.database.connection.session.clientId, self.oid)
+                                               self.transaction.database.connection.session.clientId,
+                                               self.oid)
         if resp.status == 0:
             return resp.status
         elif resp.status == 1 or resp.status == 3:
-            raise Exception("Error: Unknown Client. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
-            raise Exception("Error: Unknown Object. Status: " + str(resp.status))
+            raise Exception(
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
@@ -328,13 +349,17 @@ class Transaction(object):
         self.begin()
 
     def begin(self):
-        rassrvr_begin_transaction(self.database.stub, self.database.connection.session.clientId, self.rw)
+        rassrvr_begin_transaction(self.database.stub,
+                                  self.database.connection.session.clientId,
+                                  self.rw)
 
     def commit(self):
-        rassrvr_commit_transaction(self.database.stub, self.database.connection.session.clientId)
+        rassrvr_commit_transaction(self.database.stub,
+                                   self.database.connection.session.clientId)
 
     def abort(self):
-        rassrvr_abort_transaction(self.database.stub, self.database.connection.session.clientId)
+        rassrvr_abort_transaction(self.database.stub,
+                                  self.database.connection.session.clientId)
 
     def query(self, query_str):
         """
@@ -388,12 +413,14 @@ class Query(object):
         if self.mdd_constants is not None:
             pass
 
-        exec_update_query_resp = rassrvr_execute_update_query(self.transaction.database.stub,
-                                                              self.transaction.database.connection.session.clientId,
-                                                              self.query_str)
+        exec_update_query_resp = rassrvr_execute_update_query(
+            self.transaction.database.stub,
+            self.transaction.database.connection.session.clientId,
+            self.query_str)
         if exec_update_query_resp.status == 2 or exec_update_query_resp.status == 3:
             raise Exception(
-                "Error executing query: err_no = " + str(exec_update_query_resp.erroNo) + ", line_no = " + str(
+                "Error executing query: err_no = " + str(
+                    exec_update_query_resp.erroNo) + ", line_no = " + str(
                     exec_update_query_resp.lineNo) + ", col_no = " + str(
                     exec_update_query_resp.colNo) + ", token = " + exec_update_query_resp.token)
         if exec_update_query_resp.status == 1:
@@ -409,10 +436,12 @@ class Query(object):
         :rtype: Array
         """
         exec_query_resp = rassrvr_execute_query(self.transaction.database.stub,
-                                                self.transaction.database.connection.session.clientId, self.query_str)
+                                                self.transaction.database.connection.session.clientId,
+                                                self.query_str)
         self.exec_query_resp = exec_query_resp
         if exec_query_resp.status == 4 or exec_query_resp.status == 5:
-            raise Exception("Error executing query: err_no = " + str(exec_query_resp.err_no) + ", line_no = " + str(
+            raise Exception("Error executing query: err_no = " + str(
+                exec_query_resp.err_no) + ", line_no = " + str(
                 exec_query_resp.line_no) + ", col_no = " + str(
                 exec_query_resp.col_no) + ", token = " + exec_query_resp.token)
         elif exec_query_resp.status == 0:
@@ -422,28 +451,33 @@ class Query(object):
         elif exec_query_resp.status == 2:
             raise Exception("Query returned an empty collection")
         else:
-            raise Exception("Unknown status code: " + str(exec_query_resp.status) + " returned by ExecuteQuery")
+            raise Exception("Unknown status code: " + str(
+                exec_query_resp.status) + " returned by ExecuteQuery")
 
     def _get_next_collection(self):
         mddstatus = 0
         tilestatus = 0
         array = []
         metadata = ArrayMetadata(
-            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(self.exec_query_resp.type_structure)),
-            band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
+            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(
+                self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(
+                self.exec_query_resp.type_structure))
         while mddstatus == 0:
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
-                raise Exception("getMDDCollection - no transfer or empty collection")
+                raise Exception(
+                    "getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
                 tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
                                                  self.transaction.database.connection.session.clientId)
                 tilestatus = tileresp.status
                 if tilestatus == 4:
-                    raise Exception("rpcGetNextTile - no tile to transfer or empty collection")
+                    raise Exception(
+                        "rpcGetNextTile - no tile to transfer or empty collection")
                 else:
                     if self.query_str == "select r from RAS_COLLECTIONNAMES as r":
                         array.append(tileresp.data[:-1])
@@ -461,7 +495,8 @@ class Query(object):
 
             if tilestatus == 0:
                 break
-        rassrvr_end_transfer(self.transaction.database.stub, self.transaction.database.connection.session.clientId)
+        rassrvr_end_transfer(self.transaction.database.stub,
+                             self.transaction.database.connection.session.clientId)
         if self.query_str == "select r from RAS_COLLECTIONNAMES as r":
             return array
         else:
@@ -471,36 +506,45 @@ class Query(object):
         rpcstatus = 0
         array = []
         metadata = ArrayMetadata(
-            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(self.exec_query_resp.type_structure)),
-            band_types=get_type_structure_from_string(self.exec_query_resp.type_structure))
+            spatial_domain=SpatialDomain(get_spatial_domain_from_type_structure(
+                self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(
+                self.exec_query_resp.type_structure))
         while rpcstatus == 0:
             elemresp = rassrvr_get_next_element(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId)
             rpcstatus = elemresp.status
             if rpcstatus == 2:
                 raise Exception("getNextElement - no transfer or empty element")
-            array.append(convert_data_stream_from_bin(metadata.band_types, elemresp.data, elemresp.data_length,
-                                                      elemresp.data_length, metadata.spatial_domain))
+            array.append(
+                convert_data_stream_from_bin(metadata.band_types, elemresp.data,
+                                             elemresp.data_length,
+                                             elemresp.data_length,
+                                             metadata.spatial_domain))
         return array
 
     def _send_mdd_constants(self):
-        exec_init_update_resp = rassrvr_init_update(self.transaction.database.stub,
-                                                    self.transaction.database.connection.session.clientId)
+        exec_init_update_resp = rassrvr_init_update(
+            self.transaction.database.stub,
+            self.transaction.database.connection.session.clientId)
         if exec_init_update_resp.status is not 1:
-            raise Exception("Error: Transfer Failed. ExecInitUpdate returned with a non-zero status: " + str(
-                exec_init_update_resp.status))
+            raise Exception(
+                "Error: Transfer Failed. ExecInitUpdate returned with a non-zero status: " + str(
+                    exec_init_update_resp.status))
 
         for mdd in self.mdd_constants:
-            insert_trans_mdd_resp = rassrvr_start_insert_trans_mdd(self.transaction.database.stub,
-                                                                   self.transaction.database.connection.session.clientId,
-                                                                   mdd.domain, mdd.type_length, mdd.type_name)
+            insert_trans_mdd_resp = rassrvr_start_insert_trans_mdd(
+                self.transaction.database.stub,
+                self.transaction.database.connection.session.clientId,
+                mdd.domain, mdd.type_length, mdd.type_name)
             if insert_trans_mdd_resp.status is 0:
-                insert_tile_resp = rassrvr_insert_tile(self.transaction.database.stub,
-                                                       self.transaction.database.connection.session.clientId,
-                                                       self.transaction.rw,
-                                                       mdd.domain, mdd.type_length, mdd.current_format,
-                                                       mdd.storage_format, mdd.data,
-                                                       mdd.data_length)
+                insert_tile_resp = rassrvr_insert_tile(
+                    self.transaction.database.stub,
+                    self.transaction.database.connection.session.clientId,
+                    self.transaction.rw,
+                    mdd.domain, mdd.type_length, mdd.current_format,
+                    mdd.storage_format, mdd.data,
+                    mdd.data_length)
                 if insert_tile_resp.status > 0:
                     raise Exception("Error: Transfer failed")
             elif insert_trans_mdd_resp.status is 2:
@@ -516,7 +560,8 @@ class RPCMarray(object):
     Class to represent RPC Array
     """
 
-    def __init__(self, domain=None, cell_type_length=None, current_format=None, storage_format=None, data=None):
+    def __init__(self, domain=None, cell_type_length=None, current_format=None,
+                 storage_format=None, data=None):
         self.domain = domain
         self.cell_type_length = cell_type_length
         self.current_format = current_format
@@ -531,7 +576,8 @@ class RPCMarray(object):
         elif type == "pandas":
             raise NotImplementedError("No Support for Pandas yet")
         else:
-            raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
+            raise NotImplementedError(
+                "Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
 
 
 class BandType(object):
@@ -601,4 +647,5 @@ class Array(object):
         elif type == "pandas":
             raise NotImplementedError("No Support for Pandas yet")
         else:
-            raise NotImplementedError("Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
+            raise NotImplementedError(
+                "Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
