@@ -90,7 +90,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['grpcio>=1.0.0', 'protobuf>=3.0.0'],
+    install_requires=['grpcio>=1.0.0', 'protobuf>=3.0.0', 'numpy'],
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
