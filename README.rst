@@ -1,14 +1,11 @@
 RasdaPy - Talk RasQL using Python
 =================================
 
-.. image:: https://travis-ci.com/thunderboltsid/rasdaman.svg?token=Wsb489WHHrz6ABU9Q3F3&branch=master
-    :target: https://travis-ci.com/thunderboltsid/rasdaman
-
-Copyright 2003 - 2016 Peter Baumann /
-rasdaman GmbH.
+Copyright 2003 - 2016 Peter Baumann / rasdaman GmbH.
 
 RasdaPy is a client side interface for Rasdaman that enables execution of
-RasQL queries using the python programming languae.
+RasQL queries using the python programming languae without having to write the
+actual RasQL queries.
 
 This directory contains the RasdaPy library.
 
@@ -35,7 +32,8 @@ unexpected behaviour.
 Installation
 ============
 
-1) Make sure you have Python 2.6 or newer. Python 3.x and PyPy are not supported at the moment. If in doubt, run:
+1) Make sure you have Python 2.7 or newer if using Python 2 and Python 3.4 or
+newer if using Python 3. If in doubt, run:
 
 ::
 
@@ -49,40 +47,14 @@ Installation
 
    https://packaging.python.org/en/latest/installing.html#setup-for-installing-packages
 
-3) Build the C++ code, or install a binary distribution of protoc. If
-   you install a binary distribution, make sure that it is the same
-   version as this package. If in doubt, run:
+3) Install:
 
 ::
 
-   $ protoc --version
-
-4) Build and run the tests:
-
-::
-
-    $ python setup.py build
-    $ python setup.py test
-
-If some tests fail, this library may not work correctly on your system.
-Continue at your own risk.
-
-Please note that there is a known problem with some versions of Python
-on Cygwin which causes the tests to fail after printing the error:
-"sem\_init: Resource temporarily unavailable". This appears to be a bug
-either in Cygwin or in Python:
-http://www.cygwin.com/ml/cygwin/2005-07/msg01378.html We do not know if
-or when it might me fixed. We also do not know how likely it is that
-this bug will affect users in practice.
-
-5) Install:
-
-::
-
-   $ python setup.py install
+   $ pip install rasdapy
 
 This step may require superuser privileges. In case the setup fails because of library issues, the dependencies
-for the library can be found in requirements.txt in project root.
+for the library are `grpcio>=1.0.0`, `numpy`, `protobuf>=3.0.0`, and `numpy`.
 
 Usage: For low level API
 ========================
@@ -90,12 +62,12 @@ Usage: For low level API
 The complete documentation for RasdaPy can be found in Sphinx docs under the docs directory. Examples
 can be found in the examples directory.
 
-Import RasdaPy
---------------
+Import RasdaPy core API
+-----------------------
 
 ::
 
-    $ from raspy.rasda import *
+    $ from rasdapy.core import Connection
 
 Connect to default port 7001 if not specified
 ---------------------------------------------
@@ -163,8 +135,16 @@ Numpy Operations
 
     $ data += 1
 
+
 Usage: For Query Construction
 =============================
+Import RasdaPy lib API
+----------------------
+
+::
+
+    $ from rasdapy.lib import RasCollection
+
 Initialize RasCollection with collection name
 ---------------------------------------------
 ::
@@ -193,8 +173,8 @@ Get the data from db
     $ arr = col.eval()
     $ data = col.to_array()
 
-Convert array to image
-----------------------
+Convert array to image (only for 2D data)
+-----------------------------------------
 ::
 
     $ arr.to_image("example.png")
