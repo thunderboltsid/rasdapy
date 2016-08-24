@@ -138,8 +138,8 @@ Numpy Operations
 
 Usage: For Query Construction
 =============================
-Import RasdaPy lib API
-----------------------
+Import RasdaPy surface API
+--------------------------
 
 ::
 
