@@ -251,14 +251,6 @@ class StoppableTimeoutThread(threading.Thread):
         return self._stop.isSet()
 
 
-def signal_handler(signal, frame):
-    """
-    Signal handler for SIGINT
-    """
-    print('SIGINT: You pressed Ctrl+C - or killed execution with -2')
-    os._exit(0)
-
-
 def slice_tuple(slice_):
     """
     Return start and stop values from a slice object
@@ -273,6 +265,3 @@ def represent_subsetting(collection, tuple_arr):
     repr = repr[:-1]
     repr += "]"
     return repr
-
-
-signal.signal(signal.SIGINT, signal_handler)
