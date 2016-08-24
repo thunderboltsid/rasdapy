@@ -143,7 +143,7 @@ Import RasdaPy lib API
 
 ::
 
-    $ from rasdapy.lib import RasCollection
+    $ from rasdapy.surface import RasCollection
 
 Initialize RasCollection with collection name
 ---------------------------------------------
