@@ -33,7 +33,9 @@ on the resultant arrays efficiently on the local machine
 
 import numpy as np
 import grpc
-from rasdapy.utils import StoppableTimeoutThread,
+from rasdapy.utils import StoppableTimeoutThread, \
+    get_spatial_domain_from_type_structure, get_type_structure_from_string, \
+    convert_data_stream_from_bin
 from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
     rasmgr_disconnect, rasmgr_keep_alive, rasmgr_open_db, \
     rassrvr_abort_transaction, rassrvr_begin_streamed_http_query, \
@@ -610,7 +612,7 @@ class RPCMarray(object):
         if type == "numpy":
             return np.frombuffer(self.data)
         elif type == "scipy":
-            return sparse.csr_matrix(np.frombuffer(self.data))
+            raise NotImplementedError("No support for SciPy yet")
         elif type == "pandas":
             raise NotImplementedError("No Support for Pandas yet")
         else:
