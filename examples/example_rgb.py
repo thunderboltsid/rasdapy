@@ -3,7 +3,7 @@ from rasdapy.core import Connection
 from rasdapy.surface import RasCollection
 
 # Initialize Connection and database instance
-con = Connection()
+con = Connection(hostname="138.201.18.85")
 db = con.database("RASBASE")
 
 # List Collections on database
