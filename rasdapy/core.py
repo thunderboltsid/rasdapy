@@ -33,7 +33,7 @@ on the resultant arrays efficiently on the local machine
 
 import numpy as np
 from grpc.beta import implementations
-from rasdapy.utils import StoppableTimeoutThread
+from rasdapy.utils import StoppableTimeoutThread, 
 from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
     rasmgr_disconnect, rasmgr_keep_alive, rasmgr_open_db, \
     rassrvr_abort_transaction, rassrvr_begin_streamed_http_query, \
@@ -53,7 +53,8 @@ from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
     rassrvr_keep_alive, rassrvr_open_db, \
     rassrvr_remove_object_from_collection, \
     rassrvr_set_format, rassrvr_start_insert_mdd, rassrvr_start_insert_trans_mdd
-from rasdapy.stubs import
+from rasdapy.stubs import client_rassrvr_service_pb2 as rassrvr
+from rasdapy.stubs import rasmgr_client_service_pb2 as rasmgr
 
 
 class Connection(object):

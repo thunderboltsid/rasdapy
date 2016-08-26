@@ -28,10 +28,7 @@
 ##################################################################
 if RMANRASNET
 init:
-    pip install -r requirements.txt
-    python bin/stub_generator.py
-    python setup.py build
-    python setup.py test
+    python scripts/stub_generator.py
     python setup.py install
 test:
     py.test tests
