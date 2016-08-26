@@ -96,13 +96,6 @@ def main(args=None):
         pb2_file = proto_file.replace(".proto", "_pb2.py")
         generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir,
                        stubs_dir, require=True)
-        f = open(stubs_dir + pb2_file, "r+b")
-        f_content = f.read()
-        f_content = re.sub(r"syntax='proto3',", r"#syntax='proto3'", f_content)
-        f.seek(0)
-        f.truncate()
-        f.write(f_content)
-        f.close()
 
 
 if __name__ == '__main__':
