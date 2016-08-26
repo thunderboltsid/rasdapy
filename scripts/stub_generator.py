@@ -91,8 +91,8 @@ def main(args=None):
                   'error_message.proto',
                   'rasmgr_client_service.proto']
     current_dir = os.path.dirname(os.path.realpath(__file__))
-    proto_dir = current_dir + "../../../rasnet/protomessages/"
-    stubs_dir = current_dir + "../rasdapy/stubs/"
+    proto_dir = current_dir + "/../../../rasnet/protomessages/"
+    stubs_dir = current_dir + "/../rasdapy/stubs/"
     for proto_file in proto_list:
         pb2_file = proto_file.replace(".proto", "_pb2.py")
         generate_proto(proto_dir + proto_file, stubs_dir + pb2_file, proto_dir,

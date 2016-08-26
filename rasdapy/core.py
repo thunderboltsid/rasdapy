@@ -33,8 +33,28 @@ on the resultant arrays efficiently on the local machine
 
 import numpy as np
 from grpc.beta import implementations
-from utils import *
-from remote_procedures import *
+from rasdapy.utils import get_md5_string, get_size_from_data_type, \
+    get_spatial_domain_from_type_structure, get_type_structure_from_string
+from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
+    rasmgr_disconnect, rasmgr_keep_alive, rasmgr_open_db, \
+    rassrvr_abort_transaction, rassrvr_begin_streamed_http_query, \
+    rassrvr_begin_transaction, rassrvr_close_db, rassrvr_commit_transaction, \
+    rassrvr_create_db, rassrvr_delete_collection_by_id, \
+    rassrvr_delete_collection_by_name, rassrvr_destroy_db, \
+    rassrvr_end_insert_mdd, rassrvr_end_transfer, rassrvr_execute_http_query, \
+    rassrvr_execute_insert_query, rassrvr_execute_query, \
+    rassrvr_execute_update_query, rassrvr_get_collection_by_id, \
+    rassrvr_get_collection_by_name, rassrvr_get_collection_oids_by_id, \
+    rassrvr_get_collection_oids_by_name, rassrvr_get_new_oid, \
+    rassrvr_get_next_element, rassrvr_get_next_mdd, \
+    rassrvr_get_next_streamed_http_query, rassrvr_get_next_tile, \
+    rassrvr_get_object_type, rassrvr_get_type_structure, rassrvr_init_update, \
+    rassrvr_insert_collection, rassrvr_insert_tile, \
+    rassrvr_is_transaction_open, \
+    rassrvr_keep_alive, rassrvr_open_db, \
+    rassrvr_remove_object_from_collection, \
+    rassrvr_set_format, rassrvr_start_insert_mdd, rassrvr_start_insert_trans_mdd
+from rasdapy.stubs import
 
 
 class Connection(object):
@@ -669,4 +689,5 @@ class Array(object):
             raise NotImplementedError("No Support for Pandas yet")
         else:
             raise NotImplementedError(
-                    "Invalid type: only valid types are 'numpy' (default), 'scipy', and 'pandas'")
+                    "Invalid type: only valid types are 'numpy' (default), "
+                    "'scipy', and 'pandas'")

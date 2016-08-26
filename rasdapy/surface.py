@@ -29,7 +29,7 @@ the python magic methods for certain operations.
 """
 
 from copy import deepcopy
-from core import *
+from rasdapy.core import
 
 
 class ExpNode(object):
