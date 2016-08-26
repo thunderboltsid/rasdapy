@@ -78,7 +78,7 @@ class Connection(object):
         self.username = username
         self.password = password
         self.channel = grpc.insecure_channel(hostname, port)
-        self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
+        self.stub = rasmgr.RasMgrClientServiceStub(self.channel)
         self.session = None
         self._rasmgr_keep_alive_running = None
         self._keep_alive_thread = None
@@ -113,9 +113,9 @@ class Connection(object):
             self._rasmgr_keep_alive_running = True
             if not self._keep_alive_thread:
                 self._keep_alive_thread = StoppableTimeoutThread(
-                        rasmgr_keep_alive,
-                        self.session.keepAliveTimeout / 2000,
-                        self.stub, self.session.clientUUID)
+                    rasmgr_keep_alive,
+                    self.session.keepAliveTimeout / 2000,
+                    self.stub, self.session.clientUUID)
                 self._keep_alive_thread.start()
         else:
             raise Exception("RasMgrKeepAlive already running")
@@ -182,9 +182,9 @@ class Database(object):
                                         self.name)
         if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
             self.connection._stop_keep_alive()
-        self.channel = implementations.insecure_channel(
-                self.rasmgr_db.serverHostName, self.rasmgr_db.port)
-        self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
+        self.channel = grpc.insecure_channel(
+            self.rasmgr_db.serverHostName, self.rasmgr_db.port)
+        self.stub = rassrvr.ClientRassrvrServiceStub(self.channel)
         self.rassrvr_db = rassrvr_open_db(self.stub,
                                           self.connection.session.clientId,
                                           self.name)
@@ -244,10 +244,10 @@ class Database(object):
             self._rassrvr_keep_alive_running = True
             if not self._keep_alive_thread:
                 self._keep_alive_thread = StoppableTimeoutThread(
-                        rassrvr_keep_alive,
-                        self.connection.session.keepAliveTimeout / 2000,
-                        self.stub, self.connection.session.clientUUID,
-                        self.rasmgr_db.dbSessionId)
+                    rassrvr_keep_alive,
+                    self.connection.session.keepAliveTimeout / 2000,
+                    self.stub, self.connection.session.clientUUID,
+                    self.rasmgr_db.dbSessionId)
                 self._keep_alive_thread.start()
         else:
             raise Exception("RasSrvrKeepAlive already running")
@@ -309,10 +309,10 @@ class Collection(object):
             return resp.status
         elif resp.status == 1 or resp.status == 3:
             raise Exception(
-                    "Error: Unknown Client. Status: " + str(resp.status))
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
             raise Exception(
-                    "Error: Unknown Object. Status: " + str(resp.status))
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
@@ -324,10 +324,10 @@ class Collection(object):
             return resp.status
         elif resp.status == 1 or resp.status == 3:
             raise Exception(
-                    "Error: Unknown Client. Status: " + str(resp.status))
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
             raise Exception(
-                    "Error: Unknown Object. Status: " + str(resp.status))
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
@@ -339,10 +339,10 @@ class Collection(object):
             return resp.status
         elif resp.status == 1 or resp.status == 3:
             raise Exception(
-                    "Error: Unknown Client. Status: " + str(resp.status))
+                "Error: Unknown Client. Status: " + str(resp.status))
         elif resp.status == 2:
             raise Exception(
-                    "Error: Unknown Object. Status: " + str(resp.status))
+                "Error: Unknown Object. Status: " + str(resp.status))
         else:
             raise Exception("Error: Unknown Error. Status: " + str(resp.status))
 
@@ -440,19 +440,19 @@ class Query(object):
             pass
 
         exec_update_query_resp = rassrvr_execute_update_query(
-                self.transaction.database.stub,
-                self.transaction.database.connection.session.clientId,
-                self.query_str)
+            self.transaction.database.stub,
+            self.transaction.database.connection.session.clientId,
+            self.query_str)
         if exec_update_query_resp.status == 2 or \
                         exec_update_query_resp.status == 3:
             raise Exception(
-                    "Error executing query: err_no = " + str(
-                            exec_update_query_resp.erroNo) + ", line_no = " +
-                    str(
-                            exec_update_query_resp.lineNo) + ", col_no = " +
-                    str(
-                            exec_update_query_resp.colNo) + ", token = " +
-                    exec_update_query_resp.token)
+                "Error executing query: err_no = " + str(
+                    exec_update_query_resp.erroNo) + ", line_no = " +
+                str(
+                    exec_update_query_resp.lineNo) + ", col_no = " +
+                str(
+                    exec_update_query_resp.colNo) + ", token = " +
+                exec_update_query_resp.token)
         if exec_update_query_resp.status == 1:
             raise Exception("Error: Unknown Client")
         if exec_update_query_resp.status > 3:
@@ -471,9 +471,9 @@ class Query(object):
         self.exec_query_resp = exec_query_resp
         if exec_query_resp.status == 4 or exec_query_resp.status == 5:
             raise Exception("Error executing query: err_no = " + str(
-                    exec_query_resp.err_no) + ", line_no = " + str(
-                    exec_query_resp.line_no) + ", col_no = " + str(
-                    exec_query_resp.col_no) + ", token = " +
+                exec_query_resp.err_no) + ", line_no = " + str(
+                exec_query_resp.line_no) + ", col_no = " + str(
+                exec_query_resp.col_no) + ", token = " +
                             exec_query_resp.token)
         elif exec_query_resp.status == 0:
             return self._get_next_collection()
@@ -483,25 +483,25 @@ class Query(object):
             raise Exception("Query returned an empty collection")
         else:
             raise Exception("Unknown status code: " + str(
-                    exec_query_resp.status) + " returned by ExecuteQuery")
+                exec_query_resp.status) + " returned by ExecuteQuery")
 
     def _get_next_collection(self):
         mddstatus = 0
         tilestatus = 0
         array = []
         metadata = ArrayMetadata(
-                spatial_domain=SpatialDomain(
-                        get_spatial_domain_from_type_structure(
-                                self.exec_query_resp.type_structure)),
-                band_types=get_type_structure_from_string(
-                        self.exec_query_resp.type_structure))
+            spatial_domain=SpatialDomain(
+                get_spatial_domain_from_type_structure(
+                    self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(
+                self.exec_query_resp.type_structure))
         while mddstatus == 0:
             mddresp = rassrvr_get_next_mdd(self.transaction.database.stub,
                                            self.transaction.database.connection.session.clientId)
             mddstatus = mddresp.status
             if mddstatus == 2:
                 raise Exception(
-                        "getMDDCollection - no transfer or empty collection")
+                    "getMDDCollection - no transfer or empty collection")
             tilestatus = 2
             while tilestatus == 2 or tilestatus == 3:
                 tileresp = rassrvr_get_next_tile(self.transaction.database.stub,
@@ -509,8 +509,8 @@ class Query(object):
                 tilestatus = tileresp.status
                 if tilestatus == 4:
                     raise Exception(
-                            "rpcGetNextTile - no tile to transfer or empty "
-                            "collection")
+                        "rpcGetNextTile - no tile to transfer or empty "
+                        "collection")
                 else:
                     if self.query_str == "select r from RAS_COLLECTIONNAMES " \
                                          "as r":
@@ -521,11 +521,11 @@ class Query(object):
                                                current_format=tileresp.current_format,
                                                storage_format=tileresp.storage_format,
                                                data=convert_data_stream_from_bin(
-                                                       metadata.band_types,
-                                                       tileresp.data,
-                                                       tileresp.data_length,
-                                                       tileresp.cell_type_length,
-                                                       metadata.spatial_domain)))
+                                                   metadata.band_types,
+                                                   tileresp.data,
+                                                   tileresp.data_length,
+                                                   tileresp.cell_type_length,
+                                                   metadata.spatial_domain)))
 
             if tilestatus == 0:
                 break
@@ -541,11 +541,11 @@ class Query(object):
         rpcstatus = 0
         array = []
         metadata = ArrayMetadata(
-                spatial_domain=SpatialDomain(
-                        get_spatial_domain_from_type_structure(
-                                self.exec_query_resp.type_structure)),
-                band_types=get_type_structure_from_string(
-                        self.exec_query_resp.type_structure))
+            spatial_domain=SpatialDomain(
+                get_spatial_domain_from_type_structure(
+                    self.exec_query_resp.type_structure)),
+            band_types=get_type_structure_from_string(
+                self.exec_query_resp.type_structure))
         while rpcstatus == 0:
             elemresp = rassrvr_get_next_element(self.transaction.database.stub,
                                                 self.transaction.database.connection.session.clientId)
@@ -553,36 +553,36 @@ class Query(object):
             if rpcstatus == 2:
                 raise Exception("getNextElement - no transfer or empty element")
             array.append(
-                    convert_data_stream_from_bin(metadata.band_types,
-                                                 elemresp.data,
-                                                 elemresp.data_length,
-                                                 elemresp.data_length,
-                                                 metadata.spatial_domain))
+                convert_data_stream_from_bin(metadata.band_types,
+                                             elemresp.data,
+                                             elemresp.data_length,
+                                             elemresp.data_length,
+                                             metadata.spatial_domain))
         return array
 
     def _send_mdd_constants(self):
         exec_init_update_resp = rassrvr_init_update(
-                self.transaction.database.stub,
-                self.transaction.database.connection.session.clientId)
+            self.transaction.database.stub,
+            self.transaction.database.connection.session.clientId)
         if exec_init_update_resp.status is not 1:
             raise Exception(
-                    "Error: Transfer Failed. ExecInitUpdate returned with a "
-                    "non-zero status: " + str(
-                            exec_init_update_resp.status))
+                "Error: Transfer Failed. ExecInitUpdate returned with a "
+                "non-zero status: " + str(
+                    exec_init_update_resp.status))
 
         for mdd in self.mdd_constants:
             insert_trans_mdd_resp = rassrvr_start_insert_trans_mdd(
-                    self.transaction.database.stub,
-                    self.transaction.database.connection.session.clientId,
-                    mdd.domain, mdd.type_length, mdd.type_name)
+                self.transaction.database.stub,
+                self.transaction.database.connection.session.clientId,
+                mdd.domain, mdd.type_length, mdd.type_name)
             if insert_trans_mdd_resp.status is 0:
                 insert_tile_resp = rassrvr_insert_tile(
-                        self.transaction.database.stub,
-                        self.transaction.database.connection.session.clientId,
-                        self.transaction.rw,
-                        mdd.domain, mdd.type_length, mdd.current_format,
-                        mdd.storage_format, mdd.data,
-                        mdd.data_length)
+                    self.transaction.database.stub,
+                    self.transaction.database.connection.session.clientId,
+                    self.transaction.rw,
+                    mdd.domain, mdd.type_length, mdd.current_format,
+                    mdd.storage_format, mdd.data,
+                    mdd.data_length)
                 if insert_tile_resp.status > 0:
                     raise Exception("Error: Transfer failed")
             elif insert_trans_mdd_resp.status is 2:
@@ -615,8 +615,8 @@ class RPCMarray(object):
             raise NotImplementedError("No Support for Pandas yet")
         else:
             raise NotImplementedError(
-                    "Invalid type: only valid types are 'numpy' (default), "
-                    "'scipy', and 'pandas'")
+                "Invalid type: only valid types are 'numpy' (default), "
+                "'scipy', and 'pandas'")
 
 
 class BandType(object):
@@ -691,5 +691,5 @@ class Array(object):
             raise NotImplementedError("No Support for Pandas yet")
         else:
             raise NotImplementedError(
-                    "Invalid type: only valid types are 'numpy' (default), "
-                    "'scipy', and 'pandas'")
+                "Invalid type: only valid types are 'numpy' (default), "
+                "'scipy', and 'pandas'")
