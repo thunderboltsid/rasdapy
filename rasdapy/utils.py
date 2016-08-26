@@ -3,9 +3,6 @@ import re
 import struct
 import threading
 import time
-import os
-import signal
-import numpy as np
 
 
 def get_md5_string(input_str):
