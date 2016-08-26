@@ -688,7 +688,7 @@ class Array(object):
             nparr = np.array([val.data for val in self.values])
             return nparr
         elif type == "scipy":
-            return sparse.csr_matrix(np.frombuffer(self.values))
+            raise NotImplementedError("No support for SciPy yet")
         elif type == "pandas":
             raise NotImplementedError("No Support for Pandas yet")
         else:
