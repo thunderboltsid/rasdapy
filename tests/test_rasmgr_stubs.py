@@ -1,5 +1,6 @@
-from lib.utils import get_md5_string
-from lib.request_factories import make_rasmgr_close_db_req, make_rasmgr_connect_req, make_rasmgr_disconnect_req, \
+from rasdapy.utils import get_md5_string
+from rasdapy.request_factories import make_rasmgr_close_db_req, \
+    make_rasmgr_connect_req, make_rasmgr_disconnect_req, \
     make_rasmgr_open_db_req, make_rasmgr_keep_alive_req
 import unittest
 

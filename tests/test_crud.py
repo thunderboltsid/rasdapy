@@ -1,5 +1,5 @@
 import unittest
-import lib.ras as ras
+from rasdapy import core
 
 
 class TestDemoCollectionGreySet(unittest.TestCase):
@@ -8,7 +8,8 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         self.username = "rasadmin"
         self.password = "rasadmin"
         self.collName = "RasdaPyGrey"
-        self.con = ras.Connection(hostname=self.hostname, username=self.username, password=self.password)
+        self.con = core.Connection(hostname=self.hostname,
+                                username=self.username, password=self.password)
         self.db = self.con.database("RASBASE")
 
     def test_a_create_collection(self):
@@ -30,7 +31,7 @@ class TestDemoCollectionGreySet(unittest.TestCase):
         q = txn.query("select " + self.collName + "[0:2,0:2] from " + self.collName)
         data = q.eval()
         txn.abort()
-        self.assertIsInstance(data, ras.Array)
+        self.assertIsInstance(data, core.Array)
 
     def test_d_read_scalar_from_collection(self):
         txn = self.db.transaction(rw=False)
@@ -54,7 +55,8 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         self.username = "rasadmin"
         self.password = "rasadmin"
         self.collection_name = "RasdaPyRGBTest"
-        self.con = ras.Connection(hostname=self.hostname, username=self.username, password=self.password)
+        self.con = core.Connection(hostname=self.hostname,
+                                username=self.username, password=self.password)
         self.db = self.con.database("RASBASE")
 
     def test_a_create_collection(self):
@@ -76,7 +78,7 @@ class TestDemoCollectionRGBSet(unittest.TestCase):
         q = txn.query("select " + self.collection_name + "[0:2,0:2] from " + self.collection_name)
         data = q.eval()
         txn.abort()
-        self.assertIsInstance(data, ras.Array)
+        self.assertIsInstance(data, core.Array)
 
     def test_d_read_scalar_from_collection(self):
         txn = self.db.transaction(rw=False)

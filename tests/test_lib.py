@@ -21,8 +21,8 @@
  * or contact Peter Baumann via <baumann@rasdaman.com>.
  *
 """
-from lib import utils
-from lib.rasda import ExpNode, RasCollection
+from rasdapy import utils
+from rasdapy.surface import ExpNode, RasCollection
 import unittest
 
 
