@@ -33,8 +33,7 @@ on the resultant arrays efficiently on the local machine
 
 import numpy as np
 from grpc.beta import implementations
-from rasdapy.utils import get_md5_string, get_size_from_data_type, \
-    get_spatial_domain_from_type_structure, get_type_structure_from_string
+from rasdapy.utils import StoppableTimeoutThread
 from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
     rasmgr_disconnect, rasmgr_keep_alive, rasmgr_open_db, \
     rassrvr_abort_transaction, rassrvr_begin_streamed_http_query, \
@@ -420,12 +419,14 @@ class Query(object):
         self.exec_query_resp = None
 
     def eval(self):
-        # TODO: Only if query starts with keyword
-        if "insert" in self.query_str:
+        if self.query_str.startswith("insert") or self.query_str.startswith(
+                "INSERT"):
             self._execute_update()
-        elif "create" in self.query_str:
+        elif self.query_str.startswith("create") or self.query_str.startswith(
+                "CREATE"):
             self._execute_update()
-        elif "drop" in self.query_str:
+        elif self.query_str.startswith("drop") or self.query_str.startswith(
+                "DROP"):
             self._execute_update()
         else:
             return self._execute_read()
