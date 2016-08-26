@@ -79,7 +79,7 @@ class Connection(object):
         self.port = port
         self.username = username
         self.password = password
-        self.channel = grpc.insecure_channel(hostname, port)
+        self.channel = grpc.insecure_channel(hostname + ':' + str(port))
         self.stub = rasmgr.RasMgrClientServiceStub(self.channel)
         self.session = None
         self._rasmgr_keep_alive_running = None
@@ -185,7 +185,7 @@ class Database(object):
         if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
             self.connection._stop_keep_alive()
         self.channel = grpc.insecure_channel(
-            self.rasmgr_db.serverHostName, self.rasmgr_db.port)
+            self.rasmgr_db.serverHostName + ":" + str(self.rasmgr_db.port))
         self.stub = rassrvr.ClientRassrvrServiceStub(self.channel)
         self.rassrvr_db = rassrvr_open_db(self.stub,
                                           self.connection.session.clientId,
