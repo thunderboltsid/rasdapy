@@ -27,6 +27,14 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+import unittest
+
+
+def my_test_suite():
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('tests', pattern='test_*.py')
+    return test_suite
+
 
 here = path.abspath(path.dirname(__file__))
 
@@ -109,4 +117,5 @@ setup(
             'generate_stubs=scripts.stub_generator.__main__:main',
         ],
     },
+    test_suite='setup.my_test_suite',
 )

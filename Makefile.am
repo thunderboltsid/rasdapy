@@ -21,7 +21,7 @@
 # or contact Peter Baumann via <baumann@rasdaman.com>.
 #
 # MAKEFILE FOR:
-#   Library RasPy
+#   Library RasdaPy
 #
 # COMMENTS:
 #
@@ -31,6 +31,6 @@ init:
     python scripts/stub_generator.py
     python setup.py install
 test:
-    py.test tests
+    python setup.py test
 endif
 

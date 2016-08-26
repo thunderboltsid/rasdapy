@@ -40,21 +40,7 @@ newer if using Python 3. If in doubt, run:
    $ python --version
 
 2) If you do not have setuptools, numpy, scipy, grpcio, and protobuf
-   installed, note that they will be downloaded and installed
-   automatically as soon as you run setup.py. If you would rather
-   install them manually, you may do so by following the instructions on
-   this page:
-
-   https://packaging.python.org/en/latest/installing.html#setup-for-installing-packages
-
-3) Install:
-
-::
-
-   $ pip install rasdapy
-
-This step may require superuser privileges. In case the setup fails because of library issues, the dependencies
-for the library are `grpcio>=1.0.0`, `numpy`, `protobuf>=3.0.0`, and `numpy`.
+   installed, note that they will be downloaded , and `numpy`.
 
 Usage: For low level API
 ========================
