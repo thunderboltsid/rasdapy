@@ -132,7 +132,8 @@ class ExpNode(object):
 
 class Filter(object):
     """
-    Class representing filters. Currently each filter just has a condition string
+    Class representing filters. Currently each filter just has a condition
+    string
     """
 
     def __init__(self, condition=None):
@@ -153,8 +154,10 @@ class Filter(object):
 
 class RasCollection(object):
     """
-    Class denoting a Rasdaman Collection object on a client library. Operators are overloaded on this class
-    and each of them modify the query tree which can be stringified into a query string to be passed to the eval()
+    Class denoting a Rasdaman Collection object on a client library.
+    Operators are overloaded on this class
+    and each of them modify the query tree which can be stringified into a
+    query string to be passed to the eval()
     method.
     """
 
@@ -176,7 +179,8 @@ class RasCollection(object):
 
     def use_db(self, db):
         """
-        Method to specify the databse object required for accessing the collection. Usage not necessary if passed in the
+        Method to specify the databse object required for accessing the
+        collection. Usage not necessary if passed in the
         constructor already.
         Parameters
         ----------
@@ -187,11 +191,12 @@ class RasCollection(object):
                 self._db = db
             else:
                 raise Exception(
-                    "Argument passed not an instance of ras.Database")
+                        "Argument passed not an instance of ras.Database")
 
     def eval(self):
         """
-        Method to evaluate the query constructed on the server. Starts transaction, evaluates query, and returns data.
+        Method to evaluate the query constructed on the server. Starts
+        transaction, evaluates query, and returns data.
         Returns
         -------
         Return Array object with the necessary arrays or scalars
@@ -208,7 +213,8 @@ class RasCollection(object):
     def _operation_helper(self, operator, operand, reflected=False,
                           function=False, parenthesis=False):
         """
-        Generic operation method. Creates nodes and keeps track of the query tree for all operations.
+        Generic operation method. Creates nodes and keeps track of the query
+        tree for all operations.
         Syntactically, there are three possible types of operations:
             * Regular Binary operation
             * Reflected Binary operation
@@ -217,8 +223,10 @@ class RasCollection(object):
         ----------
         operator: The operator or the function name
         operand: The other operand besides the base MDD
-        reflected: Boolean value signifying whether the operation is reflected or not
-        function: Boolean value signifying whether the operation is a function like operation or not
+        reflected: Boolean value signifying whether the operation is
+        reflected or not
+        function: Boolean value signifying whether the operation is a
+        function like operation or not
         Returns
         -------
         A new copy of the object with the added operation in the query tree.
@@ -407,7 +415,8 @@ class RasCollection(object):
         Overloading for [...] operator
         Parameters
         ----------
-        other : Arguments in the form of tuples of splice objects representing subsetting operations
+        other : Arguments in the form of tuples of splice objects
+        representing subsetting operations
         Returns
         -------
         A new copy of the object with the added operation in the query tree.
@@ -420,8 +429,8 @@ class RasCollection(object):
             exp._leaf.set_value(represent_subsetting(exp._leaf.value, value))
         elif type(args[0]) is slice:  # If type is slice
             exp._leaf.set_value(
-                exp._leaf.value + "[" + str(args[0].start) + ":" + str(
-                    args[0].stop) + "]")
+                    exp._leaf.value + "[" + str(args[0].start) + ":" + str(
+                            args[0].stop) + "]")
         else:
             exp._leaf.set_value(exp._leaf.value + "[" + str(args[0]) + "]")
         return exp
@@ -434,7 +443,8 @@ class RasCollection(object):
         other: other operand
         Returns
         -------
-        True if the objects have same generated query string otherwise returns False
+        True if the objects have same generated query string otherwise
+        returns False
         """
         if str(self.query) == str(other.query):
             return True
@@ -449,7 +459,8 @@ class RasCollection(object):
         other: other operand
         Returns
         -------
-        False if the objects have same generated query string otherwise returns True
+        False if the objects have same generated query string otherwise
+        returns True
         """
         return not self.__eq__(other)
 
@@ -523,8 +534,10 @@ class RasCollection(object):
 
     def filter(self, **kwargs):
         """
-        Method for adding filters to the collection via keyword arguments. Any keyword argument is added as a filter as
-         is. Perhaps we can have a list of arguments that can be used for validation and hence invalid filters can be
+        Method for adding filters to the collection via keyword arguments.
+        Any keyword argument is added as a filter as
+         is. Perhaps we can have a list of arguments that can be used for
+         validation and hence invalid filters can be
          avoided.
         """
         for key in kwargs:
@@ -541,8 +554,10 @@ class RasCollection(object):
     @property
     def query(self):
         """
-        A property for getting the query object created from the query tree. Use within str for getting the stringified
-        query i.e. str(col.query) for a RasCollection object stored in a variable called col
+        A property for getting the query object created from the query tree.
+        Use within str for getting the stringified
+        query i.e. str(col.query) for a RasCollection object stored in a
+        variable called col
         Returns
         -------
         RasQuery object
@@ -560,7 +575,8 @@ class RasCollection(object):
     @property
     def expression(self):
         """
-        Constructs the expression clause (i.e. clause between select and from) of the query from the query tree.
+        Constructs the expression clause (i.e. clause between select and
+        from) of the query from the query tree.
         Returns
         -------
         A string representing the expression clause of the query
@@ -568,14 +584,16 @@ class RasCollection(object):
         temp = self._leaf
         exp = temp.value
         while temp.parent is not None:
-            if temp.parent.is_reflected is False and temp.parent.is_function is False:
+            if temp.parent.is_reflected is False and temp.parent.is_function \
+                    is False:
                 if type(temp.parent.rchild.value) == RasCollection:
                     exp = "(" + exp + temp.parent.value + str(
-                        temp.parent.rchild.value.expression) + ")"
+                            temp.parent.rchild.value.expression) + ")"
                 else:
                     exp = "(" + exp + temp.parent.value + str(
-                        temp.parent.rchild.value) + ")"
-            elif temp.parent.is_function is True and temp.parent.is_reflected is False:
+                            temp.parent.rchild.value) + ")"
+            elif temp.parent.is_function is True and temp.parent.is_reflected\
+                    is False:
                 args = temp.parent.rchild.value
                 arg_str = ","
                 for arg in args:
@@ -592,17 +610,20 @@ class RasCollection(object):
                 exp = temp.parent.value + "(" + exp + arg_str + ")"
             else:
                 if type(temp.parent.rchild.value) == RasCollection:
-                    exp = "(" + temp.parent.rchild.value.expression + temp.parent.value + exp + ")"
+                    exp = "(" + temp.parent.rchild.value.expression + \
+                          temp.parent.value + exp + ")"
                 else:
                     exp = "(" + str(
-                        temp.parent.rchild.value) + temp.parent.value + exp + ")"
+                            temp.parent.rchild.value) + temp.parent.value + \
+                          exp + ")"
             temp = temp.parent
         return exp
 
     @property
     def condition(self):
         """
-        Returns the filters stringified together in a composite manner via the `and` keyword
+        Returns the filters stringified together in a composite manner via
+        the `and` keyword
         """
         return " and ".join(str(fltr) for fltr in self._filters)
 
@@ -617,9 +638,12 @@ class RasQuery(object):
         Constructor for the RasQuery object
         Parameters
         ----------
-        collection: The clause representing the collection in a query (i.e. select ...)
-        expression: The clause representing the expression in a query (i.e. from ...)
-        condition: The clause representing the condition in a query (i.e. where ...)
+        collection: The clause representing the collection in a query (i.e.
+        select ...)
+        expression: The clause representing the expression in a query (i.e.
+        from ...)
+        condition: The clause representing the condition in a query (i.e.
+        where ...)
         """
         self._collection = collection
         self._expression = expression
@@ -630,7 +654,8 @@ class RasQuery(object):
         Overloading the str() method for returning the complete query
         """
         if self._condition != "":
-            query_str = "select " + self._expression + " from " + self._collection + " where " + self._condition
+            query_str = "select " + self._expression + " from " + \
+                        self._collection + " where " + self._condition
         else:
             query_str = "select " + self._expression + " from " + self._collection
         return query_str

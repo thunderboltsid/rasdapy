@@ -1,5 +1,6 @@
 # Import library
-from lib.rasda import *
+from rasdapy.core import Connection
+from rasdapy.surface import RasCollection
 
 # Initialize Connection and database instance
 con = Connection()

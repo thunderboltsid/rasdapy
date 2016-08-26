@@ -27,13 +27,17 @@ def get_type_structure_from_string(input_str):
     :return: object {"type", "base_type", "sub_type"(optional)}
     TODO: SDOM might not be a scalar. Look into the result type
     """
-    primary_regex = "set\s*<marray\s*<(char|ushort|short|ulong|long|float|double),\s*.*>>"
+    primary_regex = "set\s*<marray\s*<(" \
+                    "char|ushort|short|ulong|long|float|double),\s*.*>>"
     scalar_regex = "set\s*<(char|ushort|short|ulong|long|float|double)\s*>"
     struct_regex = (
-        "set\s*<marray\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)},\s*.*>>"
+        "set\s*<marray\s*<struct\s*{(("
+        "char|ushort|short|ulong|long|float|double)\s*.*,)*\s*(("
+        "char|ushort|short|ulong|long|float|double)\s*.*)},\s*.*>>"
     )
     complex_scalar_regex = (
-        "set\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,)*\s*((char|ushort|short|ulong|long|float|double)\s*.*)}\s*>"
+        "set\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,"
+        ")*\s*((char|ushort|short|ulong|long|float|double)\s*.*)}\s*>"
     )
     primary_match = re.match(primary_regex, input_str)
     scalar_match = re.match(scalar_regex, input_str)
@@ -93,7 +97,8 @@ def get_type_structure_from_string(input_str):
         result['sub_type'] = sub_type
     else:
         raise Exception(
-            "Invalid Type Structure: Could not retrieve type structure from String")
+                "Invalid Type Structure: Could not retrieve type structure "
+                "from String")
 
     return result
 
@@ -172,7 +177,9 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len,
                 for idx, dt in enumerate(dtype["sub_type"]["types"]):
                     dtsize = get_size_from_data_type(dt)
                     temp.append(convert_data_from_bin(dt, data[
-                                                          i + cell_counter:i + cell_counter + dtsize]))
+                                                          i + cell_counter:i
+                                                                           +
+                                                                           cell_counter + dtsize]))
                     cell_counter += dtsize
                 arr.append(temp)
                 tile_v_index += 1
@@ -198,7 +205,9 @@ def convert_data_stream_from_bin(dtype, data, array_len, cell_len,
             for idx, dt in enumerate(dtype["sub_type"]["types"]):
                 dtsize = get_size_from_data_type(dt)
                 temp.append(convert_data_from_bin(dt, data[
-                                                      idx + cell_counter: idx + cell_counter + dtsize]))
+                                                      idx + cell_counter: idx
+                                                                          +
+                                                                          cell_counter + dtsize]))
                 cell_counter += 1
             return temp
         else:

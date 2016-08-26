@@ -185,7 +185,7 @@ def make_rassrvr_insert_collection_req(cid, coll_name, type_name, oid):
 
 def make_rassrvr_delete_collection_by_name_req(cid, coll_name):
     delete_collection_by_name_req = rassrvr.DeleteCollectionByNameReq(
-        client_id=cid, collection_name=coll_name)
+            client_id=cid, collection_name=coll_name)
     if not delete_collection_by_name_req:
         raise Exception("Can't create DeleteCollectionByName request")
     return delete_collection_by_name_req
@@ -193,7 +193,7 @@ def make_rassrvr_delete_collection_by_name_req(cid, coll_name):
 
 def make_rassrvr_delete_collection_by_id_req(cid, coll_id):
     delete_collection_by_id_req = rassrvr.DeleteCollectionByOidReq(
-        client_id=cid, oid=coll_id)
+            client_id=cid, oid=coll_id)
     if not delete_collection_by_id_req:
         raise Exception("Can't create DeleteCollectionById request")
     return delete_collection_by_id_req
@@ -201,8 +201,8 @@ def make_rassrvr_delete_collection_by_id_req(cid, coll_id):
 
 def make_rassrvr_remove_object_from_collection_req(cid, coll_name, oid):
     remove_object_from_collection_req = rassrvr.RemoveObjectFromCollectionReq(
-        client_id=cid, collection_name=coll_name,
-        oid=oid)
+            client_id=cid, collection_name=coll_name,
+            oid=oid)
     if not remove_object_from_collection_req:
         raise Exception("Can't create RemoveObjectFromCollection request")
     return remove_object_from_collection_req
@@ -336,7 +336,7 @@ def make_rassrvr_keep_alive_req(cuuid, dbsid):
 
 def make_rassrvr_begin_streamed_http_query_req(cuuid, data):
     begin_streamed_http_query_req = rassrvr.BeginStreamedHttpQueryReq(
-        client_uuid=cuuid, data=data)
+            client_uuid=cuuid, data=data)
     if not begin_streamed_http_query_req:
         raise Exception("Can't create BeginStreamedHttpQuery request")
     return begin_streamed_http_query_req
@@ -344,7 +344,7 @@ def make_rassrvr_begin_streamed_http_query_req(cuuid, data):
 
 def make_rassrvr_get_next_streamed_http_query_req(cuuid):
     get_next_streamed_http_query_req = rassrvr.GetNextStreamedHttpQueryReq(
-        uuid=cuuid)
+            uuid=cuuid)
     if not get_next_streamed_http_query_req:
         raise Exception("Can't create GetNextStreamedHttpQuery request")
     return get_next_streamed_http_query_req
