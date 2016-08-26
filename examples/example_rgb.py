@@ -3,9 +3,9 @@ from rasdapy.core import Connection
 from rasdapy.surface import RasCollection
 
 # Initialize Connection and database instance
-con = Connection()
-db = con.database("RASBASE")
+con = Connection(hostname="138.201.18.85")
 
+db = con.database("RASBASE")
 # List Collections on database
 print(db.collections)
 
@@ -17,11 +17,11 @@ col /= 3
 col -= 10
 
 # Specify database to use
-col.use_db(db)
 
 # Verify query
 str(col.query)
 
+col.use_db(db)
 # Evaluate query
 data = col.eval()
 

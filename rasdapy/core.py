@@ -32,7 +32,7 @@ on the resultant arrays efficiently on the local machine
 """
 
 import numpy as np
-import grpc
+from grpc.beta import implementations
 from rasdapy.utils import StoppableTimeoutThread, \
     get_spatial_domain_from_type_structure, get_type_structure_from_string, \
     convert_data_stream_from_bin
@@ -79,8 +79,8 @@ class Connection(object):
         self.port = port
         self.username = username
         self.password = password
-        self.channel = grpc.insecure_channel(hostname, port)
-        self.stub = rasmgr.RasMgrClientServiceStub(self.channel)
+        self.channel = implementations.insecure_channel(hostname, port)
+        self.stub = rasmgr.beta_create_RasmgrClientService_stub(self.channel)
         self.session = None
         self._rasmgr_keep_alive_running = None
         self._keep_alive_thread = None
@@ -184,9 +184,9 @@ class Database(object):
                                         self.name)
         if self.rasmgr_db.dbSessionId == self.connection.session.clientUUID:
             self.connection._stop_keep_alive()
-        self.channel = grpc.insecure_channel(
+        self.channel = implementations.insecure_channel(
             self.rasmgr_db.serverHostName, self.rasmgr_db.port)
-        self.stub = rassrvr.ClientRassrvrServiceStub(self.channel)
+        self.stub = rassrvr.beta_create_ClientRassrvrService_stub(self.channel)
         self.rassrvr_db = rassrvr_open_db(self.stub,
                                           self.connection.session.clientId,
                                           self.name)

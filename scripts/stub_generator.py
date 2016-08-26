@@ -88,7 +88,6 @@ def generate_proto(source, destination, proto_dir, stubs_dir, require=True):
 
 def main(args=None):
     proto_list = ['client_rassrvr_service.proto', 'common_service.proto',
-                  'error_message.proto',
                   'rasmgr_client_service.proto']
     current_dir = os.path.dirname(os.path.realpath(__file__))
     proto_dir = current_dir + "/../../../rasnet/protomessages/"
