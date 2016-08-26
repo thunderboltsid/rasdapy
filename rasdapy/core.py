@@ -32,8 +32,8 @@ on the resultant arrays efficiently on the local machine
 """
 
 import numpy as np
-from grpc.beta import implementations
-from rasdapy.utils import StoppableTimeoutThread, 
+import grpc
+from rasdapy.utils import StoppableTimeoutThread,
 from rasdapy.remote_procedures import rasmgr_close_db, rasmgr_connect, \
     rasmgr_disconnect, rasmgr_keep_alive, rasmgr_open_db, \
     rassrvr_abort_transaction, rassrvr_begin_streamed_http_query, \
@@ -77,7 +77,7 @@ class Connection(object):
         self.port = port
         self.username = username
         self.password = password
-        self.channel = implementations.insecure_channel(hostname, port)
+        self.channel = grpc.insecure_channel(hostname, port)
         self.stub = rasmgr.beta_create_RasMgrClientService_stub(self.channel)
         self.session = None
         self._rasmgr_keep_alive_running = None
