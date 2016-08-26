@@ -36,10 +36,12 @@ def get_type_structure_from_string(input_str):
         "set\s*<struct\s*{((char|ushort|short|ulong|long|float|double)\s*.*,"
         ")*\s*((char|ushort|short|ulong|long|float|double)\s*.*)}\s*>"
     )
+    minterval_regex = "set<minterval>"
     primary_match = re.match(primary_regex, input_str)
     scalar_match = re.match(scalar_regex, input_str)
     complex_scalar_match = re.match(complex_scalar_regex, input_str)
     struct_match = re.match(struct_regex, input_str)
+    minterval_match = re.match(minterval_regex, input_str)
     if primary_match is not None:
         result = {
             'base_type': 'marray',
@@ -92,7 +94,13 @@ def get_type_structure_from_string(input_str):
 
         result['type'] = 'struct'
         result['sub_type'] = sub_type
+    elif minterval_match is not None:
+        result = {
+            'base_type': 'scalar',
+            'type': 'minterval'
+        }
     else:
+        print(input_str)
         raise Exception(
                 "Invalid Type Structure: Could not retrieve type structure "
                 "from String")
@@ -146,6 +154,8 @@ def get_size_from_data_type(dtype):
         result = 4
     elif dtype == "double":
         result = 8
+    elif dtype == "minterval":
+        result = 0
     else:
         raise Exception("Unknown Data type provided: " + dtype)
     return result

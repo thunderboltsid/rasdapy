@@ -49,6 +49,7 @@ from rasdapy.request_factories import make_rasmgr_close_db_req, \
     make_rassrvr_start_insert_trans_mdd
 
 _TIMEOUT_SECONDS = 60
+_QUERY_TIMEOUT_SECONDS = 3600
 
 
 def rasmgr_connect(stub, username, password):
@@ -136,7 +137,7 @@ def rassrvr_start_insert_mdd(stub, cid, coll_name, domain, type_len, type_name,
     resp = stub.StartInsertMDD(
             make_rassrvr_start_insert_mdd(cid, coll_name, domain, type_len,
                                           type_name, oid),
-            _TIMEOUT_SECONDS)
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'StartInsertMDD' did not return anything")
@@ -147,7 +148,7 @@ def rassrvr_start_insert_trans_mdd(stub, cid, domain, type_len, type_name):
     resp = stub.StartInsertTransMDD(
             make_rassrvr_start_insert_trans_mdd(cid, domain, type_len,
                                                 type_name),
-            _TIMEOUT_SECONDS)
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'StartInsertTransMDD' did not return anything")
@@ -160,7 +161,7 @@ def rassrvr_insert_tile(stub, cid, persistent, domain, type_len, current_format,
             make_rassrvr_insert_tile_req(cid, persistent, domain, type_len,
                                          current_format, storage_format, data,
                                          data_len),
-            _TIMEOUT_SECONDS)
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'InsertTile' did not return anything")
     return resp
@@ -213,7 +214,7 @@ def rassrvr_remove_object_from_collection(stub, cid, coll_name, oid):
 def rassrvr_get_collection_by_name(stub, cid, name):
     resp = stub.GetCollectionByNameOrOid(
             make_rassrvr_get_collection_by_name_or_id_req(cid, name, True),
-            _TIMEOUT_SECONDS)
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'GetCollectionByNameOrOid' did not return "
@@ -224,7 +225,7 @@ def rassrvr_get_collection_by_name(stub, cid, name):
 def rassrvr_get_collection_by_id(stub, cid, oid):
     resp = stub.GetCollectionByNameOrOid(
             make_rassrvr_get_collection_by_name_or_id_req(cid, oid, False),
-            _TIMEOUT_SECONDS)
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'GetCollectionByNameOrOid' did not return "
@@ -256,7 +257,8 @@ def rassrvr_get_collection_oids_by_name(stub, cid, coll_name):
 
 
 def rassrvr_get_next_mdd(stub, cid):
-    resp = stub.GetNextMDD(make_rassrvr_get_next_mdd_req(cid), _TIMEOUT_SECONDS)
+    resp = stub.GetNextMDD(make_rassrvr_get_next_mdd_req(cid),
+                           _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNextMDD' did not return anything")
     return resp
@@ -264,7 +266,7 @@ def rassrvr_get_next_mdd(stub, cid):
 
 def rassrvr_get_next_tile(stub, cid):
     resp = stub.GetNextTile(make_rassrvr_get_next_tile_req(cid),
-                            _TIMEOUT_SECONDS)
+                            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception("Remote function 'GetNextTile' did not return anything")
     return resp
@@ -287,7 +289,7 @@ def rassrvr_init_update(stub, cid):
 
 def rassrvr_execute_query(stub, cid, query):
     resp = stub.ExecuteQuery(make_rassrvr_execute_query_req(cid, query),
-                             _TIMEOUT_SECONDS)
+                             _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'ExecuteQuery' did not return anything")
@@ -296,7 +298,7 @@ def rassrvr_execute_query(stub, cid, query):
 
 def rassrvr_execute_http_query(stub, cid, data):
     resp = stub.ExecuteHttpQuery(make_rassrvr_execute_http_query_req(cid, data),
-                                 _TIMEOUT_SECONDS)
+                                 _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'ExecuteHttpQuery' did not return anything")
@@ -305,7 +307,7 @@ def rassrvr_execute_http_query(stub, cid, data):
 
 def rassrvr_get_next_element(stub, cid):
     resp = stub.GetNextElement(make_rassrvr_get_next_element_req(cid),
-                               _TIMEOUT_SECONDS)
+                               _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'GetNextElement' did not return anything")
@@ -314,7 +316,8 @@ def rassrvr_get_next_element(stub, cid):
 
 def rassrvr_execute_update_query(stub, cid, query):
     resp = stub.ExecuteUpdateQuery(
-            make_rassrvr_execute_update_query_req(cid, query), _TIMEOUT_SECONDS)
+            make_rassrvr_execute_update_query_req(cid, query),
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'ExecuteUpdateQuery' did not return anything")
@@ -323,7 +326,8 @@ def rassrvr_execute_update_query(stub, cid, query):
 
 def rassrvr_execute_insert_query(stub, cid, query):
     resp = stub.ExecuteInsertQuery(
-            make_rassrvr_execute_insert_query_req(cid, query), _TIMEOUT_SECONDS)
+            make_rassrvr_execute_insert_query_req(cid, query),
+            _QUERY_TIMEOUT_SECONDS)
     if not resp:
         raise Exception(
                 "Remote function 'ExecuteInsertQuery' did not return anything")
